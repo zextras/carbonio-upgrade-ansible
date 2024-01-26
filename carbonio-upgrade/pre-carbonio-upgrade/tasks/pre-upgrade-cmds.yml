@@ -1,0 +1,58 @@
+---
+- name: Creates Bck directory
+  file:
+    path: /bck/{{ ansible_date_time.date }}
+    state: directory
+    owner: zextras
+    group: zextras
+    mode: 0775
+  tags:
+    - pre-upgrade-cmds
+
+- name: Dump Ldap
+  become: true
+  become_method: su
+  become_user: zextras
+  command: '/opt/zextras/libexec/zmslapcat /bck/{{ ansible_date_time.date }}'
+  when: inventory_hostname in groups["masterDirectoryServers"] or inventory_hostname in groups["replicaDirectoryServers"]
+  tags:
+    - pre-upgrade-cmds
+
+- name: Dump Ldap Config
+  become: true
+  become_method: su
+  become_user: zextras
+  command: '/opt/zextras/libexec/zmslapcat -c /bck/{{ ansible_date_time.date }}'
+  when: inventory_hostname in groups["masterDirectoryServers"] or inventory_hostname in groups["replicaDirectoryServers"]
+  tags:
+    - pre-upgrade-cmds
+
+- name: Save /opt/zextras/conf
+  become: true
+  become_method: su
+  become_user: zextras
+  command: 'rsync  -av /opt/zextras/conf /bck/{{ ansible_date_time.date }}'
+  tags:
+    - pre-upgrade-cmds
+
+- name: Save /opt/zextras/common/conf
+  become: true
+  become_method: su
+  become_user: zextras
+  command: 'rsync  -av /opt/zextras/common/conf /bck/{{ ansible_date_time.date }}/common'
+  tags:
+    - pre-upgrade-cmds
+
+- name: Save /etc/zextras
+  become: true
+  become_method: su
+  command: 'rsync  -av /etc/zextras /bck/{{ ansible_date_time.date }}/etc/'
+  tags:
+    - pre-upgrade-cmds
+
+- name: Save /etc/carbonio
+  become: true
+  become_method: su
+  command: 'rsync  -av /etc/carbonio /bck/{{ ansible_date_time.date }}/etc/'
+  tags:
+    - pre-upgrade-cmds

@@ -1,0 +1,75 @@
+---
+- name: Check zmcontrol status
+  become: true
+  become_method: su
+  become_user: zextras
+  command: '/opt/zextras/bin/zmcontrol status'
+  register: zmcontrol_chk_status
+  changed_when: false
+  tags:
+    - check-carbonio-upgrade
+
+- name: Debug zmcontrol status
+  debug:
+    msg: "{{ zmcontrol_chk_status.stdout_lines }}"
+
+- name: Check Carbonio services
+  become: true
+  become_method: su
+  shell:
+    cmd: 'set -o pipefail && systemctl list-units --no-legend | grep carbonio'
+    executable: /bin/bash
+  register: carbonio_chk_services
+  changed_when: false
+  tags:
+    - check-carbonio-upgrade
+
+- name: Debug list of carbonio services status
+  debug:
+    msg: "{{ carbonio_chk_services.stdout_lines }}"
+
+- name: Check Consul services
+  become: true
+  become_method: su
+  shell:
+    cmd: 'set -o pipefail && systemctl list-units --no-legend | grep service-discover'
+    executable: /bin/bash
+  register: consul_chk_services
+  changed_when: false
+  tags:
+    - check-carbonio-upgrade
+
+- name: Debig consul status
+  debug:
+    msg: "{{ consul_chk_services.stdout_lines }}"
+
+- name: Check videoserver services
+  become: true
+  become_method: su
+  shell:
+    cmd: 'set -o pipefail && systemctl list-units --no-legend | grep videoserver'
+    executable: /bin/bash
+  register: video_chk_services
+  changed_when: false
+  when: inventory_hostname in groups["videoServers"]
+  tags:
+    - check-carbonio-upgrade
+
+- name: Debug videoserver status
+  when: inventory_hostname in groups["videoServers"]
+  debug:
+    msg: "{{ video_chk_services.stdout_lines }}"
+
+- name: Check Carbonio version
+  become: true
+  become_method: su
+  become_user: zextras
+  command: '/opt/zextras/bin/zmcontrol -v'
+  register: version_chk_version
+  changed_when: false
+  tags:
+    - check-carbonio-upgrade
+
+- name: Debug version output
+  debug:
+    msg: "{{ version_chk_version.stdout_lines }}"

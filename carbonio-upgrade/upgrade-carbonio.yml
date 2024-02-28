@@ -1,6 +1,10 @@
+
+
 - hosts: all
   order: inventory
   gather_facts: true
+  vars:
+    ha_mode: false
   roles:
      - pre-carbonio-upgrade
 
@@ -8,6 +12,8 @@
 - hosts: masterDirectoryServers, replicaDirectoryServers
   serial: 1
   gather_facts: true
+  vars:
+    ha_mode: false
   roles:
      - upgrade-carbonio-packages
      - post-carbonio-packages-upgrade
@@ -17,6 +23,8 @@
   serial: 1
   order: inventory
   gather_facts: true
+  vars:
+    ha_mode: false
   roles:
      - upgrade-carbonio-packages
      - post-carbonio-packages-upgrade
@@ -26,6 +34,8 @@
   serial: 1
   order: inventory
   gather_facts: true
+  vars:
+    ha_mode: false
   roles:
      - upgrade-carbonio-packages
      - post-carbonio-packages-upgrade
@@ -34,6 +44,8 @@
 - hosts: all, !serviceDiscoverServers, !masterDirectoryServers, !replicaDirectoryServers, !dbsConnectorServers
   order: inventory
   gather_facts: true
+  vars:
+    ha_mode: false
   roles:
      - upgrade-carbonio-packages
      - post-carbonio-packages-upgrade
@@ -41,5 +53,7 @@
 - hosts: all
   order: inventory
   gather_facts: true
+  vars:
+    ha_mode: false
   roles:
      - chk-carbonio-upgrade

@@ -83,6 +83,10 @@
     #state: latest
   when: ansible_os_family == "Debian"
 
+- name: Disable postgresql service for HA mode
+  bebug:
+    msg: "Check ha_mode: <{{ ha_mode }} >"
+
 - name: Upgrade RHEL Family OS packages
   become: true
   yum:

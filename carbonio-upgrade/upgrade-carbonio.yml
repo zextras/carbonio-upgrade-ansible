@@ -1,0 +1,45 @@
+- hosts: all
+  order: inventory
+  gather_facts: true
+  roles:
+     - pre-carbonio-upgrade
+
+# Upgrade LDAP
+- hosts: masterDirectoryServers, replicaDirectoryServers
+  serial: 1
+  gather_facts: true
+  roles:
+     - upgrade-carbonio-packages
+     - post-carbonio-packages-upgrade
+
+# Upgrade others consul servers
+- hosts: serviceDiscoverServers, !masterDirectoryServers, !replicaDirectoryServers
+  serial: 1
+  order: inventory
+  gather_facts: true
+  roles:
+     - upgrade-carbonio-packages
+     - post-carbonio-packages-upgrade
+
+# Upgrade all dbsConnectorServers, db bootstrap it's executed only on first
+- hosts: dbsConnectorServers
+  serial: 1
+  order: inventory
+  gather_facts: true
+  roles:
+     - upgrade-carbonio-packages
+     - post-carbonio-packages-upgrade
+
+# Upgrade others VMs except consul servers and db-connectors
+- hosts: all, !serviceDiscoverServers, !masterDirectoryServers, !replicaDirectoryServers, !dbsConnectorServers
+  order: inventory
+  gather_facts: true
+  roles:
+     - upgrade-carbonio-packages
+     - post-carbonio-packages-upgrade
+
+- hosts: all
+  order: inventory
+  gather_facts: true
+  roles:
+     - chk-carbonio-upgrade

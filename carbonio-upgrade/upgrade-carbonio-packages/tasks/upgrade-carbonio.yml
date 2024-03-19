@@ -1,0 +1,145 @@
+---
+- name: Update repositories cache
+  become: true
+  apt:
+    update_cache: true
+  when: ansible_os_family == "Debian"
+  tags:
+    - ugrade-carbonio
+
+- name: Run scripts to get packages to upgrade(Ubuntu)
+  become: true
+  shell:
+    cmd: 'set -o pipefail && apt list --upgradable 2>/dev/null | cut -f 1 -d / | tail -n +2'
+    executable: /bin/bash
+  register: pkgu
+  when: ansible_os_family == "Debian"
+  tags:
+    - ugrade-carbonio
+
+- name: Run scripts to get packages to upgrade(RedHat)
+  become: true
+  shell:
+    cmd: "set -o pipefail && yum check-update -y 2>/dev/null |  awk '/zextras/ {print $1}'"
+    executable: /bin/bash
+  register: pkgr
+  failed_when: "pkgr.rc not in [ 0, 100 ]"
+  when: ansible_os_family == "RedHat"
+  tags:
+    - ugrade-carbonio
+
+# Check if file with status for restart present . For all VMs
+- name: Check if file exist
+  stat:
+    path: "{{ restart_file }}"
+  register: restart_file_status
+  tags:
+    - track-zmcontrol
+
+# If file with restart status not present will create with content:true. zmcontrol will be restarted with content:true. For all VMs
+- name: Create file with default variables if not exist
+  copy:
+      dest: "{{ restart_file }}"
+      content: |
+        true
+  tags:
+    - track-zmcontrol
+
+- name: Stop carbonio server
+  become: true
+  become_method: su
+  become_user: zextras
+  command: '/opt/zextras/bin/zmcontrol stop'
+  register: ldap
+  when: >
+    (inventory_hostname in groups["masterDirectoryServers"] or
+    inventory_hostname in groups["replicaDirectoryServers"]) and
+    (pkgu is search("carbonio-directory-server") or pkgr is search("carbonio-directory-server"))
+  tags:
+    - ugrade-carbonio
+
+- name: Stop ldap status
+  debug:
+    msg: "{{ ldap }}"
+  when: >
+    (inventory_hostname in groups["masterDirectoryServers"] or
+    inventory_hostname in groups["replicaDirectoryServers"]) and
+    (pkgu is search("carbonio-directory-server") or pkgr is search("carbonio-directory-server"))
+
+- name: Debug list packages(Ubuntu)
+  when: ansible_os_family == "Debian"
+  debug:
+    msg: "{{ pkgu }}"
+
+- name: Debug list packages(RedHat)
+  when: ansible_os_family == "RedHat"
+  debug:
+    msg: "{{ pkgr }}"
+
+- name: Update all packages to their latest version
+  ansible.builtin.apt:
+    upgrade: full
+    #name: "*"
+    #state: latest
+  when: ansible_os_family == "Debian"
+
+- name: Upgrade RHEL Family OS packages
+  become: true
+  yum:
+    name: "*"
+    state: latest
+  register: update
+  when: ansible_os_family == "RedHat"
+
+- name: Add capability to slapd
+  community.general.capabilities:
+    path: /opt/zextras/common/libexec/slapd
+    capability: cap_net_bind_service=+ep
+    state: present
+  when: >
+    (inventory_hostname in groups["masterDirectoryServers"] or
+    inventory_hostname in groups["replicaDirectoryServers"]) and
+    (pkgu is search("carbonio-directory-server") or pkgr is search("carbonio-directory-server"))
+
+# Check status of restart file. Only for LDAP master and LDAP replica
+- name: Check restart file value
+  command: "cat {{ restart_file }}"
+  register: restart_zmcontrol_var
+  when: >
+    (inventory_hostname in groups["masterDirectoryServers"] or
+    inventory_hostname in groups["replicaDirectoryServers"])
+  tags:
+      - track-zmcontrol
+
+- name: Debug restart file
+  when: >
+    (inventory_hostname in groups["masterDirectoryServers"] or
+    inventory_hostname in groups["replicaDirectoryServers"])
+  debug:
+    msg: "{{ restart_zmcontrol_var.stdout }}"
+
+- name: Restart Directory Server
+  become: true
+  become_method: su
+  become_user: zextras
+  command: /opt/zextras/bin/zmcontrol restart
+  register: zm_status
+  changed_when: zm_status.rc == 0
+  when: >
+    (inventory_hostname in groups["masterDirectoryServers"] or
+    inventory_hostname in groups["replicaDirectoryServers"]) and
+    (pkgu is search("carbonio-directory-server") or pkgr is search("carbonio-directory-server"))
+  tags:
+    - ugrade-carbonio
+
+# set content for restart file to false. Only for LDAP master and LDAP replica
+- name: Modify restart file
+  copy:
+      dest: "{{ restart_file }}"
+      content: |
+        false
+  when: >
+    (inventory_hostname in groups["masterDirectoryServers"] or
+    inventory_hostname in groups["replicaDirectoryServers"])
+  tags:
+    - track-zmcontrol

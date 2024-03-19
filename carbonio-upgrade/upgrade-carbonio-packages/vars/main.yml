@@ -1,0 +1,3 @@
+---
+# vars file for upgrade-carbonio-packages
+restart_file: "/tmp/zmcontrol_restart_status"

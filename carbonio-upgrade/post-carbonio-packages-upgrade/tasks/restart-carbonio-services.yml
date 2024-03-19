@@ -1,0 +1,184 @@
+---
+#  1 start ldap, postgres, service-discover server
+#  2 start service-discover agent, all sidecars, application server
+#  3 start service-discover agent, all sidecars, files/docs
+#  4 start service-discover agent, all sidecars, videoserver
+#  5 start service-discover agent, all sidecars, proxyServers
+#  6 start service-discover agent, all sidecars, mtaServers
+
+- name: Restart postgres(Ubuntu)
+  become: true
+  ansible.builtin.service:
+    name: "postgresql"
+    state: restarted
+  register: postgres
+  when: inventory_hostname in groups["postgresServers"] and ansible_os_family == "Debian"
+  tags:
+    - restart-carbonio-services
+    - postgresServers
+
+- name: Restart postgres(RHEL)
+  become: true
+  ansible.builtin.service:
+    name: "postgresql-12.service"
+    state: restarted
+  register: postgres
+  when: inventory_hostname in groups["postgresServers"] and ansible_os_family == "RedHat"
+  tags:
+    - restart-carbonio-services
+    - postgresServers
+
+- name: Debug postgres restart status
+  debug:
+    msg: "{{ postgres }}"
+  when: inventory_hostname in groups["postgresServers"]
+
+- name: Restart Service-discover service
+  become: true
+  ansible.builtin.service:
+    name: service-discover
+    state: restarted
+  tags:
+    - restart-carbonio-services
+
+- name: Fix amavis ipv6
+  ansible.builtin.lineinfile:
+    path: /opt/zextras/conf/amavisd.conf.in
+    insertafter: '# \$inet_socket_port = \[10024,10026\];.*'
+    line: "$inet_socket_bind = '127.0.0.1';"
+    regexp: \$inet_socket_bind.*
+  when: inventory_hostname in groups["mtaServers"]
+  tags:
+    - amavis
+
+# Check status of restart file. For all VMs except LDAP master and LDAP replica
+- name: Check restart file value
+  command: "cat {{ restart_file }}"
+  register: restart_zmcontrol_var
+  when: >
+    inventory_hostname not in groups["masterDirectoryServers"] and
+    inventory_hostname not in groups["replicaDirectoryServers"]
+  tags:
+      - track-zmcontrol
+
+- name: Debug restart file
+  when: >
+    inventory_hostname not in groups["masterDirectoryServers"] and
+    inventory_hostname not in groups["replicaDirectoryServers"]
+  debug:
+    msg: "{{ restart_zmcontrol_var.stdout }}"
+
+- name: Restart zmcontrol
+  become: true
+  become_method: su
+  become_user: zextras
+  command: '/opt/zextras/bin/zmcontrol restart'
+  register: appserver_status
+  changed_when: appserver_status.rc == 0
+  when: >
+    inventory_hostname not in groups["masterDirectoryServers"] and
+    inventory_hostname not in groups["replicaDirectoryServers"] and
+    restart_zmcontrol_var.stdout | bool
+  tags:
+    - restart-carbonio-services
+    - applicationServers
+
+# set content for restart file to false. For all VMs except LDAP master and LDAP replica
+- name: Modify restart file
+  when: >
+    inventory_hostname not in groups["masterDirectoryServers"] and
+    inventory_hostname not in groups["replicaDirectoryServers"]
+  copy:
+      dest: "{{ restart_file }}"
+      content: |
+        false
+  tags:
+    - track-zmcontrol
+
+- name: Get all carbonio sidecar services
+  become: true
+  shell:
+    cmd: "set -o pipefail && systemctl list-units --no-legend  | awk '/sidecar/ {print $1}'"
+    executable: /bin/bash
+  register: carbonio_sidecar_services_in_memory
+  changed_when: false
+  tags:
+    - restart-carbonio-services
+
+- name: Restart sidecars
+  become: true
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: restarted
+  loop: "{{ carbonio_sidecar_services_in_memory.stdout_lines }}"
+  tags:
+    - restart-carbonio-services
+
+- name: Restart application service
+  become: true
+  become_method: su
+  become_user: zextras
+  command: '/opt/zextras/bin/zmmailboxdctl restart'
+  when: inventory_hostname in groups["applicationServers"]
+  register: appserver_status
+  changed_when: appserver_status.rc == 0
+  tags:
+    - restart-carbonio-services
+    - applicationServers
+
+- name: Restart files carbonio services
+  become: true
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: restarted
+  when: inventory_hostname in groups["filesServers"]
+  loop:
+    - carbonio-files.service
+  tags:
+    - restart-carbonio-service
+    - filesServers
+
+- name: Restart docs carbonio services
+  become: true
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: restarted
+  when: inventory_hostname in groups["docsServers"]
+  loop:
+    - carbonio-docs-editor.service
+    - carbonio-docs-connector.service
+  tags:
+    - restart-carbonio-service
+    - filesServers
+
+- name: Restart preview carbonio services
+  become: true
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: restarted
+  when: inventory_hostname in groups["previewServers"]
+  loop:
+    - carbonio-preview.service
+  tags:
+    - restart-carbonio-service
+    - previewServers
+
+- name: Restart video carbonio services
+  become: true
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: restarted
+  when: inventory_hostname in groups["videoServers"]
+  loop:
+    - videoserver.service
+  tags:
+    - restart-carbonio-service
+    - videoServers
+
+# Remove restart file on all VMs
+- name: Remove restart file
+  file:
+      path: "{{ restart_file }}"
+      state: absent
+  tags:
+    - track-zmcontrol

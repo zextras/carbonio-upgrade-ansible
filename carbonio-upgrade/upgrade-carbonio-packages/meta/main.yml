@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
 galaxy_info:
   author: Mobius
   description: Upgrade carbonio packages
@@ -16,7 +20,7 @@ galaxy_info:
   # - CC-BY-4.0
   license: licens1 (GPL-2.0-or-later, MIT, etc)
 
-  min_ansible_version: 2.1
+  min_ansible_version: "2.1"
 
   # If this a Container Enabled role, provide the minimum Ansible Container version.
   # min_ansible_container_version:

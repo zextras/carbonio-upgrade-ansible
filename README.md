@@ -1,4 +1,5 @@
 # Upgrade Carbonio Ansible role
+
 An ansible role to upgrade Zextras Carbonio infrastructures
 
 To upgrade Carbonio using this role, you will need to use or create an inventory file from the [carbonio-install-ansible](https://github.com/zextras/carbonio-install-ansible) repository. Additionally, the upgrade playbook requires the Postgres, LDAP, Consul, and video server passwords. If you didn't use the [carbonio-install-ansible](https://github.com/zextras/carbonio-install-ansible) repository, make sure to place the respective password files (inventoryname_postgrespassword, inventoryname_consulpassword, inventoryname_ldap_password, inventoryname_videoserver_password) alongside your inventory file.
@@ -13,3 +14,7 @@ To perform the upgrade, follow these steps:
 ```bash
 ansible-playbook -i inventoryname sps-upgrade-carbonio-ansible-role/carbonio-upgrade/upgrade-carbonio.yml
 ```
+
+## License(s)
+
+See [COPYING](COPYING.md) file for detail.

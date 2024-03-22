@@ -12,7 +12,7 @@ To perform the upgrade, follow these steps:
 4. Execute the upgrade playbook using the following command:
 
 ```bash
-ansible-playbook -i inventoryname sps-upgrade-carbonio-ansible-role/carbonio-upgrade/upgrade-carbonio.yml
+ansible-playbook -i inventoryname carbonio-upgrade-ansible/carbonio-upgrade/upgrade-carbonio.yml
 ```
 
 ## License(s)

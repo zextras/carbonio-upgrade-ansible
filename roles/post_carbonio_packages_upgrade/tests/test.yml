@@ -6,4 +6,4 @@
 - hosts: localhost
   remote_user: root
   roles:
-    - post-carbonio-packages-upgrade
+    - post_carbonio_packages_upgrade

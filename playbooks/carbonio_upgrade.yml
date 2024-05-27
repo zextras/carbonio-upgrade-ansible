@@ -35,7 +35,7 @@
      - ../roles/post_carbonio_packages_upgrade
 
 # Fix packages
-- hosts: all
+- hosts: all, !serviceDiscoverServers, !masterDirectoryServers, !replicaDirectoryServers, !dbsConnectorServers
   order: inventory
   gather_facts: true
   roles:

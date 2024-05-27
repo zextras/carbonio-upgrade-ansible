@@ -1,0 +1,9 @@
+# SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
+---
+# tasks file for install_new_packages
+- import_tasks: install-carbonio-storages.yml
+- import_tasks: install-carbonio-user-management.yml
+- import_tasks: execute-carbonio-pending-setups.yml

@@ -34,6 +34,13 @@
      - ../roles/upgrade_carbonio_packages
      - ../roles/post_carbonio_packages_upgrade
 
+# Fix packages
+- hosts: all
+  order: inventory
+  gather_facts: true
+  roles:
+     - ../roles/install_new_packages
+
 # Upgrade others VMs except consul servers and db-connectors
 - hosts: all, !serviceDiscoverServers, !masterDirectoryServers, !replicaDirectoryServers, !dbsConnectorServers
   order: inventory

@@ -1,0 +1,43 @@
+# SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
+---
+  - name: Remove carbonio user management 24.3 -> 24.5 [Ubuntu]
+    become: true
+    apt: name={{ item }} state=absent
+    with_items:
+      - "{{ carbonio_user_management_packages }}"
+    when: ansible_os_family == "Debian" and inventory_hostname in ['filesServers']
+    tags:
+      - upgrade-carbonio-user-management
+
+  - name: Install carbonio user management 24.3 -> 24.5 [Ubuntu]
+    become: true
+    apt: name={{ item }} state=present
+    with_items:
+      - "{{ carbonio_user_management_packages }}"
+    when: ansible_os_family == "Debian" and inventory_hostname in groups["dbsConnectorServers"] and groups['filesServers'] | length > 0
+    tags:
+      - upgrade-carbonio-user-management
+
+##### RHEL
+
+  - name: Remove carbonio user management 24.3 -> 24.5 [RHEL]
+    become: true
+    yum: name={{ item }} state=absent
+    with_items:
+      - "{{ carbonio_user_management_packages }}"
+    when: (ansible_os_family == "RedHat" or ansible_os_family == "CentOS") and inventory_hostname in groups['filesServers']
+    tags:
+      - upgrade-carbonio-user-management
+
+  - name: Install carbonio user management 24.3 -> 24.5 [RHEL]
+    become: true
+    yum: name={{ item }} state=present
+    with_items:
+      - "{{ carbonio_user_management_packages }}"
+    when: (ansible_os_family == "RedHat" or ansible_os_family == "CentOS") and inventory_hostname in groups["dbsConnectorServers"] and groups['filesServers'] | length > 0
+    tags:
+      - upgrade-carbonio-user-management
+

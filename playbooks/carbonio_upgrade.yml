@@ -32,17 +32,20 @@
   gather_facts: true
   roles:
      - ../roles/upgrade_carbonio_packages
+     - ../roles/install_new_packages
      - ../roles/post_carbonio_packages_upgrade
 
 # Fix packages
-- hosts: all, !serviceDiscoverServers, !masterDirectoryServers, !replicaDirectoryServers, !dbsConnectorServers
+- hosts: filesServers
   order: inventory
   gather_facts: true
   roles:
+     - ../roles/upgrade_carbonio_packages
      - ../roles/install_new_packages
+     - ../roles/post_carbonio_packages_upgrade
 
 # Upgrade others VMs except consul servers and db-connectors
-- hosts: all, !serviceDiscoverServers, !masterDirectoryServers, !replicaDirectoryServers, !dbsConnectorServers
+- hosts: all, !serviceDiscoverServers, !masterDirectoryServers, !replicaDirectoryServers, !dbsConnectorServers, !filesServers
   order: inventory
   gather_facts: true
   roles:

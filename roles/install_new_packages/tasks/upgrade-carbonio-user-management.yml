@@ -3,19 +3,21 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 ---
-  - name: Stop carbonio-user-management-sidecar
-    become: true
-    ansible.builtin.systemd_service:
-      state: stopped
-      daemon_reload: true
-      name: carbonio-user-management-sidecar
-    tags:
-      - upgrade-carbonio-user-management
+  # - name: Stop carbonio-user-management-sidecar
+  #   become: true
+  #   ansible.builtin.systemd_service:
+  #     state: stopped
+  #     daemon_reload: true
+  #     name: carbonio-user-management-sidecar
+  #   when: ansible_os_family == "Debian" and inventory_hostname in groups['filesServers']
+  #   tags:
+  #     - upgrade-carbonio-user-management
 
   - name: Reset failed services
     shell:
       cmd: 'systemctl reset-failed'
       executable: /bin/bash
+    when: ansible_os_family == "Debian" and inventory_hostname in groups['filesServers']
     tags:
       - upgrade-carbonio-user-management
 

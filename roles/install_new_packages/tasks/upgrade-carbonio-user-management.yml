@@ -3,6 +3,23 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 ---
+  - name: Stop carbonio-user-management-sidecar
+    become: true
+    ansible.builtin.systemd_service:
+      state: stopped
+      daemon_reload: true
+      name: carbonio-user-management-sidecar
+    tags:
+      - upgrade-carbonio-user-management
+
+  - name: Reset failed services
+    shell:
+      cmd: 'systemctl reset-failed'
+      executable: /bin/bash
+    tags:
+      - upgrade-carbonio-user-management
+
+
   - name: Remove carbonio user management 24.3 -> 24.5 [Ubuntu]
     become: true
     apt: name={{ item }} state=absent

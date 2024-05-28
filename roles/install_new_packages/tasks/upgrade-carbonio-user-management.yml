@@ -13,14 +13,6 @@
   #   tags:
   #     - upgrade-carbonio-user-management
 
-  - name: Reset failed services
-    shell:
-      cmd: 'systemctl reset-failed'
-      executable: /bin/bash
-    when: ansible_os_family == "Debian" and inventory_hostname in groups['filesServers']
-    tags:
-      - upgrade-carbonio-user-management
-
 
   - name: Remove carbonio user management 24.3 -> 24.5 [Ubuntu]
     become: true
@@ -60,3 +52,12 @@
     tags:
       - upgrade-carbonio-user-management
 
+##### Common
+
+  - name: Reset failed services
+    shell:
+      cmd: 'systemctl reset-failed'
+      executable: /bin/bash
+    when: ansible_os_family == "Debian" and inventory_hostname in groups['filesServers']
+    tags:
+      - upgrade-carbonio-user-management

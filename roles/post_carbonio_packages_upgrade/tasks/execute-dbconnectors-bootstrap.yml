@@ -38,3 +38,13 @@
   when: groups['docsServers'] | length > 0 and inventory_hostname in groups["dbsConnectorServers"][0]
   tags:
       - db-connectors-bootstrap
+
+- name: run tasks-connector-db Bootstrap
+  environment:
+      PGPASSWORD: "{{ carbonio_postgres_password }}"
+  become: true
+  run_once: true
+  command: /usr/bin/carbonio-tasks-db-bootstrap carbonio_adm 127.0.0.1
+  when:  groups['taskServers'] | length > 0 and inventory_hostname in groups["dbsConnectorServers"][0]
+  tags:
+      - db-connectors-bootstrap

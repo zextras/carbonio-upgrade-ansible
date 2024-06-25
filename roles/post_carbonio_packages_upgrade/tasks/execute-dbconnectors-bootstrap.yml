@@ -25,7 +25,7 @@
   command: /usr/bin/carbonio-files-db-bootstrap carbonio_adm 127.0.0.1
   become: true
   run_once: true
-  when: groups['filesServers'] | length > 0 and inventory_hostname in groups["dbsConnectorServers"][0]
+  when: groups['filesServers'] | length > 0 and inventory_hostname in groups["postgresServers"][0]
   tags:
       - db-connectors-bootstrap
 
@@ -35,6 +35,16 @@
   become: true
   run_once: true
   command: /usr/bin/carbonio-docs-connector-db-bootstrap carbonio_adm 127.0.0.1
-  when: groups['docsServers'] | length > 0 and inventory_hostname in groups["dbsConnectorServers"][0]
+  when: groups['docsServers'] | length > 0 and inventory_hostname in groups["postgresServers"][0]
+  tags:
+      - db-connectors-bootstrap
+
+- name: run tasks-connector-db Bootstrap
+  environment:
+      PGPASSWORD: "{{ carbonio_postgres_password }}"
+  become: true
+  run_once: true
+  command: /usr/bin/carbonio-tasks-db-bootstrap carbonio_adm 127.0.0.1
+  when:  groups['taskServers'] | length > 0 and inventory_hostname in groups["postgresServers"][0]
   tags:
       - db-connectors-bootstrap

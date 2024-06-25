@@ -153,7 +153,19 @@
     - carbonio-docs-connector.service
   tags:
     - restart-carbonio-service
-    - filesServers
+    - docsServers
+
+- name: Restart task carbonio services
+  become: true
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: restarted
+  when: inventory_hostname in groups["taskServers"]
+  loop:
+    - carbonio-tasks.service
+  tags:
+    - restart-carbonio-service
+    - taskServers
 
 - name: Restart preview carbonio services
   become: true

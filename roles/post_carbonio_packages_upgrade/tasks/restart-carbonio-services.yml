@@ -24,7 +24,7 @@
 - name: Restart postgres(RHEL)
   become: true
   ansible.builtin.service:
-    name: "postgresql-12.service"
+    name: "postgresql-16.service"
     state: restarted
   register: postgres
   when: inventory_hostname in groups["postgresServers"] and ansible_os_family == "RedHat"

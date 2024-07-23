@@ -51,7 +51,7 @@
   become: true
   become_method: su
   shell:
-    cmd: 'set -o pipefail && systemctl list-units --no-legend | grep carbonio-videoserver'
+    cmd: 'set -o pipefail && systemctl list-units --no-legend | grep videoserver'
     executable: /bin/bash
   register: video_chk_services
   changed_when: false

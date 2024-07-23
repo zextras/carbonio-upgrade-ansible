@@ -186,7 +186,7 @@
     state: restarted
   when: inventory_hostname in groups["videoServers"]
   loop:
-    - carbonio-videoserver.service
+    - videoserver.service
   tags:
     - restart-carbonio-service
     - videoServers

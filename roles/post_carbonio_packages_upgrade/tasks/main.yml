@@ -6,4 +6,5 @@
 # tasks file for post-carbonio-packages-upgrade
 - import_tasks: execute-carbonio-pending-setups.yml
 - import_tasks: execute-dbconnectors-bootstrap.yml
+- import_tasks: remove-unused-dependencies.yml
 - import_tasks: restart-carbonio-services.yml

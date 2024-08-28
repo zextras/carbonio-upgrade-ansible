@@ -11,6 +11,7 @@
 
       Unused packages installed manually are not removed by this operation,
       please check Carbonio documentation for deprecated packages.
+  when: skip_autoremove == 0
 
 - name: Delay for 10 seconds to read the warning
   pause:

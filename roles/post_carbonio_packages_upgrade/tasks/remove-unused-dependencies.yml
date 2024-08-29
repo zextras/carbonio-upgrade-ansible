@@ -1,0 +1,28 @@
+# SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
+---
+- name: Display warning about autoremove
+  debug:
+    msg: |
+      WARNING: the Ansible playbook will remove unused dependencies on your system,
+      to avoid running autoremove add skip_autoremove=1 as --extra-vars.
+
+      Unused packages installed manually are not removed by this operation,
+      please check Carbonio documentation for deprecated packages.
+  when: skip_autoremove == 0
+
+- name: Delay for 10 seconds to read the warning
+  pause:
+    seconds: 10
+
+- name: Autoremove unnecessary packages with apt
+  apt:
+    autoremove: yes
+  when: ansible_facts['os_family'] == "Debian" and skip_autoremove == 0
+
+- name: Autoremove unnecessary packages with dnf
+  dnf:
+    autoremove: yes
+  when: ansible_facts['os_family'] == "RedHat" and skip_autoremove == 0

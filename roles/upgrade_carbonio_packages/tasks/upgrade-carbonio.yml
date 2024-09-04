@@ -49,27 +49,6 @@
   tags:
     - track-zmcontrol
 
-- name: Stop carbonio server
-  become: true
-  become_method: su
-  become_user: zextras
-  command: '/opt/zextras/bin/zmcontrol stop'
-  register: ldap
-  when: >
-    (inventory_hostname in groups["masterDirectoryServers"] or
-    inventory_hostname in groups["replicaDirectoryServers"]) and
-    (pkgu is search("carbonio-directory-server") or pkgr is search("carbonio-directory-server"))
-  tags:
-    - ugrade-carbonio
-
-- name: Stop ldap status
-  debug:
-    msg: "{{ ldap }}"
-  when: >
-    (inventory_hostname in groups["masterDirectoryServers"] or
-    inventory_hostname in groups["replicaDirectoryServers"]) and
-    (pkgu is search("carbonio-directory-server") or pkgr is search("carbonio-directory-server"))
-
 - name: Debug list packages(Ubuntu)
   when: ansible_os_family == "Debian"
   debug:

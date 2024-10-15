@@ -102,7 +102,7 @@
 - name: Get all carbonio sidecar services
   become: true
   shell:
-    cmd: "set -o pipefail && systemctl list-units --no-legend  | awk '/sidecar/ {print $1}'"
+    cmd: "set -o pipefail && systemctl list-unit-files --state=enabled  | awk '/sidecar/ {print $1}'"
     executable: /bin/bash
   register: carbonio_sidecar_services_in_memory
   changed_when: false

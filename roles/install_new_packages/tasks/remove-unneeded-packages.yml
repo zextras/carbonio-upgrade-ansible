@@ -1,0 +1,260 @@
+# SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
+---
+- name: Check if pgpool is installed (Debian) 24.9 -> 24.12
+  become: true
+  command:
+    cmd: apt list --installed pgpool2
+  register: pgpool_check_debian
+  failed_when: false
+  changed_when: false 
+  when: ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers']
+  tags:
+    - remove-carbonio-dbconnectors
+
+- name: Disable pgpool service if installed (Debian) 24.9 -> 24.12
+  become: true
+  systemd:
+    name: pgpool2.service
+    enabled: false
+    state: stopped
+  when: 
+    - ansible_os_family == "Debian" and pgpool_check_debian.rc == 0 and inventory_hostname in groups['dbsConnectorServers']
+  tags:
+    - remove-carbonio-dbconnectors
+
+- name: Uninstall pgpool package if installed (Debian) 24.9 -> 24.12
+  become: true
+  package:
+    name: pgpool2
+    state: absent
+  when: 
+    - ansible_os_family == "Debian" and pgpool_check_debian.rc == 0 and inventory_hostname in groups['dbsConnectorServers']
+  tags:
+    - remove-carbonio-dbconnectors
+
+- name: Remove pgpool configuration files (Debian) 24.9 -> 24.12
+  become: true
+  file:
+    path: /etc/pgpool-II
+    state: absent
+  when: 
+    - ansible_os_family == "Debian" and pgpool_check_debian.rc == 0 and inventory_hostname in groups['dbsConnectorServers']
+  tags:
+    - remove-carbonio-dbconnectors
+
+- name: Check if carbonio-prometheus-pgpool-exporter is installed (Debian) 24.9 -> 24.12
+  become: true
+  command:
+    cmd: apt list --installed carbonio-prometheus-pgpool-exporter
+  register: pgpool_exporter_check_debian
+  failed_when: false 
+  changed_when: false
+  when: ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers']
+  tags:
+    - remove-carbonio-dbconnectors
+
+- name: Disable carbonio-prometheus-pgpool-exporter service if installed (Debian) 24.9 -> 24.12
+  become: true
+  systemd:
+    name: carbonio-prometheus-pgpool-exporter.service
+    enabled: false
+    state: stopped
+  when: 
+    - ansible_os_family == "Debian" and pgpool_exporter_check_debian.rc == 0 and inventory_hostname in groups['dbsConnectorServers']
+  tags:
+    - remove-carbonio-dbconnectors
+
+- name: Uninstall carbonio-prometheus-pgpool-exporter package if installed (Debian) 24.9 -> 24.12
+  become: true
+  yum:
+    name: carbonio-prometheus-pgpool-exporter
+    state: absent
+  when: 
+    - ansible_os_family == "Debian" and pgpool_exporter_check_debian.rc == 0 and inventory_hostname in groups['dbsConnectorServers']
+  tags:
+    - remove-carbonio-dbconnectors
+
+- name: Remove mailbox db connector packages (Debian) 24.9 -> 24.12
+  become: true
+  apt: 
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ mailbox_dbconnectors_packages }}"
+  when: 
+    - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers'] and pgpool_exporter_check_debian.rc == 0
+  tags:
+    - remove-carbonio-dbconnectors
+
+- name: Remove files db connector packages (Debian) 24.9 -> 24.12
+  become: true
+  apt: 
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ files_dbconnectors_packages }}"
+  when: 
+    - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers'] and pgpool_exporter_check_debian.rc == 0
+    - groups['filesServers'] | length > 0
+  tags:
+    - remove-carbonio-dbconnectors
+
+- name: Remove docs db connector packages (Debian) 24.9 -> 24.12
+  become: true
+  apt: 
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ docs_dbconnectors_packages }}"
+  when: 
+    - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers'] and pgpool_exporter_check_debian.rc == 0
+    - groups['docsServers'] | length > 0
+  tags:
+    - remove-carbonio-dbconnectors
+
+- name: Remove tasks db connector packages (Debian) 24.9 -> 24.12
+  become: true
+  apt: 
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ task_dbconnectors_packages }}"
+  when: 
+    - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers'] and pgpool_exporter_check_debian.rc == 0
+    - groups['taskServers'] | length > 0
+  tags:
+    - remove-carbonio-dbconnectors
+
+#RHEL
+
+- name: Check if pgpool is installed (RHEL) 24.9 -> 24.12
+  become: true
+  command:
+    cmd: rpm -q pgpool-II
+  register: pgpool_check_rhel
+  failed_when: false 
+  changed_when: false
+  when: ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers']
+  tags:
+    - remove-carbonio-dbconnectors
+
+- name: Disable pgpool service if installed (RHEL) 24.9 -> 24.12
+  become: true
+  systemd:
+    name: "{{ item }}"
+    enabled: false
+    state: stopped
+  with_items:
+    - "{{ pgpool_packages_rhe }}"
+  when: 
+    - ansible_os_family == "RedHat" and pgpool_check_rhel.rc == 0 andand inventory_hostname in groups['dbsConnectorServers']
+  tags:
+    - remove-carbonio-dbconnectors
+
+- name: Uninstall pgpool package if installed (RHEL) 24.9 -> 24.12
+  become: true
+  yum:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ pgpool_packages_rhe }}"
+  when: 
+    - ansible_os_family == "RedHat" and pgpool_check_rhel.rc == 0 and inventory_hostname in groups['dbsConnectorServers']
+  tags:
+    - remove-carbonio-dbconnectors
+
+- name: Remove pgpool configuration files (RHEL) 24.9 -> 24.12
+  become: true
+  file:
+    path: /etc/pgpool-II
+    state: absent
+  when: 
+    - ansible_os_family == "RedHat" and pgpool_check_rhel.rc == 0 and inventory_hostname in groups['dbsConnectorServers']
+  tags:
+    - remove-carbonio-dbconnectors
+
+- name: Check if carbonio-prometheus-pgpool-exporter is installed (RHEL) 24.9 -> 24.12
+  become: true
+  command:
+    cmd: rpm -q carbonio-prometheus-pgpool-exporter
+  register: pgpool_exporter_check_rhel
+  failed_when: false 
+  changed_when: false
+  when: ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers']
+  tags:
+    - remove-carbonio-dbconnectors
+
+- name: Disable carbonio-prometheus-pgpool-exporter service if installed (RHEL) 24.9 -> 24.12 24.9 -> 24.12
+  become: true
+  systemd:
+    name: carbonio-prometheus-pgpool-exporter.service
+    enabled: false
+    state: stopped
+  when: 
+    - ansible_os_family == "RedHat"  and pgpool_exporter_check_rhel.rc == 0 and inventory_hostname in groups['dbsConnectorServers']
+  tags:
+    - remove-carbonio-dbconnectors
+
+- name: Uninstall carbonio-prometheus-pgpool-exporter package if installed (RHEL) 24.9 -> 24.12
+  become: true
+  package:
+    name: carbonio-prometheus-pgpool-exporter
+    state: absent
+  when: 
+    - ansible_os_family == "RedHat"  and pgpool_exporter_check_rhel.rc == 0 and inventory_hostname in groups['dbsConnectorServers']
+  tags:
+    - remove-carbonio-dbconnectors
+
+- name: Remove mailbox db connector packages (RHEL) 24.9 -> 24.12
+  become: true
+  yum:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ mailbox_dbconnectors_packages }}"
+  when: 
+    - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers' and pgpool_check_rhel.rc == 0
+  tags:
+    - remove-carbonio-dbconnectors
+
+- name: Remove files db connector packages (RHEL) 24.9 -> 24.12
+  become: true
+  yum:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ files_dbconnectors_packages }}"
+  when: 
+    - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers'] and pgpool_check_rhel.rc == 0
+    - groups['filesServers'] | length > 0
+  tags:
+    - remove-carbonio-dbconnectors
+
+- name: Remove docs db connector packages (RHEL) 24.9 -> 24.12
+  become: true
+  yum:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ docs_dbconnectors_packages }}"
+  when: 
+    - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers'] and pgpool_check_rhel.rc == 0
+    - groups['docsServers'] | length > 0
+  tags:
+    - remove-carbonio-dbconnectors
+
+- name: Remove tasks db connector packages (RHEL) 24.9 -> 24.12
+  become: true
+  yum:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ task_dbconnectors_packages }}"
+  when: 
+    - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers'] and pgpool_check_rhel.rc == 0
+    - groups['taskServers'] | length > 0
+  tags:
+    - remove-carbonio-dbconnectors

@@ -1,0 +1,121 @@
+# SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
+---
+- name: Check if pgpool is installed Ubuntu 24.9 -> 24.12
+  become: true
+  command:
+    cmd: apt list --installed pgpool2
+  register: pgpool_check_debian
+  failed_when: false
+  changed_when: false 
+  when: ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers']
+  tags:
+    - upgrade-carbonio-dbconnectors
+
+- name: Install mailbox db connector Ubuntu 24.9 -> 24.12
+  become: true
+  apt: name={{ item }} state=present
+  with_items:
+    - "{{ mailbox_dbconnectors_packages }}"
+  when: ansible_os_family == "Debian" and inventory_hostname in groups['postgresServers'][0] and pgpool_check_debian.rc == 0
+  tags:
+    - upgrade-carbonio-dbconnectors
+    
+- name: Install files db connector Ubuntu 24.9 -> 24.12
+  become: true
+  apt: name={{ item }} state=present
+  with_items:
+    - "{{ files_dbconnectors_packages }}"
+  when: 
+    - ansible_os_family == "Debian" and inventory_hostname in groups['postgresServers'][0] and pgpool_check_debian.rc == 0
+    - groups['filesServers'] | length > 0
+  tags:
+    - upgrade-carbonio-dbconnectors
+    
+- name: Install docs db connector Ubuntu 24.9 -> 24.12
+  become: true
+  apt: name={{ item }} state=present
+  with_items:
+    - "{{ docs_dbconnectors_packages }}"
+  when: 
+    - ansible_os_family == "Debian" and inventory_hostname in groups['postgresServers'][0] and pgpool_check_debian.rc == 0
+    - groups['docsServers'] | length > 0 
+  tags:
+    - upgrade-carbonio-dbconnectors
+
+- name: Install tasks db connector Ubuntu 24.9 -> 24.12
+  become: true
+  apt: name={{ item }} state=present
+  with_items:
+    - "{{ task_dbconnectors_packages }}"
+  when: 
+    - ansible_os_family == "Debian" and inventory_hostname in groups['postgresServers'][0] and pgpool_check_debian.rc == 0
+    - groups['taskServers'] | length > 0
+  tags:
+    - upgrade-carbonio-dbconnectors
+
+##### RHEL
+
+- name: Check if pgpool is installed (RHEL) 24.9 -> 24.12
+  become: true
+  command:
+    cmd: rpm -q pgpool-II
+  register: pgpool_check_rhel
+  failed_when: false 
+  changed_when: false
+  when: ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers']
+  tags:
+    - upgrade-carbonio-dbconnectors
+
+- name: Install mailbox db connector RHEL 24.9 -> 24.12
+  become: true
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "{{ mailbox_dbconnectors_packages }}"
+  when: 
+    - ansible_os_family == "RedHat" and inventory_hostname in groups['postgresServers'][0] and pgpool_check_rhel.rc == 0
+  tags:
+    - upgrade-carbonio-dbconnectors
+
+- name: Install files db connector RHEL 24.9 -> 24.12
+  become: true
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "{{ files_dbconnectors_packages }}"
+  when: 
+    - ansible_os_family == "RedHat" and inventory_hostname in groups['postgresServers'][0] and pgpool_check_rhel.rc == 0
+    - groups['filesServers'] | length > 0
+  tags:
+    - upgrade-carbonio-dbconnectors
+
+- name: Install docs db connector RHEL 24.9 -> 24.12
+  become: true
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "{{ docs_dbconnectors_packages }}"
+  when: 
+    - ansible_os_family == "RedHat" and inventory_hostname in groups['postgresServers'][0] and pgpool_check_rhel.rc == 0
+    - groups['docsServers'] | length > 0
+  tags:
+    - upgrade-carbonio-dbconnectors
+
+- name: Install tasks db connector RHEL 24.9 -> 24.12
+  become: true
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "{{ task_dbconnectors_packages }}"
+  when: 
+    - ansible_os_family == "RedHat" and inventory_hostname in groups['postgresServers'][0] and pgpool_check_rhel.rc == 0
+    - groups['taskServers'] | length > 0
+  tags:
+    - upgrade-carbonio-dbconnectors

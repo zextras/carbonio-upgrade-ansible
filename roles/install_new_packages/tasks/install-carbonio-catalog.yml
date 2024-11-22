@@ -10,7 +10,7 @@
       - "{{ catalog_packages }}"        
     when: ansible_os_family == "Debian"  and inventory_hostname in groups["proxyServers"] 
     tags:
-      - upgrade-carbonio-catalog
+      - install-carbonio-catalog
   
 
 ######## RHEL

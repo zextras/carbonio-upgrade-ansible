@@ -17,9 +17,11 @@
 - name: Disable pgpool service if installed (Debian) 24.9 -> 24.12
   become: true
   systemd:
-    name: pgpool2.service
+    name: "{{ item }}"
     enabled: false
     state: stopped
+  with_items:
+    - "{{ pgpool_packages_ubuntu }}"
   when: 
     - ansible_os_family == "Debian" and pgpool_check_debian.rc == 0 and inventory_hostname in groups['dbsConnectorServers']
   tags:
@@ -27,9 +29,11 @@
 
 - name: Uninstall pgpool package if installed (Debian) 24.9 -> 24.12
   become: true
-  package:
-    name: pgpool2
+  apt:
+    name: "{{ item }}"
     state: absent
+  with_items:
+    - "{{ pgpool_packages_ubuntu }}"
   when: 
     - ansible_os_family == "Debian" and pgpool_check_debian.rc == 0 and inventory_hostname in groups['dbsConnectorServers']
   tags:
@@ -69,7 +73,7 @@
 
 - name: Uninstall carbonio-prometheus-pgpool-exporter package if installed (Debian) 24.9 -> 24.12
   become: true
-  yum:
+  apt:
     name: carbonio-prometheus-pgpool-exporter
     state: absent
   when: 
@@ -148,7 +152,7 @@
     enabled: false
     state: stopped
   with_items:
-    - "{{ pgpool_packages_rhe }}"
+    - "{{ pgpool_packages_rhel }}"
   when: 
     - ansible_os_family == "RedHat" and pgpool_check_rhel.rc == 0 andand inventory_hostname in groups['dbsConnectorServers']
   tags:
@@ -160,7 +164,7 @@
     name: "{{ item }}"
     state: absent
   with_items:
-    - "{{ pgpool_packages_rhe }}"
+    - "{{ pgpool_packages_rhel }}"
   when: 
     - ansible_os_family == "RedHat" and pgpool_check_rhel.rc == 0 and inventory_hostname in groups['dbsConnectorServers']
   tags:

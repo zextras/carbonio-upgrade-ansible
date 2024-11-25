@@ -80,6 +80,20 @@
   tags:
     - remove-carbonio-dbconnectors
 
+- name: Disable mailbox db connector (Debian) 24.9 -> 24.12
+  become: true
+  systemd:
+    name: "{{ item }}"
+    enabled: false
+    state: stopped
+  with_items:
+    - "{{ mailbox_dbconnectors_packages }}"
+  when: 
+    - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers'] 
+    - "'pgpool2' in pgpool_check_debian.stdout"
+  tags:
+    - remove-carbonio-dbconnectors
+
 - name: Remove mailbox db connector packages (Debian) 24.9 -> 24.12
   become: true
   apt: 
@@ -93,6 +107,21 @@
   tags:
     - remove-carbonio-dbconnectors
 
+- name: Disable files db connector (Debian) 24.9 -> 24.12
+  become: true
+  systemd:
+    name: "{{ item }}"
+    enabled: false
+    state: stopped
+  with_items:
+    - "{{ files_dbconnectors_packages }}"
+  when: 
+    - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers']
+    - "'pgpool2' in pgpool_check_debian.stdout"
+    - groups['filesServers'] | length > 0
+  tags:
+    - remove-carbonio-dbconnectors
+    
 - name: Remove files db connector packages (Debian) 24.9 -> 24.12
   become: true
   apt: 
@@ -107,6 +136,21 @@
   tags:
     - remove-carbonio-dbconnectors
 
+- name: Disable docs db connector (Debian) 24.9 -> 24.12
+  become: true
+  systemd:
+    name: "{{ item }}"
+    enabled: false
+    state: stopped
+  with_items:
+    - "{{ docs_dbconnectors_packages }}"
+  when: 
+    - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers'] 
+    - "'pgpool2' in pgpool_check_debian.stdout"
+    - groups['docsServers'] | length > 0
+  tags:
+    - remove-carbonio-dbconnectors
+
 - name: Remove docs db connector packages (Debian) 24.9 -> 24.12
   become: true
   apt: 
@@ -118,6 +162,21 @@
     - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers'] 
     - "'pgpool2' in pgpool_check_debian.stdout"
     - groups['docsServers'] | length > 0
+  tags:
+    - remove-carbonio-dbconnectors
+
+- name: Disable tasks db connector (Debian) 24.9 -> 24.12
+  become: true
+  systemd:
+    name: "{{ item }}"
+    enabled: false
+    state: stopped
+  with_items:
+    - "{{ task_dbconnectors_packages }}"
+  when: 
+    - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers'] 
+    - "'pgpool2' in pgpool_check_debian.stdout" 
+    - groups['taskServers'] | length > 0
   tags:
     - remove-carbonio-dbconnectors
 
@@ -214,6 +273,21 @@
   tags:
     - remove-carbonio-dbconnectors
 
+- name: Disable mailbox db connector (RHEL) 24.9 -> 24.12
+  become: true
+  systemd:
+    name: "{{ item }}"
+    enabled: false
+    state: stopped
+  with_items:
+    - "{{ mailbox_dbconnectors_packages }}"
+  when: 
+    - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers']
+    - "'pgpool-II' in pgpool_check_rhel.stdout"
+  tags:
+    - remove-carbonio-dbconnectors
+
+
 - name: Remove mailbox db connector packages (RHEL) 24.9 -> 24.12
   become: true
   yum:
@@ -224,6 +298,21 @@
   when: 
     - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers']
     - "'pgpool-II' in pgpool_check_rhel.stdout"
+  tags:
+    - remove-carbonio-dbconnectors
+
+- name: Disable files db connector (RHEL) 24.9 -> 24.12
+  become: true
+  systemd:
+    name: "{{ item }}"
+    enabled: false
+    state: stopped
+  with_items:
+    - "{{ files_dbconnectors_packages }}"
+  when: 
+    - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers']
+    - "'pgpool-II' in pgpool_check_rhel.stdout"
+    - groups['filesServers'] | length > 0
   tags:
     - remove-carbonio-dbconnectors
 
@@ -241,6 +330,21 @@
   tags:
     - remove-carbonio-dbconnectors
 
+- name: Disable docs db connector (RHEL) 24.9 -> 24.12
+  become: true
+  systemd:
+    name: "{{ item }}"
+    enabled: false
+    state: stopped
+  with_items:
+    - "{{ docs_dbconnectors_packages }}"
+  when: 
+    - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers']
+    - "'pgpool-II' in pgpool_check_rhel.stdout"
+    - groups['docsServers'] | length > 0
+  tags:
+    - remove-carbonio-dbconnectors
+
 - name: Remove docs db connector packages (RHEL) 24.9 -> 24.12
   become: true
   yum:
@@ -252,6 +356,21 @@
     - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers']
     - "'pgpool-II' in pgpool_check_rhel.stdout"
     - groups['docsServers'] | length > 0
+  tags:
+    - remove-carbonio-dbconnectors
+
+- name: Disable tasks db connector (RHEL) 24.9 -> 24.12
+  become: true
+  systemd:
+    name: "{{ item }}"
+    enabled: false
+    state: stopped
+  with_items:
+    - "{{ task_dbconnectors_packages }}"
+  when: 
+    - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers'] 
+    - "'pgpool-II' in pgpool_check_rhel.stdout"
+    - groups['taskServers'] | length > 0
   tags:
     - remove-carbonio-dbconnectors
 

@@ -193,6 +193,25 @@
     - groups['taskServers'] | length > 0
   tags:
     - remove-carbonio-dbconnectors
+- name: Collect hcl files for dbconnectors
+  find:
+    paths: /etc/zextras/service-discover/
+    patterns: "*-db.hcl"
+    recurse: no
+  register: hcl_files
+  when: 
+    - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers'] 
+    - "'pgpool2' in pgpool_check_rhel.stdout"
+
+- name: Delete *-db.hcl files for dbconnectors
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ hcl_files.files }}"
+  when: 
+    - hcl_files.matched > 0
+    - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers'] 
+    - "'pgpool2' in pgpool_check_rhel.stdout"
 
 #RHEL
 
@@ -394,10 +413,16 @@
     patterns: "*-db.hcl"
     recurse: no
   register: hcl_files
+  when: 
+    - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers'] 
+    - "'pgpool-II' in pgpool_check_rhel.stdout"
 
 - name: Delete *-db.hcl files for dbconnectors
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: absent
   loop: "{{ hcl_files.files }}"
-  when: hcl_files.matched > 0
+  when: 
+    - hcl_files.matched > 0
+    - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers'] 
+    - "'pgpool-II' in pgpool_check_rhel.stdout"

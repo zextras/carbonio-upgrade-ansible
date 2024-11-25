@@ -83,11 +83,11 @@
 - name: Disable mailbox db connector (Debian) 24.9 -> 24.12
   become: true
   systemd:
-    name: "{{ item }}-sidecar"
+    name: "{{ item }}"
     enabled: false
     state: stopped
   with_items:
-    - "{{ mailbox_dbconnectors_packages }}"
+    - "{{ mailbox_dbconnectors_packages | map('regex_replace', '$', '-sidecar') | list }}"
   when: 
     - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers'] 
     - "'pgpool2' in pgpool_check_debian.stdout"
@@ -110,11 +110,11 @@
 - name: Disable files db connector (Debian) 24.9 -> 24.12
   become: true
   systemd:
-    name: "{{ item }}-sidecar"
+    name: "{{ item }}"
     enabled: false
     state: stopped
   with_items:
-    - "{{ files_dbconnectors_packages }}"
+    - "{{ files_dbconnectors_packages | map('regex_replace', '$', '-sidecar') | list }}"
   when: 
     - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers']
     - "'pgpool2' in pgpool_check_debian.stdout"
@@ -139,11 +139,11 @@
 - name: Disable docs db connector (Debian) 24.9 -> 24.12
   become: true
   systemd:
-    name: "{{ item }}-sidecar"
+    name: "{{ item }}"
     enabled: false
     state: stopped
   with_items:
-    - "{{ docs_dbconnectors_packages }}"
+    - "{{ docs_dbconnectors_packages | map('regex_replace', '$', '-sidecar') | list }}"
   when: 
     - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers'] 
     - "'pgpool2' in pgpool_check_debian.stdout"
@@ -168,11 +168,11 @@
 - name: Disable tasks db connector (Debian) 24.9 -> 24.12
   become: true
   systemd:
-    name: " { item }}-sidecar"
+    name: "{{ item }}"
     enabled: false
     state: stopped
   with_items:
-    - "{{ task_dbconnectors_packages }}"
+    - "{{ task_dbconnectors_packages | map('regex_replace', '$', '-sidecar') | list }}"
   when: 
     - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers'] 
     - "'pgpool2' in pgpool_check_debian.stdout" 
@@ -276,11 +276,11 @@
 - name: Disable mailbox db connector (RHEL) 24.9 -> 24.12
   become: true
   systemd:
-    name: "{{ item }}-sidecar"
+    name: "{{ item }}"
     enabled: false
     state: stopped
   with_items:
-    - "{{ mailbox_dbconnectors_packages }}"
+    - "{{ mailbox_dbconnectors_packages | map('regex_replace', '$', '-sidecar') | list }}"
   when: 
     - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers']
     - "'pgpool-II' in pgpool_check_rhel.stdout"
@@ -304,11 +304,11 @@
 - name: Disable files db connector (RHEL) 24.9 -> 24.12
   become: true
   systemd:
-    name: "{{ item }}-sidecar"
+    name: "{{ item }}"
     enabled: false
     state: stopped
   with_items:
-    - "{{ files_dbconnectors_packages }}"
+    - "{{ files_dbconnectors_packages | map('regex_replace', '$', '-sidecar') | list }}"
   when: 
     - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers']
     - "'pgpool-II' in pgpool_check_rhel.stdout"
@@ -333,11 +333,11 @@
 - name: Disable docs db connector (RHEL) 24.9 -> 24.12
   become: true
   systemd:
-    name: "{{ item }}-sidecar"
+    name: "{{ item }}"
     enabled: false
     state: stopped
   with_items:
-    - "{{ docs_dbconnectors_packages }}"
+    - "{{ docs_dbconnectors_packages | map('regex_replace', '$', '-sidecar') | list }}"
   when: 
     - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers']
     - "'pgpool-II' in pgpool_check_rhel.stdout"
@@ -362,11 +362,11 @@
 - name: Disable tasks db connector (RHEL) 24.9 -> 24.12
   become: true
   systemd:
-    name: "{{ item }}-sidecar"
+    name: "{{ item }}"
     enabled: false
     state: stopped
   with_items:
-    - "{{ task_dbconnectors_packages }}"
+    - "{{ task_dbconnectors_packages | map('regex_replace', '$', '-sidecar') | list }}"
   when: 
     - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers'] 
     - "'pgpool-II' in pgpool_check_rhel.stdout"

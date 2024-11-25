@@ -5,12 +5,12 @@
 ---
 - name: Check if pgpool is installed Ubuntu 24.9 -> 24.12
   become: true
-  command:
-    cmd: apt list --installed | grep pgpool2
+  shell: apt list --installed 2>/dev/null | grep -w '^pgpool2'
   register: pgpool_check_debian
   failed_when: false
   changed_when: false 
-  when: ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers']
+  when: ansible_os_family == "Debian"
+  delegate_to: "{{ groups['dbsConnectorServers'][0] }}"
   tags:
     - install-carbonio-dbconnectors
 
@@ -65,8 +65,7 @@
 
 - name: Check if pgpool is installed (RHEL) 24.9 -> 24.12
   become: true
-  command:
-    cmd: rpm -qa  | grep pgpool-II
+  shell: rpm -qa 2>/dev/null | grep -w '^pgpool-II'
   register: pgpool_check_rhel
   failed_when: false 
   changed_when: false

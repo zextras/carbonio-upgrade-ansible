@@ -83,7 +83,7 @@
 - name: Disable mailbox db connector (Debian) 24.9 -> 24.12
   become: true
   systemd:
-    name: "{{ item }}"
+    name: "{{ item }}-sidecar"
     enabled: false
     state: stopped
   with_items:
@@ -110,7 +110,7 @@
 - name: Disable files db connector (Debian) 24.9 -> 24.12
   become: true
   systemd:
-    name: "{{ item }}"
+    name: "{{ item }}-sidecar"
     enabled: false
     state: stopped
   with_items:
@@ -139,7 +139,7 @@
 - name: Disable docs db connector (Debian) 24.9 -> 24.12
   become: true
   systemd:
-    name: "{{ item }}"
+    name: "{{ item }}-sidecar"
     enabled: false
     state: stopped
   with_items:
@@ -168,7 +168,7 @@
 - name: Disable tasks db connector (Debian) 24.9 -> 24.12
   become: true
   systemd:
-    name: "{{ item }}"
+    name: " { item }}-sidecar"
     enabled: false
     state: stopped
   with_items:
@@ -276,7 +276,7 @@
 - name: Disable mailbox db connector (RHEL) 24.9 -> 24.12
   become: true
   systemd:
-    name: "{{ item }}"
+    name: "{{ item }}-sidecar"
     enabled: false
     state: stopped
   with_items:
@@ -304,7 +304,7 @@
 - name: Disable files db connector (RHEL) 24.9 -> 24.12
   become: true
   systemd:
-    name: "{{ item }}"
+    name: "{{ item }}-sidecar"
     enabled: false
     state: stopped
   with_items:
@@ -333,7 +333,7 @@
 - name: Disable docs db connector (RHEL) 24.9 -> 24.12
   become: true
   systemd:
-    name: "{{ item }}"
+    name: "{{ item }}-sidecar"
     enabled: false
     state: stopped
   with_items:
@@ -362,7 +362,7 @@
 - name: Disable tasks db connector (RHEL) 24.9 -> 24.12
   become: true
   systemd:
-    name: "{{ item }}"
+    name: "{{ item }}-sidecar"
     enabled: false
     state: stopped
   with_items:
@@ -387,3 +387,17 @@
     - groups['taskServers'] | length > 0
   tags:
     - remove-carbonio-dbconnectors
+
+- name: Collect hcl files for dbconnectors
+  find:
+    paths: /etc/zextras/service-discover/
+    patterns: "*-db.hcl"
+    recurse: no
+  register: hcl_files
+
+- name: Delete *-db.hcl files for dbconnectors
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ hcl_files.files }}"
+  when: hcl_files.matched > 0

@@ -6,7 +6,7 @@
 - name: Check if pgpool is installed (Debian) 24.9 -> 24.12
   become: true
   command:
-    cmd: apt list --installed pgpool2
+    cmd: apt list --installed | grep pgpool2
   register: pgpool_check_debian
   failed_when: false
   changed_when: false 
@@ -51,7 +51,7 @@
 - name: Check if carbonio-prometheus-pgpool-exporter is installed (Debian) 24.9 -> 24.12
   become: true
   command:
-    cmd: apt list --installed carbonio-prometheus-pgpool-exporter
+    cmd: apt list --installed | grep carbonio-prometheus-pgpool-exporter
   register: pgpool_exporter_check_debian
   failed_when: false 
   changed_when: false
@@ -62,7 +62,7 @@
 - name: Disable carbonio-prometheus-pgpool-exporter service if installed (Debian) 24.9 -> 24.12
   become: true
   systemd:
-    name: carbonio-prometheus-pgpool-exporter.service
+    name: carbonio-prometheus-pgpool-exporter
     enabled: false
     state: stopped
   when: 
@@ -142,7 +142,7 @@
 - name: Check if pgpool is installed (RHEL) 24.9 -> 24.12
   become: true
   command:
-    cmd: rpm -q pgpool-II
+    cmd: rpm -qa | grep pgpool-II
   register: pgpool_check_rhel
   failed_when: false 
   changed_when: false
@@ -187,7 +187,7 @@
 - name: Check if carbonio-prometheus-pgpool-exporter is installed (RHEL) 24.9 -> 24.12
   become: true
   command:
-    cmd: rpm -q carbonio-prometheus-pgpool-exporter
+    cmd: rpm -qa | grep carbonio-prometheus-pgpool-exporter
   register: pgpool_exporter_check_rhel
   failed_when: false 
   changed_when: false

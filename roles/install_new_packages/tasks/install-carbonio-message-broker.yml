@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 ---
-  - name: Install Message Broker on Server Ubuntu
+  - name: Install Message Broker 24.9 -> 24.12 [Ubuntu]
     become: true
     apt: name={{ item }} state=present
     with_items:
@@ -14,7 +14,7 @@
       
 ##### RHEL
 
-  - name: Install Message Broker on RH
+  - name: Install Message Broker 24.9 -> 24.12 [RHEL]
     become: true
     yum: name={{ item }} state=present
     with_items:

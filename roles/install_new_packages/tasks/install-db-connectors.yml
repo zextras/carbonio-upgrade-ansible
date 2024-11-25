@@ -12,16 +12,18 @@
   changed_when: false 
   when: ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers']
   tags:
-    - upgrade-carbonio-dbconnectors
+    - install-carbonio-dbconnectors
 
 - name: Install mailbox db connector Ubuntu 24.9 -> 24.12
   become: true
   apt: name={{ item }} state=present
   with_items:
     - "{{ mailbox_dbconnectors_packages }}"
-  when: ansible_os_family == "Debian" and inventory_hostname in groups['postgresServers'][0] and pgpool_check_debian.rc == 0
+  when: 
+    - ansible_os_family == "Debian" and inventory_hostname in groups['postgresServers'][0]  
+    - "'pgpool2' in pgpool_check_debian.stdout"
   tags:
-    - upgrade-carbonio-dbconnectors
+    - install-carbonio-dbconnectors
     
 - name: Install files db connector Ubuntu 24.9 -> 24.12
   become: true
@@ -29,10 +31,11 @@
   with_items:
     - "{{ files_dbconnectors_packages }}"
   when: 
-    - ansible_os_family == "Debian" and inventory_hostname in groups['postgresServers'][0] and pgpool_check_debian.rc == 0
+    - ansible_os_family == "Debian" and inventory_hostname in groups['postgresServers'][0]
+    - "'pgpool2' in pgpool_check_debian.stdout"
     - groups['filesServers'] | length > 0
   tags:
-    - upgrade-carbonio-dbconnectors
+    - install-carbonio-dbconnectors
     
 - name: Install docs db connector Ubuntu 24.9 -> 24.12
   become: true
@@ -40,10 +43,11 @@
   with_items:
     - "{{ docs_dbconnectors_packages }}"
   when: 
-    - ansible_os_family == "Debian" and inventory_hostname in groups['postgresServers'][0] and pgpool_check_debian.rc == 0
+    - ansible_os_family == "Debian" and inventory_hostname in groups['postgresServers'][0]
+    - "'pgpool2' in pgpool_check_debian.stdout"
     - groups['docsServers'] | length > 0 
   tags:
-    - upgrade-carbonio-dbconnectors
+    - install-carbonio-dbconnectors
 
 - name: Install tasks db connector Ubuntu 24.9 -> 24.12
   become: true
@@ -51,10 +55,11 @@
   with_items:
     - "{{ task_dbconnectors_packages }}"
   when: 
-    - ansible_os_family == "Debian" and inventory_hostname in groups['postgresServers'][0] and pgpool_check_debian.rc == 0
+    - ansible_os_family == "Debian" and inventory_hostname in groups['postgresServers'][0] 
+    - "'pgpool2' in pgpool_check_debian.stdout"
     - groups['taskServers'] | length > 0
   tags:
-    - upgrade-carbonio-dbconnectors
+    - install-carbonio-dbconnectors
 
 ##### RHEL
 
@@ -67,7 +72,7 @@
   changed_when: false
   when: ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers']
   tags:
-    - upgrade-carbonio-dbconnectors
+    - install-carbonio-dbconnectors
 
 - name: Install mailbox db connector RHEL 24.9 -> 24.12
   become: true
@@ -77,9 +82,10 @@
   with_items:
     - "{{ mailbox_dbconnectors_packages }}"
   when: 
-    - ansible_os_family == "RedHat" and inventory_hostname in groups['postgresServers'][0] and pgpool_check_rhel.rc == 0
+    - ansible_os_family == "RedHat" and inventory_hostname in groups['postgresServers'][0] 
+    - "'pgpool-II' in pgpool_check_debian.stdout"
   tags:
-    - upgrade-carbonio-dbconnectors
+    - install-carbonio-dbconnectors
 
 - name: Install files db connector RHEL 24.9 -> 24.12
   become: true
@@ -89,10 +95,11 @@
   with_items:
     - "{{ files_dbconnectors_packages }}"
   when: 
-    - ansible_os_family == "RedHat" and inventory_hostname in groups['postgresServers'][0] and pgpool_check_rhel.rc == 0
+    - ansible_os_family == "RedHat" and inventory_hostname in groups['postgresServers'][0]
+    - "'pgpool-II' in pgpool_check_debian.stdout"
     - groups['filesServers'] | length > 0
   tags:
-    - upgrade-carbonio-dbconnectors
+    - install-carbonio-dbconnectors
 
 - name: Install docs db connector RHEL 24.9 -> 24.12
   become: true
@@ -102,10 +109,11 @@
   with_items:
     - "{{ docs_dbconnectors_packages }}"
   when: 
-    - ansible_os_family == "RedHat" and inventory_hostname in groups['postgresServers'][0] and pgpool_check_rhel.rc == 0
+    - ansible_os_family == "RedHat" and inventory_hostname in groups['postgresServers'][0]
+    - "'pgpool-II' in pgpool_check_debian.stdout"
     - groups['docsServers'] | length > 0
   tags:
-    - upgrade-carbonio-dbconnectors
+    - install-carbonio-dbconnectors
 
 - name: Install tasks db connector RHEL 24.9 -> 24.12
   become: true
@@ -115,7 +123,8 @@
   with_items:
     - "{{ task_dbconnectors_packages }}"
   when: 
-    - ansible_os_family == "RedHat" and inventory_hostname in groups['postgresServers'][0] and pgpool_check_rhel.rc == 0
+    - ansible_os_family == "RedHat" and inventory_hostname in groups['postgresServers'][0]
+    - "'pgpool-II' in pgpool_check_debian.stdout"
     - groups['taskServers'] | length > 0
   tags:
-    - upgrade-carbonio-dbconnectors
+    - install-carbonio-dbconnectors

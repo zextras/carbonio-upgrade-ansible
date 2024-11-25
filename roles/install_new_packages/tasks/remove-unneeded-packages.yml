@@ -17,25 +17,23 @@
 - name: Disable pgpool service if installed (Debian) 24.9 -> 24.12
   become: true
   systemd:
-    name: "{{ item }}"
+    name: pgpool2
     enabled: false
     state: stopped
-  with_items:
-    - "{{ pgpool_packages_ubuntu }}"
   when: 
-    - ansible_os_family == "Debian" and pgpool_check_debian.rc == 0 and inventory_hostname in groups['dbsConnectorServers']
+    - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers']
+    - "'pgpool2' in pgpool_check_debian.stdout"
   tags:
     - remove-carbonio-dbconnectors
 
 - name: Uninstall pgpool package if installed (Debian) 24.9 -> 24.12
   become: true
   apt:
-    name: "{{ item }}"
+    name: pgpool2
     state: absent
-  with_items:
-    - "{{ pgpool_packages_ubuntu }}"
   when: 
-    - ansible_os_family == "Debian" and pgpool_check_debian.rc == 0 and inventory_hostname in groups['dbsConnectorServers']
+    - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers']
+    - "'pgpool2' in pgpool_check_debian.stdout"
   tags:
     - remove-carbonio-dbconnectors
 
@@ -45,7 +43,8 @@
     path: /etc/pgpool-II
     state: absent
   when: 
-    - ansible_os_family == "Debian" and pgpool_check_debian.rc == 0 and inventory_hostname in groups['dbsConnectorServers']
+    - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers']
+    - "'pgpool2' in pgpool_check_debian.stdout"
   tags:
     - remove-carbonio-dbconnectors
 
@@ -67,7 +66,8 @@
     enabled: false
     state: stopped
   when: 
-    - ansible_os_family == "Debian" and pgpool_exporter_check_debian.rc == 0 and inventory_hostname in groups['dbsConnectorServers']
+    - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers'] 
+    - "'carbonio-prometheus-pgpool-exporter' in pgpool_exporter_check_debian.stdout"
   tags:
     - remove-carbonio-dbconnectors
 
@@ -77,7 +77,8 @@
     name: carbonio-prometheus-pgpool-exporter
     state: absent
   when: 
-    - ansible_os_family == "Debian" and pgpool_exporter_check_debian.rc == 0 and inventory_hostname in groups['dbsConnectorServers']
+    - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers'] 
+    -  "'carbonio-prometheus-pgpool-exporter' in pgpool_exporter_check_debian.stdout"
   tags:
     - remove-carbonio-dbconnectors
 
@@ -89,7 +90,8 @@
   with_items:
     - "{{ mailbox_dbconnectors_packages }}"
   when: 
-    - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers'] and pgpool_exporter_check_debian.rc == 0
+    - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers'] 
+    - "'pgpool2' in pgpool_check_debian.stdout"
   tags:
     - remove-carbonio-dbconnectors
 
@@ -101,7 +103,8 @@
   with_items:
     - "{{ files_dbconnectors_packages }}"
   when: 
-    - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers'] and pgpool_exporter_check_debian.rc == 0
+    - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers']
+    - "'pgpool2' in pgpool_check_debian.stdout"
     - groups['filesServers'] | length > 0
   tags:
     - remove-carbonio-dbconnectors
@@ -114,7 +117,8 @@
   with_items:
     - "{{ docs_dbconnectors_packages }}"
   when: 
-    - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers'] and pgpool_exporter_check_debian.rc == 0
+    - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers'] 
+    - "'pgpool2' in pgpool_check_debian.stdout"
     - groups['docsServers'] | length > 0
   tags:
     - remove-carbonio-dbconnectors
@@ -127,7 +131,8 @@
   with_items:
     - "{{ task_dbconnectors_packages }}"
   when: 
-    - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers'] and pgpool_exporter_check_debian.rc == 0
+    - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers'] 
+    - "'pgpool2' in pgpool_check_debian.stdout" 
     - groups['taskServers'] | length > 0
   tags:
     - remove-carbonio-dbconnectors
@@ -148,25 +153,23 @@
 - name: Disable pgpool service if installed (RHEL) 24.9 -> 24.12
   become: true
   systemd:
-    name: "{{ item }}"
+    name: pgpool-II
     enabled: false
     state: stopped
-  with_items:
-    - "{{ pgpool_packages_rhel }}"
   when: 
-    - ansible_os_family == "RedHat" and pgpool_check_rhel.rc == 0 andand inventory_hostname in groups['dbsConnectorServers']
+    - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers']
+    - "'pgpool-II' in pgpool_check_rhel.stdout"
   tags:
     - remove-carbonio-dbconnectors
 
 - name: Uninstall pgpool package if installed (RHEL) 24.9 -> 24.12
   become: true
   yum:
-    name: "{{ item }}"
+    name: pgpool-II
     state: absent
-  with_items:
-    - "{{ pgpool_packages_rhel }}"
   when: 
-    - ansible_os_family == "RedHat" and pgpool_check_rhel.rc == 0 and inventory_hostname in groups['dbsConnectorServers']
+    - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers']
+    - "'pgpool-II' in pgpool_check_rhel.stdout"
   tags:
     - remove-carbonio-dbconnectors
 
@@ -176,7 +179,8 @@
     path: /etc/pgpool-II
     state: absent
   when: 
-    - ansible_os_family == "RedHat" and pgpool_check_rhel.rc == 0 and inventory_hostname in groups['dbsConnectorServers']
+    - ansible_os_family == "RedHat"  and inventory_hostname in groups['dbsConnectorServers']
+    - "'pgpool-II' in pgpool_check_rhel.stdout"
   tags:
     - remove-carbonio-dbconnectors
 
@@ -194,11 +198,12 @@
 - name: Disable carbonio-prometheus-pgpool-exporter service if installed (RHEL) 24.9 -> 24.12 24.9 -> 24.12
   become: true
   systemd:
-    name: carbonio-prometheus-pgpool-exporter.service
+    name: carbonio-prometheus-pgpool-exporter
     enabled: false
     state: stopped
   when: 
-    - ansible_os_family == "RedHat"  and pgpool_exporter_check_rhel.rc == 0 and inventory_hostname in groups['dbsConnectorServers']
+    - ansible_os_family == "RedHat"  and inventory_hostname in groups['dbsConnectorServers']
+    - "'carbonio-prometheus-pgpool-exporter' in pgpool_exporter_check_rhel.stdout"
   tags:
     - remove-carbonio-dbconnectors
 
@@ -208,7 +213,8 @@
     name: carbonio-prometheus-pgpool-exporter
     state: absent
   when: 
-    - ansible_os_family == "RedHat"  and pgpool_exporter_check_rhel.rc == 0 and inventory_hostname in groups['dbsConnectorServers']
+    - ansible_os_family == "RedHat"  and inventory_hostname in groups['dbsConnectorServers'] 
+    - "'carbonio-prometheus-pgpool-exporter' in pgpool_exporter_check_rhel.stdout"
   tags:
     - remove-carbonio-dbconnectors
 
@@ -220,7 +226,8 @@
   with_items:
     - "{{ mailbox_dbconnectors_packages }}"
   when: 
-    - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers' and pgpool_check_rhel.rc == 0
+    - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers']
+    - "'pgpool-II' in pgpool_check_rhel.stdout"
   tags:
     - remove-carbonio-dbconnectors
 
@@ -232,7 +239,8 @@
   with_items:
     - "{{ files_dbconnectors_packages }}"
   when: 
-    - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers'] and pgpool_check_rhel.rc == 0
+    - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers']
+    - "'pgpool-II' in pgpool_check_rhel.stdout"
     - groups['filesServers'] | length > 0
   tags:
     - remove-carbonio-dbconnectors
@@ -245,7 +253,8 @@
   with_items:
     - "{{ docs_dbconnectors_packages }}"
   when: 
-    - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers'] and pgpool_check_rhel.rc == 0
+    - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers']
+    - "'pgpool-II' in pgpool_check_rhel.stdout"
     - groups['docsServers'] | length > 0
   tags:
     - remove-carbonio-dbconnectors
@@ -258,7 +267,8 @@
   with_items:
     - "{{ task_dbconnectors_packages }}"
   when: 
-    - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers'] and pgpool_check_rhel.rc == 0
+    - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers'] 
+    - "'pgpool-II' in pgpool_check_rhel.stdout"
     - groups['taskServers'] | length > 0
   tags:
     - remove-carbonio-dbconnectors

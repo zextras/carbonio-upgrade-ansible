@@ -82,7 +82,7 @@
     - "{{ mailbox_dbconnectors_packages }}"
   when: 
     - ansible_os_family == "RedHat" and inventory_hostname in groups['postgresServers'][0] 
-    - "'pgpool-II' in pgpool_check_debian.stdout"
+    - "'pgpool-II' in pgpool_check_rhel.stdout"
   tags:
     - install-carbonio-dbconnectors
 
@@ -95,7 +95,7 @@
     - "{{ files_dbconnectors_packages }}"
   when: 
     - ansible_os_family == "RedHat" and inventory_hostname in groups['postgresServers'][0]
-    - "'pgpool-II' in pgpool_check_debian.stdout"
+    - "'pgpool-II' in pgpool_check_rhel.stdout"
     - groups['filesServers'] | length > 0
   tags:
     - install-carbonio-dbconnectors
@@ -109,7 +109,7 @@
     - "{{ docs_dbconnectors_packages }}"
   when: 
     - ansible_os_family == "RedHat" and inventory_hostname in groups['postgresServers'][0]
-    - "'pgpool-II' in pgpool_check_debian.stdout"
+    - "'pgpool-II' in pgpool_check_rhel.stdout"
     - groups['docsServers'] | length > 0
   tags:
     - install-carbonio-dbconnectors
@@ -123,7 +123,7 @@
     - "{{ task_dbconnectors_packages }}"
   when: 
     - ansible_os_family == "RedHat" and inventory_hostname in groups['postgresServers'][0]
-    - "'pgpool-II' in pgpool_check_debian.stdout"
+    - "'pgpool-II' in pgpool_check_rhel.stdout"
     - groups['taskServers'] | length > 0
   tags:
     - install-carbonio-dbconnectors

@@ -195,11 +195,22 @@
     - remove-carbonio-dbconnectors
 
 - name: Remove all *-db.hcl files using find and command
+  become: true
   command:
     cmd: find /etc/zextras/service-discover/ -type f -name '*-db.hcl' -exec rm -f {} +
   when: 
     - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers'] 
     - "'pgpool2' in pgpool_check_debian.stdout"
+
+- name: Remove dbconnectors directories in /etc/carbonio/ with tokens 
+  become: true
+  command:
+    cmd: find /etc/carbonio/ -type d -name '*-db' -exec rm -r {} +
+  when: 
+    - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers'] 
+    - "'pgpool2' in pgpool_check_debian.stdout"
+  tags:
+    - remove-carbonio-dbconnector
 
 - name: Reset failed services
   shell:
@@ -409,6 +420,16 @@
 - name: Remove all *-db.hcl files using find and command [RHEL]
   command:
     cmd: find /etc/zextras/service-discover/ -type f -name '*-db.hcl' -exec rm -f {} +
+  when: 
+    - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers'] 
+    - "'pgpool-II' in pgpool_check_rhel.stdout"
+  tags:
+    - remove-carbonio-dbconnector
+
+- name: Remove dbconnectors directories in /etc/carbonio/ with tokens  [RHEL]
+  become: true
+  command:
+    cmd: find /etc/carbonio/ -type d -name '*-db' -exec rm -r {} +
   when: 
     - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers'] 
     - "'pgpool-II' in pgpool_check_rhel.stdout"

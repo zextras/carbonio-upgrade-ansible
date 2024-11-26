@@ -70,9 +70,7 @@
   failed_when: false 
   changed_when: false
   delegate_to: "{{ groups['dbsConnectorServers'][0] }}"
-  when: 
-    - ansible_os_family == "RedHat" 
-    - inventory_hostname in groups['dbsConnectorServers']
+  when: ansible_os_family == "RedHat" 
   tags:
     - install-carbonio-dbconnectors
 

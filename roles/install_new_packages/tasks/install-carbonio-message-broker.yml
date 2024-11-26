@@ -8,7 +8,7 @@
     apt: name={{ item }} state=present
     with_items:
       - "{{ message_broker_packages }}"
-    when: ansible_os_family == "Debian"  and inventory_hostname in groups["masterDirectoryServers"] 
+    when: ansible_os_family == "Debian"  and inventory_hostname in groups["masterDirectoryServers"][0]
     tags:
       - install-carbonio-message-broker
       
@@ -19,6 +19,6 @@
     yum: name={{ item }} state=present
     with_items:
       - "{{ message_broker_packages }}"
-    when: (ansible_os_family == "RedHat" or ansible_os_family == "CentOS") and inventory_hostname in groups["masterDirectoryServers"] 
+    when: (ansible_os_family == "RedHat" or ansible_os_family == "CentOS") and inventory_hostname in groups["masterDirectoryServers"][0]
     tags:
       - install-carbonio-message-broker

@@ -201,9 +201,20 @@
     - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers'] 
     - "'pgpool2' in pgpool_check_debian.stdout"
 
+- name: Reset failed services
+  shell:
+    cmd: 'systemctl reset-failed'
+    executable: /bin/bash
+  when: 
+    - ansible_os_family == "Debian"
+    - inventory_hostname in groups['dbsConnectorServers'] 
+    - "'pgpool2' in pgpool_check_debian.stdout"
+  tags:
+    - remove-carbonio-dbconnector
+
 #RHEL
 
-- name: Check if pgpool is installed (RHEL) 24.9 -> 24.12
+- name: Check if pgpool is installed [RHEL] 24.9 -> 24.12
   become: true
   shell: rpm -qa 2>/dev/null | grep -w '^pgpool-II'
   register: pgpool_check_rhel
@@ -213,7 +224,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Disable pgpool service if installed (RHEL) 24.9 -> 24.12
+- name: Disable pgpool service if installed [RHEL] 24.9 -> 24.12
   become: true
   systemd:
     name: pgpool-II
@@ -225,7 +236,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Uninstall pgpool package if installed (RHEL) 24.9 -> 24.12
+- name: Uninstall pgpool package if installed [RHEL] 24.9 -> 24.12
   become: true
   yum:
     name: pgpool-II
@@ -236,7 +247,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Remove pgpool configuration files (RHEL) 24.9 -> 24.12
+- name: Remove pgpool configuration files [RHEL] 24.9 -> 24.12
   become: true
   file:
     path: /etc/pgpool-II
@@ -247,7 +258,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Check if carbonio-prometheus-pgpool-exporter is installed (RHEL) 24.9 -> 24.12
+- name: Check if carbonio-prometheus-pgpool-exporter is installed [RHEL] 24.9 -> 24.12
   become: true
   shell: rpm -qa 2>/dev/null | grep -w '^carbonio-prometheus-pgpool-exporter'
   register: pgpool_exporter_check_rhel
@@ -257,7 +268,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Disable carbonio-prometheus-pgpool-exporter service if installed (RHEL) 24.9 -> 24.12 24.9 -> 24.12
+- name: Disable carbonio-prometheus-pgpool-exporter service if installed [RHEL] 24.9 -> 24.12 24.9 -> 24.12
   become: true
   systemd:
     name: carbonio-prometheus-pgpool-exporter
@@ -269,7 +280,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Uninstall carbonio-prometheus-pgpool-exporter package if installed (RHEL) 24.9 -> 24.12
+- name: Uninstall carbonio-prometheus-pgpool-exporter package if installed [RHEL] 24.9 -> 24.12
   become: true
   package:
     name: carbonio-prometheus-pgpool-exporter
@@ -280,7 +291,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Disable mailbox db connector (RHEL) 24.9 -> 24.12
+- name: Disable mailbox db connector [RHEL] 24.9 -> 24.12
   become: true
   systemd:
     name: "{{ item }}"
@@ -295,7 +306,7 @@
     - remove-carbonio-dbconnectors
 
 
-- name: Remove mailbox db connector packages (RHEL) 24.9 -> 24.12
+- name: Remove mailbox db connector packages [RHEL] 24.9 -> 24.12
   become: true
   yum:
     name: "{{ item }}"
@@ -308,7 +319,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Disable files db connector (RHEL) 24.9 -> 24.12
+- name: Disable files db connector [RHEL] 24.9 -> 24.12
   become: true
   systemd:
     name: "{{ item }}"
@@ -323,7 +334,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Remove files db connector packages (RHEL) 24.9 -> 24.12
+- name: Remove files db connector packages [RHEL] 24.9 -> 24.12
   become: true
   yum:
     name: "{{ item }}"
@@ -337,7 +348,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Disable docs db connector (RHEL) 24.9 -> 24.12
+- name: Disable docs db connector [RHEL] 24.9 -> 24.12
   become: true
   systemd:
     name: "{{ item }}"
@@ -352,7 +363,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Remove docs db connector packages (RHEL) 24.9 -> 24.12
+- name: Remove docs db connector packages [RHEL] 24.9 -> 24.12
   become: true
   yum:
     name: "{{ item }}"
@@ -366,7 +377,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Disable tasks db connector (RHEL) 24.9 -> 24.12
+- name: Disable tasks db connector [RHEL] 24.9 -> 24.12
   become: true
   systemd:
     name: "{{ item }}"
@@ -381,7 +392,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Remove tasks db connector packages (RHEL) 24.9 -> 24.12
+- name: Remove tasks db connector packages [RHEL] 24.9 -> 24.12
   become: true
   yum:
     name: "{{ item }}"
@@ -395,9 +406,22 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Remove all *-db.hcl files using find and command
+- name: Remove all *-db.hcl files using find and command [RHEL]
   command:
     cmd: find /etc/zextras/service-discover/ -type f -name '*-db.hcl' -exec rm -f {} +
   when: 
     - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers'] 
     - "'pgpool-II' in pgpool_check_rhel.stdout"
+  tags:
+    - remove-carbonio-dbconnector
+
+- name: Reset failed services [RHEL]
+  shell:
+    cmd: 'systemctl reset-failed'
+    executable: /bin/bash
+  when: 
+    - ansible_os_family == "RedHat"
+    - inventory_hostname in groups['dbsConnectorServers'] 
+    - "'pgpool-II' in pgpool_check_rhel.stdout"
+  tags:
+    - remove-carbonio-dbconnector

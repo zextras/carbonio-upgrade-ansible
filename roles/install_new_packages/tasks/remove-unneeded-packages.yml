@@ -30,17 +30,7 @@
   apt:
     name: pgpool2
     state: absent
-  when: 
-    - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers']
-    - "'pgpool2' in pgpool_check_debian.stdout"
-  tags:
-    - remove-carbonio-dbconnectors
-
-- name: Remove pgpool configuration files (Debian) 24.9 -> 24.12
-  become: true
-  file:
-    path: /etc/pgpool-II
-    state: absent
+    purge: true
   when: 
     - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers']
     - "'pgpool2' in pgpool_check_debian.stdout"
@@ -74,6 +64,7 @@
   apt:
     name: carbonio-prometheus-pgpool-exporter
     state: absent
+    purge: true
   when: 
     - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers'] 
     -  "'carbonio-prometheus-pgpool-exporter' in pgpool_exporter_check_debian.stdout"
@@ -99,6 +90,7 @@
   apt: 
     name: "{{ item }}"
     state: absent
+    purge: true
   with_items:
     - "{{ mailbox_dbconnectors_packages }}"
   when: 
@@ -127,6 +119,7 @@
   apt: 
     name: "{{ item }}"
     state: absent
+    purge: true
   with_items:
     - "{{ files_dbconnectors_packages }}"
   when: 
@@ -156,6 +149,7 @@
   apt: 
     name: "{{ item }}"
     state: absent
+    purge: true
   with_items:
     - "{{ docs_dbconnectors_packages }}"
   when: 
@@ -185,6 +179,7 @@
   apt: 
     name: "{{ item }}"
     state: absent
+    purge: true
   with_items:
     - "{{ task_dbconnectors_packages }}"
   when: 
@@ -193,14 +188,6 @@
     - groups['taskServers'] | length > 0
   tags:
     - remove-carbonio-dbconnectors
-
-- name: Remove all *-db.hcl files using find and command
-  become: true
-  command:
-    cmd: find /etc/zextras/service-discover/ -type f -name '*-db.hcl' -exec rm -f {} +
-  when: 
-    - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers'] 
-    - "'pgpool2' in pgpool_check_debian.stdout"
 
 - name: Remove dbconnectors directories in /etc/carbonio/ with tokens 
   become: true
@@ -416,15 +403,6 @@
     - groups['taskServers'] | length > 0
   tags:
     - remove-carbonio-dbconnectors
-
-- name: Remove all *-db.hcl files using find and command [RHEL]
-  command:
-    cmd: find /etc/zextras/service-discover/ -type f -name '*-db.hcl' -exec rm -f {} +
-  when: 
-    - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers'] 
-    - "'pgpool-II' in pgpool_check_rhel.stdout"
-  tags:
-    - remove-carbonio-dbconnector
 
 - name: Remove dbconnectors directories in /etc/carbonio/ with tokens  [RHEL]
   become: true

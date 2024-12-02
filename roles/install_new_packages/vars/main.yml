@@ -48,7 +48,10 @@
 
   mta_packages: 
     - carbonio-mta
-    
+
+  catalog_packages:
+    - carbonio-catalog
+
   proxy_packages: 
     - carbonio-proxy
     - carbonio-webui
@@ -86,7 +89,10 @@
     
   sds_packages: 
     - service-discover-server
-    
+  
+  message_broker_packages:
+    - carbonio-message-broker
+
   prometheus_packages: 
     - carbonio-prometheus
 

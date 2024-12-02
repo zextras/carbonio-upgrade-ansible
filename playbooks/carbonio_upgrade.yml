@@ -8,13 +8,14 @@
   roles:
      - ../roles/pre_carbonio_upgrade
 
-# Upgrade LDAP
-- hosts: masterDirectoryServers, replicaDirectoryServers
+# Upgrade master LDAP, replica and Postgres
+- hosts: postgresServers, masterDirectoryServers, replicaDirectoryServers
   serial: 1
   gather_facts: true
   roles:
      - ../roles/upgrade_carbonio_packages
-     - ../roles/post_carbonio_packages_upgrade
+     - ../roles/install_new_packages
+     - ../roles/post_carbonio_packages_upgrade 
 
 # Upgrade others consul servers
 - hosts: serviceDiscoverServers, !masterDirectoryServers, !replicaDirectoryServers

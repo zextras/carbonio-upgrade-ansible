@@ -98,3 +98,6 @@
 
   grafana_packages:
     - grafana 
+    
+  syslog_packages:
+    - carbonio-pflogsumm

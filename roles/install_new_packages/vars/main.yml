@@ -49,17 +49,18 @@
   mta_packages: 
     - carbonio-mta
 
-  catalog_packages:
-    - carbonio-catalog
-
   proxy_packages: 
+    - carbonio-catalog
     - carbonio-proxy
     - carbonio-webui
     - carbonio-chats-ui
     - carbonio-admin-ui
     - carbonio-admin-console-ui
     - carbonio-avdb-updater
-      
+
+  search_ui_packages:
+    - carbonio-search-ui
+
   preview_packages: 
     - carbonio-preview
 

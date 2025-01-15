@@ -10,13 +10,46 @@
 #  5 start service-discover agent, all sidecars, proxyServers
 #  6 start service-discover agent, all sidecars, mtaServers
 
+- name: Check if patroni is installed (Debian) 24.9 -> 24.12
+  become: true
+  shell: apt list --installed 2>/dev/null | grep -w '^patroni'
+  register: patroni_check_debian
+  failed_when: false
+  changed_when: false 
+  when: inventory_hostname in groups["postgresServers"] and ansible_os_family == "Debian"
+  tags:
+    - restart-carbonio-services
+    - postgresServers
+
 - name: Restart postgres(Ubuntu)
   become: true
   ansible.builtin.service:
     name: "postgresql"
     state: restarted
   register: postgres
-  when: inventory_hostname in groups["postgresServers"] and ansible_os_family == "Debian"
+  when: inventory_hostname in groups["postgresServers"] and ansible_os_family == "Debian" and "'patroni' not in patroni_check_debian.stdout"
+  tags:
+    - restart-carbonio-services
+    - postgresServers
+
+- name: Restart patroni(Ubuntu)
+  become: true
+  ansible.builtin.service:
+    name: "patroni"
+    state: restarted
+  register: postgres
+  when: inventory_hostname in groups["postgresServers"] and ansible_os_family == "Debian" and "'patroni' in patroni_check_debian.stdout"
+  tags:
+    - restart-carbonio-services
+    - postgresServers
+
+- name: Check if patroni is installed [RHEL] 24.9 -> 24.12
+  become: true
+  shell: rpm -qa 2>/dev/null | grep -w '^patroni'
+  register: patroni_check_rhel
+  failed_when: false 
+  changed_when: false
+  when: ansible_os_family == "RedHat" and inventory_hostname in groups["postgresServers"]
   tags:
     - restart-carbonio-services
     - postgresServers
@@ -27,16 +60,46 @@
     name: "postgresql-16.service"
     state: restarted
   register: postgres
-  when: inventory_hostname in groups["postgresServers"] and ansible_os_family == "RedHat"
+  when: inventory_hostname in groups["postgresServers"] and ansible_os_family == "RedHat"and "'patroni' not in patroni_check_rhel.stdout"
   tags:
     - restart-carbonio-services
     - postgresServers
 
-- name: Debug postgres restart status
+- name: Restart patroni(RHEL)
+  become: true
+  ansible.builtin.service:
+    name: "patroni.service"
+    state: restarted
+  register: patroni
+  when: inventory_hostname in groups["postgresServers"] and ansible_os_family == "RedHat"and "'patroni' in patroni_check_rhel.stdout"
+  tags:
+    - restart-carbonio-services
+    - postgresServers
+
+- name: Wait for 60 seconds after Patroni restart
+  ansible.builtin.pause:
+    seconds: 60
+  when: (inventory_hostname in groups["postgresServers"] and "'patroni' in patroni_check_rhel.stdout") or (inventory_hostname in groups["postgresServers"] and "'patroni' in patroni_check_debian.stdout")
+  tags:
+    - restart-carbonio-services
+    - postgresServers
+
+- name: Debug postgres restart status 
   debug:
     msg: "{{ postgres }}"
-  when: inventory_hostname in groups["postgresServers"]
+  when: (inventory_hostname in groups["postgresServers"] and "'patroni' not in patroni_check_rhel.stdout") or (inventory_hostname in groups["postgresServers"] and "'patroni' not in patroni_check_debian.stdout")
+  tags:
+    - restart-carbonio-services
+    - postgresServers
 
+- name: Debug patroni restart status 
+  debug:
+    msg: "{{ patroni }}"
+  when: (inventory_hostname in groups["postgresServers"] and "'patroni' in patroni_check_rhel.stdout") or (inventory_hostname in groups["postgresServers"] and "'patroni' in patroni_check_debian.stdout")
+  tags:
+    - restart-carbonio-services
+    - postgresServers
+    
 - name: Restart Service-discover service
   become: true
   ansible.builtin.service:

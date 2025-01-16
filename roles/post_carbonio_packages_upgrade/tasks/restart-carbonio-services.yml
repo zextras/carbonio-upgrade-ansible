@@ -28,7 +28,7 @@
   ansible.builtin.service:
     name: "postgresql"
     state: restarted
-  register: postgres_rhel
+  register: postgres_ubuntu
   when: 
     - inventory_hostname in groups["postgresServers"] 
     - ansible_os_family == "Debian" 

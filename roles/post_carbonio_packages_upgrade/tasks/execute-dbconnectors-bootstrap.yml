@@ -15,6 +15,77 @@
   tags:
     - install-carbonio-dbconnectors
 
+- name: Manage Postgres password
+  ansible.builtin.set_fact:
+      carbonio_postgres_password: "{{ lookup('ansible.builtin.password', inventory_file + '_postgrespassword', chars=['ascii_letters']) }}"
+  when: 
+    - (
+        (inventory_hostname in groups['postgresServers'][0] and 'patroni' not in patroni_check_debian.stdout) or 
+        (inventory_hostname in groups['dbsConnectorServers'][0] and 'patroni' in patroni_check_debian.stdout)
+      )
+  tags:
+      - db-connectors-bootstrap
+
+- name: run mailbox db-connectors Bootstrap
+  environment:
+      PGPASSWORD: "{{ carbonio_postgres_password }}"
+  command: /usr/bin/carbonio-mailbox-db-bootstrap carbonio_adm 127.0.0.1
+  become: true
+  when: 
+    - (
+        (inventory_hostname in groups['postgresServers'][0] and 'patroni' not in patroni_check_debian.stdout) or 
+        (inventory_hostname in groups['dbsConnectorServers'][0] and 'patroni' in patroni_check_debian.stdout)
+      )
+  tags:
+      - db-connectors-bootstrap
+
+- name: run files-db Bootstrap
+  environment:
+      PGPASSWORD: "{{ carbonio_postgres_password }}"
+  command: /usr/bin/carbonio-files-db-bootstrap carbonio_adm 127.0.0.1
+  become: true
+  run_once: true
+  when: 
+    - groups['filesServers'] | length > 0 
+    - (
+        (inventory_hostname in groups['postgresServers'][0] and 'patroni' not in patroni_check_debian.stdout) or 
+        (inventory_hostname in groups['dbsConnectorServers'][0] and 'patroni' in patroni_check_debian.stdout)
+      )
+  tags:
+      - db-connectors-bootstrap
+
+- name: run docs-connector-db Bootstrap
+  environment:
+      PGPASSWORD: "{{ carbonio_postgres_password }}"
+  become: true
+  run_once: true
+  command: /usr/bin/carbonio-docs-connector-db-bootstrap carbonio_adm 127.0.0.1
+  when: 
+    - groups['docsServers'] | length > 0 
+    - (
+        (inventory_hostname in groups['postgresServers'][0] and 'patroni' not in patroni_check_debian.stdout) or 
+        (inventory_hostname in groups['dbsConnectorServers'][0] and 'patroni' in patroni_check_debian.stdout)
+      )
+  tags:
+      - db-connectors-bootstrap
+
+- name: run tasks-connector-db Bootstrap
+  environment:
+      PGPASSWORD: "{{ carbonio_postgres_password }}"
+  become: true
+  run_once: true
+  command: /usr/bin/carbonio-tasks-db-bootstrap carbonio_adm 127.0.0.1
+  when:  
+    - groups['taskServers'] | length > 0 
+    - (
+        (inventory_hostname in groups['postgresServers'][0] and 'patroni' not in patroni_check_debian.stdout) or 
+        (inventory_hostname in groups['dbsConnectorServers'][0] and 'patroni' in patroni_check_debian.stdout)
+      )
+  tags:
+      - db-connectors-bootstrap
+
+### RHEL
+
 - name: Check if patroni is installed [RHEL] 24.9 -> 24.12
   become: true
   shell: rpm -qa 2>/dev/null | grep -w '^patroni'
@@ -31,8 +102,8 @@
       carbonio_postgres_password: "{{ lookup('ansible.builtin.password', inventory_file + '_postgrespassword', chars=['ascii_letters']) }}"
   when: 
     - (
-        (inventory_hostname in groups['postgresServers'][0] and ('patroni' not in patroni_check_debian.stdout or 'patroni' not in patroni_check_rhel.stdout)) or 
-        (inventory_hostname in groups['dbsConnectorServers'][0] and ('patroni' in patroni_check_debian.stdout or 'patroni' in patroni_check_rhel.stdout))
+        (inventory_hostname in groups['postgresServers'][0] and 'patroni' not in patroni_check_rhel.stdout) or 
+        (inventory_hostname in groups['dbsConnectorServers'][0] and 'patroni' in patroni_check_rhel.stdout)
       )
   tags:
       - db-connectors-bootstrap
@@ -44,8 +115,8 @@
   become: true
   when: 
     - (
-        (inventory_hostname in groups['postgresServers'][0] and ('patroni' not in patroni_check_debian.stdout or 'patroni' not in patroni_check_rhel.stdout)) or 
-        (inventory_hostname in groups['dbsConnectorServers'][0] and ('patroni' in patroni_check_debian.stdout or 'patroni' in patroni_check_rhel.stdout))
+        (inventory_hostname in groups['postgresServers'][0] and 'patroni' not in patroni_check_rhel.stdout) or 
+        (inventory_hostname in groups['dbsConnectorServers'][0] and 'patroni' in patroni_check_rhel.stdout)
       )
   tags:
       - db-connectors-bootstrap
@@ -59,8 +130,8 @@
   when: 
     - groups['filesServers'] | length > 0 
     - (
-        (inventory_hostname in groups['postgresServers'][0] and ('patroni' not in patroni_check_debian.stdout or 'patroni' not in patroni_check_rhel.stdout)) or 
-        (inventory_hostname in groups['dbsConnectorServers'][0] and ('patroni' in patroni_check_debian.stdout or 'patroni' in patroni_check_rhel.stdout))
+        (inventory_hostname in groups['postgresServers'][0] and 'patroni' not in patroni_check_rhel.stdout) or 
+        (inventory_hostname in groups['dbsConnectorServers'][0] and 'patroni' in patroni_check_rhel.stdout)
       )
   tags:
       - db-connectors-bootstrap
@@ -74,8 +145,8 @@
   when: 
     - groups['docsServers'] | length > 0 
     - (
-        (inventory_hostname in groups['postgresServers'][0] and ('patroni' not in patroni_check_debian.stdout or 'patroni' not in patroni_check_rhel.stdout)) or 
-        (inventory_hostname in groups['dbsConnectorServers'][0] and ('patroni' in patroni_check_debian.stdout or 'patroni' in patroni_check_rhel.stdout))
+        (inventory_hostname in groups['postgresServers'][0] and 'patroni' not in patroni_check_rhel.stdout) or 
+        (inventory_hostname in groups['dbsConnectorServers'][0] and 'patroni' in patroni_check_rhel.stdout)
       )
   tags:
       - db-connectors-bootstrap
@@ -89,9 +160,8 @@
   when:  
     - groups['taskServers'] | length > 0 
     - (
-        (inventory_hostname in groups['postgresServers'][0] and ('patroni' not in patroni_check_debian.stdout or 'patroni' not in patroni_check_rhel.stdout)) or 
-        (inventory_hostname in groups['dbsConnectorServers'][0] and ('patroni' in patroni_check_debian.stdout or 'patroni' in patroni_check_rhel.stdout))
+        (inventory_hostname in groups['postgresServers'][0] and 'patroni' not in patroni_check_rhel.stdout) or 
+        (inventory_hostname in groups['dbsConnectorServers'][0] and 'patroni' in patroni_check_rhel.stdout)
       )
   tags:
       - db-connectors-bootstrap
-

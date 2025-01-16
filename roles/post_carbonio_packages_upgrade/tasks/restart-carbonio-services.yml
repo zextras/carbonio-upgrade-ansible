@@ -38,7 +38,7 @@
     name: "patroni"
     state: restarted
   register: postgres
-  when: inventory_hostname in groups["postgresServers"] and ansible_os_family == "Debian" and 'patroni' in (patroni_check_debian.stdout | default(''))
+  when: inventory_hostname in groups["postgresServers"] and ansible_os_family == "Debian" and 'patroni' in patroni_check_debian.stdout 
   tags:
     - restart-carbonio-services
     - postgresServers
@@ -71,31 +71,55 @@
     name: "patroni.service"
     state: restarted
   register: patroni
-  when: inventory_hostname in groups["postgresServers"] and ansible_os_family == "RedHat" and 'patroni' in (patroni_check_rhel.stdout | default(''))
+  when: inventory_hostname in groups["postgresServers"] and ansible_os_family == "RedHat" and "'patroni' in patroni_check_rhel.stdout"
   tags:
     - restart-carbonio-services
     - postgresServers
 
-- name: Wait for 60 seconds after Patroni restart
+- name: Wait for 60 seconds after Patroni restart (Ubuntu)
   ansible.builtin.pause:
     seconds: 60
-  when: (inventory_hostname in groups["postgresServers"] and "'patroni' in patroni_check_rhel.stdout") or (inventory_hostname in groups["postgresServers"] and "'patroni' in patroni_check_debian.stdout")
+  when: inventory_hostname in groups["postgresServers"] and "'patroni' in patroni_check_debian.stdout"
   tags:
     - restart-carbonio-services
     - postgresServers
 
-- name: Debug postgres restart status 
+- name: Wait for 60 seconds after Patroni restart (RHEL)
+  ansible.builtin.pause:
+    seconds: 60
+  when: inventory_hostname in groups["postgresServers"] and "'patroni' in patroni_check_rhel.stdout"
+  tags:
+    - restart-carbonio-services
+    - postgresServers
+
+- name: Debug postgres restart status (Ubuntu)
   debug:
     msg: "{{ postgres }}"
-  when: (inventory_hostname in groups["postgresServers"] and "'patroni' not in patroni_check_rhel.stdout") or (inventory_hostname in groups["postgresServers"] and "'patroni' not in patroni_check_debian.stdout")
+  when: "'inventory_hostname in groups["postgresServers"] and "'patroni' not in patroni_check_debian.stdout"
   tags:
     - restart-carbonio-services
     - postgresServers
 
-- name: Debug patroni restart status 
+- name: Debug postgres restart status (RHEL)
+  debug:
+    msg: "{{ postgres }}"
+  when: inventory_hostname in groups["postgresServers"] and "'patroni' not in patroni_check_rhel.stdout"
+  tags:
+    - restart-carbonio-services
+    - postgresServers
+
+- name: Debug patroni restart status (Ubuntu)
   debug:
     msg: "{{ patroni }}"
-  when: (inventory_hostname in groups["postgresServers"] and "'patroni' in patroni_check_rhel.stdout") or (inventory_hostname in groups["postgresServers"] and "'patroni' in patroni_check_debian.stdout")
+  when: inventory_hostname in groups["postgresServers"] and "'patroni' in patroni_check_debian.stdout"
+  tags:
+    - restart-carbonio-services
+    - postgresServers
+
+- name: Debug patroni restart status (RHEL)
+  debug:
+    msg: "{{ patroni }}"
+  when: inventory_hostname in groups["postgresServers"] and "'patroni' in patroni_check_rhel.stdout"
   tags:
     - restart-carbonio-services
     - postgresServers

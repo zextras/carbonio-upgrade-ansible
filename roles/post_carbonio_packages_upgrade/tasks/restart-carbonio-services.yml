@@ -38,7 +38,7 @@
     name: "patroni"
     state: restarted
   register: postgres
-  when: inventory_hostname in groups["postgresServers"] and ansible_os_family == "Debian" and "'patroni' in patroni_check_debian.stdout"
+  when: inventory_hostname in groups["postgresServers"] and ansible_os_family == "Debian" and 'patroni' in (patroni_check_debian.stdout | default(''))
   tags:
     - restart-carbonio-services
     - postgresServers
@@ -71,7 +71,7 @@
     name: "patroni.service"
     state: restarted
   register: patroni
-  when: inventory_hostname in groups["postgresServers"] and ansible_os_family == "RedHat" and "'patroni' in patroni_check_rhel.stdout"
+  when: inventory_hostname in groups["postgresServers"] and ansible_os_family == "RedHat" and 'patroni' in (patroni_check_rhel.stdout | default(''))
   tags:
     - restart-carbonio-services
     - postgresServers

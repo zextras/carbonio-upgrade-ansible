@@ -119,7 +119,7 @@
 - name: Debug patroni restart status (RHEL)
   debug:
     msg: "{{ patroni }}"
-  when: inventory_hostname in groups['postgresServers'] and "'patroni' in patroni_check_rhel.stdout"
+  when: inventory_hostname in groups['postgresServers'] and 'patroni' in patroni_check_rhel.stdout
   tags:
     - restart-carbonio-services
     - postgresServers

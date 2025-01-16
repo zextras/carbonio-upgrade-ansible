@@ -19,11 +19,15 @@
   ansible.builtin.set_fact:
       carbonio_postgres_password: "{{ lookup('ansible.builtin.password', inventory_file + '_postgrespassword', chars=['ascii_letters']) }}"
   when: 
-    - (
-        (inventory_hostname in groups["postgresServers"][0] and "'patroni' not in patroni_check_debian.stdout") or 
-        (inventory_hostname in groups['dbsConnectorServers'][0] and "'patroni' in patroni_check_debian.stdout")
-      )
     -  ansible_os_family == "Debian"
+    - >
+      (
+        (inventory_hostname in groups["postgresServers"][0]
+         and "'patroni' not in patroni_check_debian.stdout")
+        or
+        (inventory_hostname in groups["dbsConnectorServers"][0]
+         and "'patroni' in patroni_check_debian.stdout")
+      )
   tags:
       - db-connectors-bootstrap
 
@@ -33,11 +37,15 @@
   command: /usr/bin/carbonio-mailbox-db-bootstrap carbonio_adm 127.0.0.1
   become: true
   when: 
-    - (
-        (inventory_hostname in groups["postgresServers"][0] and "'patroni' not in patroni_check_debian.stdout") or 
-        (inventory_hostname in groups['dbsConnectorServers'][0] and "'patroni' in patroni_check_debian.stdout")
-      )
     -  ansible_os_family == "Debian"
+    - >
+      (
+        (inventory_hostname in groups["postgresServers"][0]
+         and "'patroni' not in patroni_check_debian.stdout")
+        or
+        (inventory_hostname in groups["dbsConnectorServers"][0]
+         and "'patroni' in patroni_check_debian.stdout")
+      )
   tags:
       - db-connectors-bootstrap
 

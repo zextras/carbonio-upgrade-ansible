@@ -95,7 +95,7 @@
 - name: Debug postgres restart status (Ubuntu)
   debug:
     msg: "{{ postgres }}"
-  when: "'inventory_hostname in groups['postgresServers'] and "'patroni' not in patroni_check_debian.stdout"
+  when: "'inventory_hostname in groups['postgresServers'] and 'patroni' not in patroni_check_debian.stdout
   tags:
     - restart-carbonio-services
     - postgresServers

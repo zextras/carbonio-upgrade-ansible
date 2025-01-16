@@ -37,7 +37,7 @@
   ansible.builtin.service:
     name: "patroni"
     state: restarted
-  register: postgres
+  register: patroni
   when: inventory_hostname in groups["postgresServers"] and ansible_os_family == "Debian" and "'patroni' in patroni_check_debian.stdout" 
   tags:
     - restart-carbonio-services

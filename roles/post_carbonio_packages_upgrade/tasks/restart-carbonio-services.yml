@@ -261,3 +261,11 @@
       state: absent
   tags:
     - track-zmcontrol
+
+- name: Restart zmconfigd
+  become: true
+  ansible.builtin.service:
+    name: "carbonio"
+    state: restarted
+  tags:
+    - restart-carbonio-service

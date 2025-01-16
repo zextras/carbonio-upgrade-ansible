@@ -32,7 +32,7 @@
   when: 
     - (
         (inventory_hostname in groups['postgresServers'][0] and ('patroni' not in patroni_check_debian.stdout or 'patroni' not in patroni_check_rhel.stdout)) or 
-        (inventory_hostname in groups['dbsConnectorServers'][0] and ('patroni' in patroni_check_debian.stdout or 'patroni' in patroni_check_rhel.stdout)
+        (inventory_hostname in groups['dbsConnectorServers'][0] and ('patroni' in patroni_check_debian.stdout or 'patroni' in patroni_check_rhel.stdout))
       )
   tags:
       - db-connectors-bootstrap
@@ -45,7 +45,7 @@
   when: 
     - (
         (inventory_hostname in groups['postgresServers'][0] and ('patroni' not in patroni_check_debian.stdout or 'patroni' not in patroni_check_rhel.stdout)) or 
-        (inventory_hostname in groups['dbsConnectorServers'][0] and ('patroni' in patroni_check_debian.stdout or 'patroni' in patroni_check_rhel.stdout)
+        (inventory_hostname in groups['dbsConnectorServers'][0] and ('patroni' in patroni_check_debian.stdout or 'patroni' in patroni_check_rhel.stdout))
       )
   tags:
       - db-connectors-bootstrap
@@ -60,7 +60,7 @@
     - groups['filesServers'] | length > 0 
     - (
         (inventory_hostname in groups['postgresServers'][0] and ('patroni' not in patroni_check_debian.stdout or 'patroni' not in patroni_check_rhel.stdout)) or 
-        (inventory_hostname in groups['dbsConnectorServers'][0] and ('patroni' in patroni_check_debian.stdout or 'patroni' in patroni_check_rhel.stdout)
+        (inventory_hostname in groups['dbsConnectorServers'][0] and ('patroni' in patroni_check_debian.stdout or 'patroni' in patroni_check_rhel.stdout))
       )
   tags:
       - db-connectors-bootstrap
@@ -75,7 +75,7 @@
     - groups['docsServers'] | length > 0 
     - (
         (inventory_hostname in groups['postgresServers'][0] and ('patroni' not in patroni_check_debian.stdout or 'patroni' not in patroni_check_rhel.stdout)) or 
-        (inventory_hostname in groups['dbsConnectorServers'][0] and ('patroni' in patroni_check_debian.stdout or 'patroni' in patroni_check_rhel.stdout)
+        (inventory_hostname in groups['dbsConnectorServers'][0] and ('patroni' in patroni_check_debian.stdout or 'patroni' in patroni_check_rhel.stdout))
       )
   tags:
       - db-connectors-bootstrap
@@ -90,7 +90,7 @@
     - groups['taskServers'] | length > 0 
     - (
         (inventory_hostname in groups['postgresServers'][0] and ('patroni' not in patroni_check_debian.stdout or 'patroni' not in patroni_check_rhel.stdout)) or 
-        (inventory_hostname in groups['dbsConnectorServers'][0] and ('patroni' in patroni_check_debian.stdout or 'patroni' in patroni_check_rhel.stdout)
+        (inventory_hostname in groups['dbsConnectorServers'][0] and ('patroni' in patroni_check_debian.stdout or 'patroni' in patroni_check_rhel.stdout))
       )
   tags:
       - db-connectors-bootstrap

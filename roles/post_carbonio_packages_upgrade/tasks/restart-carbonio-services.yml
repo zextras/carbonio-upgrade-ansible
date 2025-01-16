@@ -98,6 +98,7 @@
   when: 
     - inventory_hostname in groups["postgresServers"] 
     - "'patroni' in patroni_check_debian.stdout"
+    -  ansible_os_family == "Debian"
   tags:
     - restart-carbonio-services
     - postgresServers
@@ -106,6 +107,7 @@
   ansible.builtin.pause:
     seconds: 60
   when: 
+    - ansible_os_family == "RedHat" 
     - inventory_hostname in groups["postgresServers"]
     - "'patroni' in patroni_check_rhel.stdout"
   tags:
@@ -117,6 +119,7 @@
     msg: "{{ postgres }}"
   when: 
     - inventory_hostname in groups["postgresServers"]
+    -  ansible_os_family == "Debian"
     - "'patroni' not in patroni_check_debian.stdout"
   tags:
     - restart-carbonio-services
@@ -127,6 +130,7 @@
     msg: "{{ postgres }}"
   when: 
     - inventory_hostname in groups["postgresServers"]
+    - ansible_os_family == "RedHat" 
     - "'patroni' not in patroni_check_rhel.stdout"
   tags:
     - restart-carbonio-services
@@ -137,6 +141,7 @@
     msg: "{{ patroni }}"
   when: 
     - inventory_hostname in groups["postgresServers"] 
+    -  ansible_os_family == "Debian"
     - "'patroni' in patroni_check_debian.stdout"
   tags:
     - restart-carbonio-services
@@ -147,6 +152,7 @@
     msg: "{{ patroni }}"
   when: 
     - inventory_hostname in groups["postgresServers"] 
+    - ansible_os_family == "RedHat" 
     - "'patroni' in patroni_check_rhel.stdout"
   tags:
     - restart-carbonio-services

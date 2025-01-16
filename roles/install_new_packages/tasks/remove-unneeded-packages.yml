@@ -9,10 +9,11 @@
   register: patroni_check_debian
   failed_when: false
   changed_when: false 
-  when: inventory_hostname in groups["postgresServers"][0] and ansible_os_family == "Debian"
+  when: ansible_os_family == "Debian"
+  delegate_to: "{{ groups["postgresServers"][0] }}"
   tags:
     - remove-carbonio-dbconnectors
-    
+
 - name: Check if pgpool is installed (Debian) 24.9 -> 24.12
   become: true
   shell: apt list --installed 2>/dev/null | grep -w '^pgpool2'
@@ -238,7 +239,8 @@
   register: patroni_check_rhel
   failed_when: false 
   changed_when: false
-  when: ansible_os_family == "RedHat" and inventory_hostname in groups["postgresServers"]
+  when: inventory_hostname in groups["postgresServers"]
+  delegate_to: "{{ groups["postgresServers"][0] }}"
   tags:
     - install-carbonio-dbconnectors
 

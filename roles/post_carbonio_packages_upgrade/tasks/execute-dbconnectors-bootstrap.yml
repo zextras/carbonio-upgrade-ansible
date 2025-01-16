@@ -8,7 +8,7 @@
       carbonio_postgres_password: "{{ lookup('ansible.builtin.password', inventory_file + '_postgrespassword', chars=['ascii_letters']) }}"
   when: 
     - (
-        (inventory_hostname in groups["postgresServers"][0] and groups['dbsConnectorServers'] | length = 0) or 
+        (inventory_hostname in groups["postgresServers"][0] and groups['dbsConnectorServers'] | length == 0) or 
         (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'][0] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0])
       )
   tags:
@@ -22,7 +22,7 @@
   when: 
     - inventory_hostname in groups["postgresServers"][0] 
     - (
-        (inventory_hostname in groups["postgresServers"][0] and groups['dbsConnectorServers'] | length = 0) or  
+        (inventory_hostname in groups["postgresServers"][0] and groups['dbsConnectorServers'] | length == 0) or  
         (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'][0] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0])
       )
   tags:
@@ -37,7 +37,7 @@
   when: 
     - groups['filesServers'] | length > 0 
     - (
-        (inventory_hostname in groups["postgresServers"][0] and groups['dbsConnectorServers'] | length = 0) or 
+        (inventory_hostname in groups["postgresServers"][0] and groups['dbsConnectorServers'] | length == 0) or 
         (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'][0] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0])
       )
   tags:
@@ -52,7 +52,7 @@
   when: 
     - groups['docsServers'] | length > 0 
     - (
-        (inventory_hostname in groups["postgresServers"][0] and groups['dbsConnectorServers'] | length = 0) or 
+        (inventory_hostname in groups["postgresServers"][0] and groups['dbsConnectorServers'] | length == 0) or 
         (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'][0] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0])
       )
   tags:
@@ -67,7 +67,7 @@
   when:  
     - groups['taskServers'] | length > 0 
     - (
-        (inventory_hostname in groups["postgresServers"][0] and groups['dbsConnectorServers'] | length = 0) or 
+        (inventory_hostname in groups["postgresServers"][0] and groups['dbsConnectorServers'] | length == 0) or 
         (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'][0] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0])
       )
   tags:

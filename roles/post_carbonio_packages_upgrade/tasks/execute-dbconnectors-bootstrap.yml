@@ -9,7 +9,7 @@
   when: 
     - (
         (inventory_hostname in groups["postgresServers"][0] and groups['dbsConnectorServers'] | length = 0) or 
-        (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'][0] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0]
+        (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'][0] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0])
       )
   tags:
       - db-connectors-bootstrap
@@ -23,7 +23,7 @@
     - inventory_hostname in groups["postgresServers"][0] 
     - (
         (inventory_hostname in groups["postgresServers"][0] and groups['dbsConnectorServers'] | length = 0) or  
-        (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'][0] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0]
+        (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'][0] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0])
       )
   tags:
       - db-connectors-bootstrap
@@ -38,7 +38,7 @@
     - groups['filesServers'] | length > 0 
     - (
         (inventory_hostname in groups["postgresServers"][0] and groups['dbsConnectorServers'] | length = 0) or 
-        (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'][0] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0]
+        (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'][0] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0])
       )
   tags:
       - db-connectors-bootstrap
@@ -53,7 +53,7 @@
     - groups['docsServers'] | length > 0 
     - (
         (inventory_hostname in groups["postgresServers"][0] and groups['dbsConnectorServers'] | length = 0) or 
-        (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'][0] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0]
+        (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'][0] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0])
       )
   tags:
       - db-connectors-bootstrap
@@ -68,7 +68,7 @@
     - groups['taskServers'] | length > 0 
     - (
         (inventory_hostname in groups["postgresServers"][0] and groups['dbsConnectorServers'] | length = 0) or 
-        (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'][0] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0]
+        (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'][0] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0])
       )
   tags:
       - db-connectors-bootstrap

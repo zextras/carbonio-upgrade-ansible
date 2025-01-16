@@ -10,7 +10,7 @@
   failed_when: false
   changed_when: false 
   when: ansible_os_family == "Debian"
-  delegate_to: "{{ groups["postgresServers"][0] }}"
+  delegate_to: "{{ groups['postgresServers'][0] }}"
   tags:
     - remove-carbonio-dbconnectors
 
@@ -240,7 +240,7 @@
   failed_when: false 
   changed_when: false
   when: ansible_os_family == "RedHat"
-  delegate_to: "{{ groups["postgresServers"][0] }}"
+  delegate_to: "{{ groups['postgresServers'][0] }}"
   tags:
     - install-carbonio-dbconnectors
 

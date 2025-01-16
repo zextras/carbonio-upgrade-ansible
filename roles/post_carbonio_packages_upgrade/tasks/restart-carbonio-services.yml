@@ -28,7 +28,7 @@
   ansible.builtin.service:
     name: "postgresql"
     state: restarted
-  register: postgres
+  register: postgres_rhel
   when: 
     - inventory_hostname in groups["postgresServers"] 
     - ansible_os_family == "Debian" 
@@ -42,7 +42,7 @@
   ansible.builtin.service:
     name: "patroni"
     state: restarted
-  register: patroni
+  register: patroni_ubuntu
   when: 
     - inventory_hostname in groups["postgresServers"] 
     -  ansible_os_family == "Debian"
@@ -69,7 +69,7 @@
   ansible.builtin.service:
     name: "postgresql-16.service"
     state: restarted
-  register: postgres
+  register: postgres_rhel
   when: 
     - inventory_hostname in groups["postgresServers"] 
     - ansible_os_family == "RedHat"
@@ -83,7 +83,7 @@
   ansible.builtin.service:
     name: "patroni.service"
     state: restarted
-  register: patroni
+  register: patroni_rhel
   when: 
     - inventory_hostname in groups["postgresServers"] 
     - ansible_os_family == "RedHat"
@@ -116,7 +116,7 @@
 
 - name: Debug postgres restart status (Ubuntu)
   debug:
-    msg: "{{ postgres }}"
+    msg: "{{ postgres_ubuntu }}"
   when: 
     - inventory_hostname in groups["postgresServers"]
     -  ansible_os_family == "Debian"
@@ -127,7 +127,7 @@
 
 - name: Debug postgres restart status (RHEL)
   debug:
-    msg: "{{ postgres }}"
+    msg: "{{ postgres_rhel }}"
   when: 
     - inventory_hostname in groups["postgresServers"]
     - ansible_os_family == "RedHat" 
@@ -138,7 +138,7 @@
 
 - name: Debug patroni restart status (Ubuntu)
   debug:
-    msg: "{{ patroni }}"
+    msg: "{{ patroni_ubuntu }}"
   when: 
     - inventory_hostname in groups["postgresServers"] 
     -  ansible_os_family == "Debian"
@@ -149,7 +149,7 @@
 
 - name: Debug patroni restart status (RHEL)
   debug:
-    msg: "{{ patroni }}"
+    msg: "{{ patroni_rhel }}"
   when: 
     - inventory_hostname in groups["postgresServers"] 
     - ansible_os_family == "RedHat" 

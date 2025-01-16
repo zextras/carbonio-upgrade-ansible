@@ -96,9 +96,9 @@
   ansible.builtin.pause:
     seconds: 60
   when: 
+    -  ansible_os_family == "Debian"
     - inventory_hostname in groups["postgresServers"] 
     - "'patroni' in patroni_check_debian.stdout"
-    -  ansible_os_family == "Debian"
   tags:
     - restart-carbonio-services
     - postgresServers

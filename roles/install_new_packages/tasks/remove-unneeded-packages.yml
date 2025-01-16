@@ -239,7 +239,7 @@
   register: patroni_check_rhel
   failed_when: false 
   changed_when: false
-  when: inventory_hostname in groups["postgresServers"]
+  when: ansible_os_family == "RedHat"
   delegate_to: "{{ groups["postgresServers"][0] }}"
   tags:
     - install-carbonio-dbconnectors

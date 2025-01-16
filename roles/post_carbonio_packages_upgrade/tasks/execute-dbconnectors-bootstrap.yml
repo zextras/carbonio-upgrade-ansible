@@ -23,6 +23,7 @@
         (inventory_hostname in groups["postgresServers"][0] and "'patroni' not in patroni_check_debian.stdout") or 
         (inventory_hostname in groups['dbsConnectorServers'][0] and "'patroni' in patroni_check_debian.stdout")
       )
+    -  ansible_os_family == "Debian"
   tags:
       - db-connectors-bootstrap
 
@@ -36,6 +37,7 @@
         (inventory_hostname in groups["postgresServers"][0] and "'patroni' not in patroni_check_debian.stdout") or 
         (inventory_hostname in groups['dbsConnectorServers'][0] and "'patroni' in patroni_check_debian.stdout")
       )
+    -  ansible_os_family == "Debian"
   tags:
       - db-connectors-bootstrap
 
@@ -51,6 +53,7 @@
         (inventory_hostname in groups["postgresServers"][0] and "'patroni' not in patroni_check_debian.stdout") or 
         (inventory_hostname in groups['dbsConnectorServers'][0] and "'patroni' in patroni_check_debian.stdout")
       )
+    -  ansible_os_family == "Debian"
   tags:
       - db-connectors-bootstrap
 
@@ -66,6 +69,7 @@
         (inventory_hostname in groups["postgresServers"][0] and "'patroni' not in patroni_check_debian.stdout") or 
         (inventory_hostname in groups['dbsConnectorServers'][0] and "'patroni' in patroni_check_debian.stdout")
       )
+    -  ansible_os_family == "Debian"
   tags:
       - db-connectors-bootstrap
 
@@ -81,6 +85,7 @@
         (inventory_hostname in groups["postgresServers"][0] and "'patroni' not in patroni_check_debian.stdout") or 
         (inventory_hostname in groups['dbsConnectorServers'][0] and "'patroni' in patroni_check_debian.stdout")
       )
+    -  ansible_os_family == "Debian"
   tags:
       - db-connectors-bootstrap
 
@@ -105,6 +110,7 @@
         (inventory_hostname in groups["postgresServers"][0] and "'patroni' not in patroni_check_rhel.stdout") or 
         (inventory_hostname in groups['dbsConnectorServers'][0] and "'patroni' in patroni_check_rhel.stdout")
       )
+    - ansible_os_family == "RedHat" 
   tags:
       - db-connectors-bootstrap
 
@@ -118,6 +124,7 @@
         (inventory_hostname in groups["postgresServers"][0] and "'patroni' not in patroni_check_rhel.stdout") or 
         (inventory_hostname in groups['dbsConnectorServers'][0] and "'patroni' in patroni_check_rhel.stdout")
       )
+    - ansible_os_family == "RedHat" 
   tags:
       - db-connectors-bootstrap
 
@@ -133,6 +140,7 @@
         (inventory_hostname in groups["postgresServers"][0] and "'patroni' not in patroni_check_rhel.stdout") or 
         (inventory_hostname in groups['dbsConnectorServers'][0] and "'patroni' in patroni_check_rhel.stdout")
       )
+    - ansible_os_family == "RedHat" 
   tags:
       - db-connectors-bootstrap
 
@@ -148,6 +156,7 @@
         (inventory_hostname in groups["postgresServers"][0] and "'patroni' not in patroni_check_rhel.stdout") or 
         (inventory_hostname in groups['dbsConnectorServers'][0] and "'patroni' in patroni_check_rhel.stdout")
       )
+    - ansible_os_family == "RedHat" 
   tags:
       - db-connectors-bootstrap
 
@@ -163,5 +172,6 @@
         (inventory_hostname in groups["postgresServers"][0] and "'patroni' not in patroni_check_rhel.stdout") or 
         (inventory_hostname in groups['dbsConnectorServers'][0] and "'patroni' in patroni_check_rhel.stdout")
       )
+    - ansible_os_family == "RedHat" 
   tags:
       - db-connectors-bootstrap

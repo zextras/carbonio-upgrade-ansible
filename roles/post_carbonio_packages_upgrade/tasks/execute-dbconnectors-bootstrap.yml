@@ -20,7 +20,7 @@
       carbonio_postgres_password: "{{ lookup('ansible.builtin.password', inventory_file + '_postgrespassword', chars=['ascii_letters']) }}"
   when: 
     - (
-        (inventory_hostname in groups['postgresServers'][0] and 'patroni' not in patroni_check_debian.stdout) or 
+        (inventory_hostname in groups["postgresServers"][0] and 'patroni' not in patroni_check_debian.stdout) or 
         (inventory_hostname in groups['dbsConnectorServers'][0] and 'patroni' in patroni_check_debian.stdout)
       )
   tags:
@@ -33,7 +33,7 @@
   become: true
   when: 
     - (
-        (inventory_hostname in groups['postgresServers'][0] and 'patroni' not in patroni_check_debian.stdout) or 
+        (inventory_hostname in groups["postgresServers"][0] and 'patroni' not in patroni_check_debian.stdout) or 
         (inventory_hostname in groups['dbsConnectorServers'][0] and 'patroni' in patroni_check_debian.stdout)
       )
   tags:
@@ -48,7 +48,7 @@
   when: 
     - groups['filesServers'] | length > 0 
     - (
-        (inventory_hostname in groups['postgresServers'][0] and 'patroni' not in patroni_check_debian.stdout) or 
+        (inventory_hostname in groups["postgresServers"][0] and 'patroni' not in patroni_check_debian.stdout) or 
         (inventory_hostname in groups['dbsConnectorServers'][0] and 'patroni' in patroni_check_debian.stdout)
       )
   tags:
@@ -63,7 +63,7 @@
   when: 
     - groups['docsServers'] | length > 0 
     - (
-        (inventory_hostname in groups['postgresServers'][0] and 'patroni' not in patroni_check_debian.stdout) or 
+        (inventory_hostname in groups["postgresServers"][0] and 'patroni' not in patroni_check_debian.stdout) or 
         (inventory_hostname in groups['dbsConnectorServers'][0] and 'patroni' in patroni_check_debian.stdout)
       )
   tags:
@@ -78,7 +78,7 @@
   when:  
     - groups['taskServers'] | length > 0 
     - (
-        (inventory_hostname in groups['postgresServers'][0] and 'patroni' not in patroni_check_debian.stdout) or 
+        (inventory_hostname in groups["postgresServers"][0] and 'patroni' not in patroni_check_debian.stdout) or 
         (inventory_hostname in groups['dbsConnectorServers'][0] and 'patroni' in patroni_check_debian.stdout)
       )
   tags:
@@ -102,7 +102,7 @@
       carbonio_postgres_password: "{{ lookup('ansible.builtin.password', inventory_file + '_postgrespassword', chars=['ascii_letters']) }}"
   when: 
     - (
-        (inventory_hostname in groups['postgresServers'][0] and 'patroni' not in patroni_check_rhel.stdout) or 
+        (inventory_hostname in groups["postgresServers"][0] and 'patroni' not in patroni_check_rhel.stdout) or 
         (inventory_hostname in groups['dbsConnectorServers'][0] and 'patroni' in patroni_check_rhel.stdout)
       )
   tags:
@@ -115,7 +115,7 @@
   become: true
   when: 
     - (
-        (inventory_hostname in groups['postgresServers'][0] and 'patroni' not in patroni_check_rhel.stdout) or 
+        (inventory_hostname in groups["postgresServers"][0] and 'patroni' not in patroni_check_rhel.stdout) or 
         (inventory_hostname in groups['dbsConnectorServers'][0] and 'patroni' in patroni_check_rhel.stdout)
       )
   tags:
@@ -130,7 +130,7 @@
   when: 
     - groups['filesServers'] | length > 0 
     - (
-        (inventory_hostname in groups['postgresServers'][0] and 'patroni' not in patroni_check_rhel.stdout) or 
+        (inventory_hostname in groups["postgresServers"][0] and 'patroni' not in patroni_check_rhel.stdout) or 
         (inventory_hostname in groups['dbsConnectorServers'][0] and 'patroni' in patroni_check_rhel.stdout)
       )
   tags:
@@ -145,7 +145,7 @@
   when: 
     - groups['docsServers'] | length > 0 
     - (
-        (inventory_hostname in groups['postgresServers'][0] and 'patroni' not in patroni_check_rhel.stdout) or 
+        (inventory_hostname in groups["postgresServers"][0] and 'patroni' not in patroni_check_rhel.stdout) or 
         (inventory_hostname in groups['dbsConnectorServers'][0] and 'patroni' in patroni_check_rhel.stdout)
       )
   tags:
@@ -160,7 +160,7 @@
   when:  
     - groups['taskServers'] | length > 0 
     - (
-        (inventory_hostname in groups['postgresServers'][0] and 'patroni' not in patroni_check_rhel.stdout) or 
+        (inventory_hostname in groups["postgresServers"][0] and 'patroni' not in patroni_check_rhel.stdout) or 
         (inventory_hostname in groups['dbsConnectorServers'][0] and 'patroni' in patroni_check_rhel.stdout)
       )
   tags:

@@ -1,0 +1,170 @@
+# SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
+---
+#Check and remove carboio-user-management on filesServers
+- name: Check if packages are installed on filesServers [Ubuntu]
+  become: true
+  shell: "dpkg -l | grep -q {{ item }} && echo installed || echo absent"
+  with_items: "{{ carbonio_user_management_packages }}"
+  register: check_packages_ubuntu
+  changed_when: false
+  when: ansible_os_family == "Debian" and inventory_hostname in groups['filesServers']
+  tags:
+    - move-carbonio-user-management
+
+- name: Check if packages are installed on filesServers [RHEL]
+  become: true
+  shell: "rpm -q {{ item }} && echo installed || echo absent"
+  with_items: "{{ carbonio_user_management_packages }}"
+  register: check_packages_rhel
+  changed_when: false
+  when: (ansible_os_family == "RedHat" or ansible_os_family == "CentOS") and inventory_hostname in groups['filesServers']
+  tags:
+    - move-carbonio-user-management
+
+- name: Remove carbonio user management packages [Ubuntu]
+  become: true
+  apt:
+    name: "{{ item }}"
+    state: absent
+  with_items: "{{ carbonio_user_management_packages }}"
+  when:
+    - ansible_os_family == "Debian"
+    - inventory_hostname in groups['filesServers']
+    - check_packages_ubuntu.results | selectattr('stdout', 'search', 'installed') | list | length > 0
+  tags:
+    - move-carbonio-user-management
+
+- name: Remove carbonio user management packages [RHEL]
+  become: true
+  yum:
+    name: "{{ item }}"
+    state: absent
+  with_items: "{{ carbonio_user_management_packages }}"
+  when:
+    - (ansible_os_family == "RedHat" or ansible_os_family == "CentOS")
+    - inventory_hostname in groups['filesServers']
+    - check_packages_rhel.results | selectattr('stdout', 'search', 'installed') | list | length > 0
+  tags:
+    - move-carbonio-user-management
+
+- name: Reset failed services [Ubuntu]
+  shell:
+    cmd: 'systemctl reset-failed'
+    executable: /bin/bash
+  when: 
+    - ansible_os_family == "Debian" 
+    - inventory_hostname in groups['filesServers']
+    - check_packages_ubuntu.results | selectattr('stdout', 'search', 'installed') | list | length > 0
+  tags:
+    - move-carbonio-user-management
+
+- name: Reset failed services [RHEL]
+  shell:
+    cmd: 'systemctl reset-failed'
+    executable: /bin/bash
+  when: 
+    - ansible_os_family == "Debian" 
+    - inventory_hostname in groups['filesServers']
+    - check_packages_rhel.results | selectattr('stdout', 'search', 'installed') | list | length > 0
+  tags:
+    - move-carbonio-user-management
+
+#Check and remove carboio-user-management on dbsConnectorServers
+- name: Check if packages are installed on dbsConnectorServers [Ubuntu]
+  become: true
+  shell: "dpkg -l | grep -q {{ item }} && echo installed || echo absent"
+  with_items: "{{ carbonio_user_management_packages }}"
+  register: check_packages_dbs_ubuntu
+  changed_when: false
+  when: ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers']
+  tags:
+  - move-carbonio-user-management
+
+- name: Check if packages are installed on dbsConnectorServers [RHEL]
+  become: true
+  shell: "rpm -q {{ item }} && echo installed || echo absent"
+  with_items: "{{ carbonio_user_management_packages }}"
+  register: check_packages_dbs_rhel
+  changed_when: false
+  when: (ansible_os_family == "RedHat" or ansible_os_family == "CentOS") and inventory_hostname in groups['dbsConnectorServers']
+  tags:
+  - move-carbonio-user-management
+  
+- name: Remove carbonio user management packages from dbsConnectorServers [Ubuntu]
+  become: true
+  apt:
+    name: "{{ item }}"
+    state: absent
+  with_items: "{{ carbonio_user_management_packages }}"
+  when:
+    - ansible_os_family == "Debian"
+    - inventory_hostname in groups['dbsConnectorServers']
+    - check_packages_dbs_ubuntu.results | selectattr('stdout', 'search', 'installed') | list | length > 0
+  tags:
+  - move-carbonio-user-management
+
+- name: Remove carbonio user management packages from dbsConnectorServers [RHEL]
+  become: true
+  yum:
+    name: "{{ item }}"
+    state: absent
+  with_items: "{{ carbonio_user_management_packages }}"
+  when:
+    - (ansible_os_family == "RedHat" or ansible_os_family == "CentOS")
+    - inventory_hostname in groups['dbsConnectorServers']
+    - check_packages_dbs_rhel.results | selectattr('stdout', 'search', 'installed') | list | length > 0
+  tags:
+  - move-carbonio-user-management
+
+- name: Reset failed services [Ubuntu]
+  shell:
+    cmd: 'systemctl reset-failed'
+    executable: /bin/bash
+  when: 
+    - ansible_os_family == "Debian" 
+    - inventory_hostname in groups['dbsConnectorServers']
+    - check_packages_ubuntu.results | selectattr('stdout', 'search', 'installed') | list | length > 0
+  tags:
+  - move-carbonio-user-management
+
+- name: Reset failed services [RHEL]
+  shell:
+    cmd: 'systemctl reset-failed'
+    executable: /bin/bash
+  when: 
+    - ansible_os_family == "Debian" 
+    - inventory_hostname in groups['dbsConnectorServers']
+    - check_packages_rhel.results | selectattr('stdout', 'search', 'installed') | list | length > 0
+  tags:
+  - move-carbonio-user-management
+
+#Install user management packages on serviceDiscoverServers
+- name: Install carbonio user management packages [Ubuntu]
+  become: true
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ carbonio_user_management_packages }}"
+  when:
+    - ansible_os_family == "Debian"
+    - inventory_hostname in groups['serviceDiscoverServers']
+    - groups['filesServers'] | length > 0
+  tags:
+  - move-carbonio-user-management
+
+- name: Install carbonio user management packages [RHEL]
+  become: true
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ carbonio_user_management_packages }}"
+  when:
+    - (ansible_os_family == "RedHat" or ansible_os_family == "CentOS")
+    - inventory_hostname in groups['serviceDiscoverServers']
+    - groups['filesServers'] | length > 0
+  tags:
+  - move-carbonio-user-management
+

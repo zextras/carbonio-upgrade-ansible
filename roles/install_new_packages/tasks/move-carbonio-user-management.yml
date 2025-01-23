@@ -77,7 +77,7 @@
   become: true
   shell: "dpkg -l | grep -q {{ item }} && echo installed || echo absent"
   with_items: "{{ carbonio_user_management_packages }}"
-  register: check_packages_dbs_ubuntu
+  register: check_packages_ubuntu
   changed_when: false
   when: ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers']
   tags:
@@ -87,7 +87,7 @@
   become: true
   shell: "rpm -q {{ item }} && echo installed || echo absent"
   with_items: "{{ carbonio_user_management_packages }}"
-  register: check_packages_dbs_rhel
+  register: check_packages_rhel
   changed_when: false
   when: (ansible_os_family == "RedHat" or ansible_os_family == "CentOS") and inventory_hostname in groups['dbsConnectorServers']
   tags:
@@ -102,7 +102,7 @@
   when:
     - ansible_os_family == "Debian"
     - inventory_hostname in groups['dbsConnectorServers']
-    - check_packages_dbs_ubuntu.results | selectattr('stdout', 'search', 'installed') | list | length > 0
+    - check_packages_ubuntu.results | selectattr('stdout', 'search', 'installed') | list | length > 0
   tags:
   - move-carbonio-user-management
 
@@ -115,7 +115,7 @@
   when:
     - (ansible_os_family == "RedHat" or ansible_os_family == "CentOS")
     - inventory_hostname in groups['dbsConnectorServers']
-    - check_packages_dbs_rhel.results | selectattr('stdout', 'search', 'installed') | list | length > 0
+    - check_packages_rhel.results | selectattr('stdout', 'search', 'installed') | list | length > 0
   tags:
   - move-carbonio-user-management
 

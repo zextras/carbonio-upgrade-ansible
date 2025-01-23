@@ -66,7 +66,7 @@
     cmd: 'systemctl reset-failed'
     executable: /bin/bash
   when: 
-    - ansible_os_family == "Debian" 
+    - (ansible_os_family == "RedHat" or ansible_os_family == "CentOS")
     - inventory_hostname in groups['filesServers']
     - check_packages_rhel.results | selectattr('stdout', 'search', 'installed') | list | length > 0
   tags:

@@ -5,9 +5,9 @@
 ---
 # tasks file for install_new_packages
 - import_tasks: install-carbonio-message-broker.yml
-- import_tasks: install-carbonio-storages.yml
 - import_tasks: install-new-proxy-packages.yml
+- import_tasks: install-carbonio-storages.yml
+- import_tasks: move-carbonio-user-management.yml
 - import_tasks: install-carbonio-catalog.yml
 - import_tasks: install-db-connectors.yml
 - import_tasks: remove-unneeded-packages.yml
-- import_tasks: move-carbonio-user-management.yml

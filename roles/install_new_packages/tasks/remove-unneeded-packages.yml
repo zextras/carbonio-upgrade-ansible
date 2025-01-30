@@ -3,6 +3,17 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 ---
+- name: Check if patroni is installed (Debian) 24.9 -> 24.12
+  become: true
+  shell: apt list --installed 2>/dev/null | grep -w '^patroni'
+  register: patroni_check_debian
+  failed_when: false
+  changed_when: false 
+  when: ansible_os_family == "Debian"
+  delegate_to: "{{ groups['postgresServers'][0] }}"
+  tags:
+    - remove-carbonio-dbconnectors
+
 - name: Check if pgpool is installed (Debian) 24.9 -> 24.12
   become: true
   shell: apt list --installed 2>/dev/null | grep -w '^pgpool2'
@@ -82,6 +93,7 @@
   when: 
     - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers'] 
     - "'pgpool2' in pgpool_check_debian.stdout"
+    - "'patroni' not in patroni_check_debian.stdout"
   tags:
     - remove-carbonio-dbconnectors
 
@@ -96,6 +108,7 @@
   when: 
     - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers'] 
     - "'pgpool2' in pgpool_check_debian.stdout"
+    - "'patroni' not in patroni_check_debian.stdout"
   tags:
     - remove-carbonio-dbconnectors
 
@@ -110,6 +123,7 @@
   when: 
     - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers']
     - "'pgpool2' in pgpool_check_debian.stdout"
+    - "'patroni' not in patroni_check_debian.stdout"
     - groups['filesServers'] | length > 0
   tags:
     - remove-carbonio-dbconnectors
@@ -125,6 +139,7 @@
   when: 
     - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers']
     - "'pgpool2' in pgpool_check_debian.stdout"
+    - "'patroni' not in patroni_check_debian.stdout"
     - groups['filesServers'] | length > 0
   tags:
     - remove-carbonio-dbconnectors
@@ -140,6 +155,7 @@
   when: 
     - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers'] 
     - "'pgpool2' in pgpool_check_debian.stdout"
+    - "'patroni' not in patroni_check_debian.stdout"
     - groups['docsServers'] | length > 0
   tags:
     - remove-carbonio-dbconnectors
@@ -155,6 +171,7 @@
   when: 
     - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers'] 
     - "'pgpool2' in pgpool_check_debian.stdout"
+    - "'patroni' not in patroni_check_debian.stdout"
     - groups['docsServers'] | length > 0
   tags:
     - remove-carbonio-dbconnectors
@@ -170,6 +187,7 @@
   when: 
     - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers'] 
     - "'pgpool2' in pgpool_check_debian.stdout" 
+    - "'patroni' not in patroni_check_debian.stdout"
     - groups['taskServers'] | length > 0
   tags:
     - remove-carbonio-dbconnectors
@@ -185,6 +203,7 @@
   when: 
     - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers'] 
     - "'pgpool2' in pgpool_check_debian.stdout" 
+    - "'patroni' not in patroni_check_debian.stdout"
     - groups['taskServers'] | length > 0
   tags:
     - remove-carbonio-dbconnectors
@@ -196,6 +215,7 @@
   when: 
     - ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers'] 
     - "'pgpool2' in pgpool_check_debian.stdout"
+    - "'patroni' not in patroni_check_debian.stdout"
   tags:
     - remove-carbonio-dbconnector
 
@@ -207,10 +227,22 @@
     - ansible_os_family == "Debian"
     - inventory_hostname in groups['dbsConnectorServers'] 
     - "'pgpool2' in pgpool_check_debian.stdout"
+    - "'patroni' not in patroni_check_debian.stdout"
   tags:
     - remove-carbonio-dbconnector
 
 #RHEL
+
+- name: Check if patroni is installed [RHEL] 24.9 -> 24.12
+  become: true
+  shell: rpm -qa 2>/dev/null | grep -w '^patroni'
+  register: patroni_check_rhel
+  failed_when: false 
+  changed_when: false
+  when: ansible_os_family == "RedHat"
+  delegate_to: "{{ groups['postgresServers'][0] }}"
+  tags:
+    - install-carbonio-dbconnectors
 
 - name: Check if pgpool is installed [RHEL] 24.9 -> 24.12
   become: true
@@ -300,6 +332,7 @@
   when: 
     - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers']
     - "'pgpool-II' in pgpool_check_rhel.stdout"
+    - "'patroni' not in patroni_check_rhel.stdout"
   tags:
     - remove-carbonio-dbconnectors
 
@@ -314,6 +347,7 @@
   when: 
     - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers']
     - "'pgpool-II' in pgpool_check_rhel.stdout"
+    - "'patroni' not in patroni_check_rhel.stdout"
   tags:
     - remove-carbonio-dbconnectors
 
@@ -328,6 +362,7 @@
   when: 
     - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers']
     - "'pgpool-II' in pgpool_check_rhel.stdout"
+    - "'patroni' not in patroni_check_rhel.stdout"
     - groups['filesServers'] | length > 0
   tags:
     - remove-carbonio-dbconnectors
@@ -342,6 +377,7 @@
   when: 
     - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers']
     - "'pgpool-II' in pgpool_check_rhel.stdout"
+    - "'patroni' not in patroni_check_rhel.stdout"
     - groups['filesServers'] | length > 0
   tags:
     - remove-carbonio-dbconnectors
@@ -357,6 +393,7 @@
   when: 
     - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers']
     - "'pgpool-II' in pgpool_check_rhel.stdout"
+    - "'patroni' not in patroni_check_rhel.stdout"
     - groups['docsServers'] | length > 0
   tags:
     - remove-carbonio-dbconnectors
@@ -371,6 +408,7 @@
   when: 
     - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers']
     - "'pgpool-II' in pgpool_check_rhel.stdout"
+    - "'patroni' not in patroni_check_rhel.stdout"
     - groups['docsServers'] | length > 0
   tags:
     - remove-carbonio-dbconnectors
@@ -386,6 +424,7 @@
   when: 
     - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers'] 
     - "'pgpool-II' in pgpool_check_rhel.stdout"
+    - "'patroni' not in patroni_check_rhel.stdout"
     - groups['taskServers'] | length > 0
   tags:
     - remove-carbonio-dbconnectors
@@ -400,6 +439,7 @@
   when: 
     - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers'] 
     - "'pgpool-II' in pgpool_check_rhel.stdout"
+    - "'patroni' not in patroni_check_rhel.stdout"
     - groups['taskServers'] | length > 0
   tags:
     - remove-carbonio-dbconnectors
@@ -411,6 +451,7 @@
   when: 
     - ansible_os_family == "RedHat" and inventory_hostname in groups['dbsConnectorServers'] 
     - "'pgpool-II' in pgpool_check_rhel.stdout"
+    - "'patroni' not in patroni_check_rhel.stdout"
   tags:
     - remove-carbonio-dbconnector
 
@@ -422,5 +463,6 @@
     - ansible_os_family == "RedHat"
     - inventory_hostname in groups['dbsConnectorServers'] 
     - "'pgpool-II' in pgpool_check_rhel.stdout"
+    - "'patroni' not in patroni_check_rhel.stdout"
   tags:
     - remove-carbonio-dbconnector

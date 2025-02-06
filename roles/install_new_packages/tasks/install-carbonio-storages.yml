@@ -103,9 +103,11 @@
 - name: Debug check_services content
   debug:
     var: check_services
-  when: inventory_hostname in groups["masterDirectoryServers"][0]
+  when:
+    - check_services.rc == 0
+    - inventory_hostname in groups['filesServers']
   tags:
-    - install-carbonio-message-broker
+    - install-carbonio-storages
     
 - name: Debug message if carbonio-storages is already "installed"
   debug:

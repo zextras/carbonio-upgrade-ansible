@@ -3,88 +3,139 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 ---
-- name: Check if carbonio-storages package is installed on dbsConnectorServers [Ubuntu]
-  become: true
-  shell: "dpkg -l | grep -q {{ item }} && echo installed || echo absent"
-  with_items: "{{ carbonio_storages_packages }}"
-  register: check_packages_ubuntu
-  changed_when: false
-  when: ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers']
-  tags:
-  - move-carbonio-storages
+# - name: Check if carbonio-storages package is installed on dbsConnectorServers [Ubuntu]
+#   become: true
+#   shell: "dpkg -l | grep -q {{ item }} && echo installed || echo absent"
+#   with_items: "{{ carbonio_storages_packages }}"
+#   register: check_packages_ubuntu
+#   changed_when: false
+#   when: ansible_os_family == "Debian" and inventory_hostname in groups['dbsConnectorServers']
+#   tags:
+#   - move-carbonio-storages
 
-- name: Check if carbonio-storages package is installed on dbsConnectorServers [RHEL]
-  become: true
-  shell: "rpm -q {{ item }} && echo installed || echo absent"
-  with_items: "{{ carbonio_storages_packages }}"
-  register: check_packages_rhel
-  changed_when: false
-  when: (ansible_os_family == "RedHat" or ansible_os_family == "CentOS") and inventory_hostname in groups['dbsConnectorServers']
-  tags:
-  - move-carbonio-storages
+# - name: Check if carbonio-storages package is installed on dbsConnectorServers [RHEL]
+#   become: true
+#   shell: "rpm -q {{ item }} && echo installed || echo absent"
+#   with_items: "{{ carbonio_storages_packages }}"
+#   register: check_packages_rhel
+#   changed_when: false
+#   when: (ansible_os_family == "RedHat" or ansible_os_family == "CentOS") and inventory_hostname in groups['dbsConnectorServers']
+#   tags:
+#   - move-carbonio-storages
   
-- name: Remove carbonio-storages package from dbsConnectorServers [Ubuntu]
+# - name: Remove carbonio-storages package from dbsConnectorServers [Ubuntu]
+#   become: true
+#   apt:
+#     name: "{{ item }}"
+#     state: absent
+#   with_items: "{{ carbonio_storages_packages }}"
+#   when:
+#     - ansible_os_family == "Debian"
+#     - inventory_hostname in groups['dbsConnectorServers']
+#     - check_packages_ubuntu.results | selectattr('stdout', 'search', 'installed') | list | length > 0
+#   tags:
+#   - move-carbonio-storages
+
+# - name: Remove carbonio-storages packages from dbsConnectorServers [RHEL]
+#   become: true
+#   yum:
+#     name: "{{ item }}"
+#     state: absent
+#   with_items: "{{ carbonio_storages_packages }}"
+#   when:
+#     - (ansible_os_family == "RedHat" or ansible_os_family == "CentOS")
+#     - inventory_hostname in groups['dbsConnectorServers']
+#     - check_packages_rhel.results | selectattr('stdout', 'search', 'installed') | list | length > 0
+#   tags:
+#   - move-carbonio-storages
+
+# - name: Reset failed services [Ubuntu]
+#   shell:
+#     cmd: 'systemctl reset-failed'
+#     executable: /bin/bash
+#   when: 
+#     - ansible_os_family == "Debian" 
+#     - inventory_hostname in groups['dbsConnectorServers']
+#     - check_packages_ubuntu.results | selectattr('stdout', 'search', 'installed') | list | length > 0
+#   tags:
+#   - move-carbonio-storages
+
+# - name: Reset failed services [RHEL]
+#   shell:
+#     cmd: 'systemctl reset-failed'
+#     executable: /bin/bash
+#   when: 
+#     - (ansible_os_family == "RedHat" or ansible_os_family == "CentOS")
+#     - inventory_hostname in groups['dbsConnectorServers']
+#     - check_packages_rhel.results | selectattr('stdout', 'search', 'installed') | list | length > 0
+#   tags:
+#   - move-carbonio-storages
+
+# - name: Install carbonio-storages [Ubuntu]
+#   become: true
+#   apt: name={{ item }} state=present
+#   with_items:
+#     - "{{ carbonio_storages_packages }}"
+#   when: ansible_os_family == "Debian" and inventory_hostname in groups['filesServers'] 
+#   tags:
+#   - move-carbonio-storages
+
+# - name: Install carbonio-storages [RHEL]
+#   become: true
+#   yum: name={{ item }} state=present
+#   with_items:
+#     - "{{ carbonio_storages_packages }}"
+#   when: (ansible_os_family == "RedHat" or ansible_os_family == "CentOS") and inventory_hostname in  groups['filesServers']
+#   tags:
+#   - move-carbonio-storages
+
+- name: Check if Carbonio Storages service is present in Consul
   become: true
-  apt:
-    name: "{{ item }}"
-    state: absent
+  command: "consul catalog services | grep -q {{ item }}"
   with_items: "{{ carbonio_storages_packages }}"
+  register: check_services
+  changed_when: false
+  failed_when: false  
+  when: inventory_hostname in groups['filesServers']
+  tags:
+    - install-carbonio-storages
+
+- name: Debug check_services content
+  debug:
+    var: check_services
+  when: inventory_hostname in groups["masterDirectoryServers"][0]
+  tags:
+    - install-carbonio-message-broker
+    
+- name: Debug message if carbonio-storages is already "installed"
+  debug:
+    msg: "carbonio-storages is already installed according to Consul"
   when:
-    - ansible_os_family == "Debian"
-    - inventory_hostname in groups['dbsConnectorServers']
-    - check_packages_ubuntu.results | selectattr('stdout', 'search', 'installed') | list | length > 0
+    - check_services.rc == 0
+    - inventory_hostname in groups['filesServers']
   tags:
-  - move-carbonio-storages
+    - install-carbonio-storages
 
-- name: Remove carbonio-storages packages from dbsConnectorServers [RHEL]
-  become: true
-  yum:
-    name: "{{ item }}"
-    state: absent
-  with_items: "{{ carbonio_storages_packages }}"
-  when:
-    - (ansible_os_family == "RedHat" or ansible_os_family == "CentOS")
-    - inventory_hostname in groups['dbsConnectorServers']
-    - check_packages_rhel.results | selectattr('stdout', 'search', 'installed') | list | length > 0
-  tags:
-  - move-carbonio-storages
-
-- name: Reset failed services [Ubuntu]
-  shell:
-    cmd: 'systemctl reset-failed'
-    executable: /bin/bash
-  when: 
-    - ansible_os_family == "Debian" 
-    - inventory_hostname in groups['dbsConnectorServers']
-    - check_packages_ubuntu.results | selectattr('stdout', 'search', 'installed') | list | length > 0
-  tags:
-  - move-carbonio-storages
-
-- name: Reset failed services [RHEL]
-  shell:
-    cmd: 'systemctl reset-failed'
-    executable: /bin/bash
-  when: 
-    - (ansible_os_family == "RedHat" or ansible_os_family == "CentOS")
-    - inventory_hostname in groups['dbsConnectorServers']
-    - check_packages_rhel.results | selectattr('stdout', 'search', 'installed') | list | length > 0
-  tags:
-  - move-carbonio-storages
-
-- name: Install carbonio-storages [Ubuntu]
+- name: Install carbonio-storages [Debian/Ubuntu] if not found in Consul
   become: true
   apt: name={{ item }} state=present
   with_items:
     - "{{ carbonio_storages_packages }}"
-  when: ansible_os_family == "Debian" and inventory_hostname in groups['filesServers'] 
+  when:
+    - check_services.rc == 1
+    - ansible_os_family == "Debian"
+    - inventory_hostname in groups['filesServers']
   tags:
-  - move-carbonio-storages
+    - install-carbonio-storages
 
-- name: Install carbonio-storages [RHEL]
+- name: Install carbonio-storages [RHEL/CentOS] if not found in Consul
   become: true
   yum: name={{ item }} state=present
   with_items:
     - "{{ carbonio_storages_packages }}"
-  when: (ansible_os_family == "RedHat" or ansible_os_family == "CentOS") and inventory_hostname in  groups['filesServers']
+  when:
+    - check_services.rc == 1
+    - ansible_os_family in ['RedHat', 'CentOS']
+    - inventory_hostname in groups['filesServers']
   tags:
-  - move-carbonio-storages
+    - install-carbonio-storages

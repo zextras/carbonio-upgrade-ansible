@@ -104,7 +104,7 @@
   debug:
     var: check_services
   when:
-    - check_services.rc == 0
+    - check_services.results | selectattr('rc', 'eq', 0) | list | length > 0
     - inventory_hostname in groups['filesServers']
   tags:
     - install-carbonio-storages
@@ -113,7 +113,7 @@
   debug:
     msg: "carbonio-storages is already installed according to Consul"
   when:
-    - check_services.rc == 0
+    - check_services.results | selectattr('rc', 'eq', 0) | list | length > 0
     - inventory_hostname in groups['filesServers']
   tags:
     - install-carbonio-storages
@@ -124,7 +124,7 @@
   with_items:
     - "{{ carbonio_storages_packages }}"
   when:
-    - check_services.rc == 1
+    - check_services.results | selectattr('rc', 'eq', 0) | list | length > 0
     - ansible_os_family == "Debian"
     - inventory_hostname in groups['filesServers']
   tags:
@@ -136,7 +136,7 @@
   with_items:
     - "{{ carbonio_storages_packages }}"
   when:
-    - check_services.rc == 1
+    - check_services.results | selectattr('rc', 'eq', 0) | list | length > 0
     - ansible_os_family in ['RedHat', 'CentOS']
     - inventory_hostname in groups['filesServers']
   tags:

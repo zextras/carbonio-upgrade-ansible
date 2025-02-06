@@ -3,67 +3,52 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 ---
-#   - name: Install Message Broker 24.9 -> 24.12 [Ubuntu]
-#     become: true
-#     apt: name={{ item }} state=present
-#     with_items:
-#       - "{{ message_broker_packages }}"
-#     when: ansible_os_family == "Debian"  and inventory_hostname in groups["masterDirectoryServers"][0]
-#     tags:
-#       - install-carbonio-message-broker
-      
-# ##### RHEL
-
-#   - name: Install Message Broker 24.9 -> 24.12 [RHEL]
-#     become: true
-#     yum: name={{ item }} state=present
-#     with_items:
-#       - "{{ message_broker_packages }}"
-#     when: (ansible_os_family == "RedHat" or ansible_os_family == "CentOS") and inventory_hostname in groups["masterDirectoryServers"][0]
-#     tags:
-#       - install-carbonio-message-broker
-
 - name: Check if Message Broker service is present in Consul
   become: true
-  command: "consul catalog services | grep -q {{ item }}"
-  with_items:
-    - "{{ message_broker_packages }}"
+  shell: >
+    consul catalog services | grep -q {{ item }}
+    && echo installed
+    || echo absent
+  with_items: "{{ message_broker_packages }}"
   register: check_services
   changed_when: false
-  failed_when: false
-  when: inventory_hostname in groups["masterDirectoryServers"][0]
-  tags:
-    - install-carbonio-message-broker
-
-- name: Debug if Message Broker is already installed
-  debug:
-    msg: "Message Broker is already installed according to Consul"
   when:
-    - check_services.rc == 0   
-    - inventory_hostname in groups["masterDirectoryServers"][0]
+    - inventory_hostname in groups['masterDirectoryServers'][0]
   tags:
     - install-carbonio-message-broker
 
-- name: Install Message Broker 24.9 -> 24.12 [Ubuntu]
+- name: Install Message Broker if absent [Ubuntu]
   become: true
   apt:
-    name: "{{ message_broker_packages }}"
+    name: "{{ item.item }}"
     state: present
+  with_items: "{{ check_services.results }}"
   when:
-    - check_services.rc == 1   # grep не нашёл — ставим пакет
     - ansible_os_family == "Debian"
-    - inventory_hostname in groups["masterDirectoryServers"][0]
+    - inventory_hostname in groups['masterDirectoryServers'][0]
+    - item.stdout == "absent"
   tags:
     - install-carbonio-message-broker
 
-- name: Install Message Broker 24.9 -> 24.12 [RHEL]
+- name: Install Message Broker if absent [RHEL]
   become: true
   yum:
-    name: "{{ message_broker_packages }}"
+    name: "{{ item.item }}"
     state: present
+  with_items: "{{ check_services.results }}"
   when:
-    - check_services.rc == 1
     - ansible_os_family in ["RedHat", "CentOS"]
-    - inventory_hostname in groups["masterDirectoryServers"][0]
+    - inventory_hostname in groups['masterDirectoryServers'][0]
+    - item.stdout == "absent"
+  tags:
+    - install-carbonio-message-broker
+
+- name: Debug message if Message Broker is already installed
+  debug:
+    msg: "Message Broker is already installed"
+  with_items: "{{ check_services.results }}"
+  when:
+    - inventory_hostname in groups['masterDirectoryServers'][0]
+    - item.stdout == "installed"
   tags:
     - install-carbonio-message-broker

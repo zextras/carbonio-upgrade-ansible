@@ -4,4 +4,5 @@
 
 ---
 # tasks file for pre-carbonio-upgrade
+- import_tasks: password-checks.yml
 - import_tasks: pre-upgrade-cmds.yml

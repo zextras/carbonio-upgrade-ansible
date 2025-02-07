@@ -1,0 +1,24 @@
+# SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
+---
+  - name: Install Search UI 24.12.0 -> 25.3.0 [Ubuntu]
+    become: true
+    apt: name={{ item }} state=present
+    with_items:
+      - "{{ search_ui_packages }}"        
+    when: ansible_os_family == "Debian"  and inventory_hostname in groups["proxyServers"] 
+    tags:
+      - install-carbonio-proxy
+  
+
+######## RHEL
+  - name: Install Search UI 24.12.0 -> 25.3.0 [RHEL]
+    become: true
+    yum: name={{ item }} state=present
+    with_items:
+      - "{{ search_ui_packages }}"        
+    when: (ansible_os_family == "RedHat" or ansible_os_family == "CentOS") and inventory_hostname in groups["proxyServers"] 
+    tags:
+      - install-carbonio-proxy

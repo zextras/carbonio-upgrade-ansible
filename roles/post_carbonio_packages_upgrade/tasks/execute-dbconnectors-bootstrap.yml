@@ -82,6 +82,19 @@
   tags:
       - db-connectors-bootstrap
 
+- name: run carbonio-ws-collaboration-db Bootstrap
+  environment:
+    PGPASSWORD: "{{ carbonio_postgres_password }}"
+  become: true
+  command: /usr/bin/carbonio-ws-collaboration-db-bootstrap carbonio_adm 127.0.0.1
+  when: 
+    - groups['workStreamServers'] | length > 0
+    - ansible_os_family == "Debian"
+    - inventory_hostname in groups["dbsConnectorServers"][0]
+    - "'patroni' in patroni_check_debian.stdout"
+  tags:
+    - db-connectors-bootstrap
+
 # If Partoni is not installd
 - name: Manage Postgres password (Standard)
   ansible.builtin.set_fact:
@@ -147,6 +160,19 @@
     - "'patroni' not in patroni_check_debian.stdout"
   tags:
       - db-connectors-bootstrap
+
+- name: run carbonio-ws-collaboration-db Bootstrap
+  environment:
+    PGPASSWORD: "{{ carbonio_postgres_password }}"
+  become: true
+  command: /usr/bin/carbonio-ws-collaboration-db-bootstrap carbonio_adm 127.0.0.1
+  when: 
+    - groups['workStreamServers'] | length > 0
+    - ansible_os_family == "Debian"
+    - inventory_hostname in groups["dbsConnectorServers"][0]
+    - "'patroni' not in patroni_check_debian.stdout"
+  tags:
+    - db-connectors-bootstrap
 
 ### RHEL
 
@@ -226,6 +252,19 @@
   tags:
       - db-connectors-bootstrap
 
+- name: run carbonio-ws-collaboration-db Bootstrap
+  environment:
+    PGPASSWORD: "{{ carbonio_postgres_password }}"
+  become: true
+  command: /usr/bin/carbonio-ws-collaboration-db-bootstrap carbonio_adm 127.0.0.1
+  when: 
+    - groups['workStreamServers'] | length > 0
+    - ansible_os_family == "Debian"
+    - inventory_hostname in groups["dbsConnectorServers"][0]
+    - "'patroni' in patroni_check_rhel.stdout"
+  tags:
+    - db-connectors-bootstrap
+
 ### If Patroni is not installed 
 
 - name: Manage Postgres password (Standard)
@@ -291,3 +330,16 @@
     - "'patroni' not in patroni_check_rhel.stdout"
   tags:
       - db-connectors-bootstrap
+
+- name: run carbonio-ws-collaboration-db Bootstrap
+  environment:
+    PGPASSWORD: "{{ carbonio_postgres_password }}"
+  become: true
+  command: /usr/bin/carbonio-ws-collaboration-db-bootstrap carbonio_adm 127.0.0.1
+  when: 
+    - groups['workStreamServers'] | length > 0
+    - ansible_os_family == "Debian"
+    - inventory_hostname in groups["dbsConnectorServers"][0]
+    - "'patroni' not in patroni_check_rhel.stdout"
+  tags:
+    - db-connectors-bootstrap

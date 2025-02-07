@@ -1,0 +1,54 @@
+# SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
+---
+- name: Check if Message Broker service is present in Consul
+  become: true
+  shell: >
+    consul catalog services | grep -q {{ item }}
+    && echo installed
+    || echo absent
+  with_items: "{{ message_broker_packages }}"
+  register: check_services
+  changed_when: false
+  when:
+    - inventory_hostname in groups['masterDirectoryServers'][0]
+  tags:
+    - install-carbonio-message-broker
+
+- name: Install Message Broker if absent [Ubuntu]
+  become: true
+  apt:
+    name: "{{ item.item }}"
+    state: present
+  with_items: "{{ check_services.results }}"
+  when:
+    - ansible_os_family == "Debian"
+    - inventory_hostname in groups['masterDirectoryServers'][0]
+    - item.stdout == "absent"
+  tags:
+    - install-carbonio-message-broker
+
+- name: Install Message Broker if absent [RHEL]
+  become: true
+  yum:
+    name: "{{ item.item }}"
+    state: present
+  with_items: "{{ check_services.results }}"
+  when:
+    - ansible_os_family in ["RedHat", "CentOS"]
+    - inventory_hostname in groups['masterDirectoryServers'][0]
+    - item.stdout == "absent"
+  tags:
+    - install-carbonio-message-broker
+
+- name: Debug message if Message Broker is already installed
+  debug:
+    msg: "Message Broker is already installed"
+  with_items: "{{ check_services.results }}"
+  when:
+    - inventory_hostname in groups['masterDirectoryServers'][0]
+    - item.stdout == "installed"
+  tags:
+    - install-carbonio-message-broker

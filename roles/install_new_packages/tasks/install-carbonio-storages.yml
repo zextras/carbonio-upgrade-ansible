@@ -1,0 +1,54 @@
+# SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
+---
+- name: Check if carbonio-storages service is present in Consul
+  become: true
+  shell: >
+    consul catalog services | grep -q {{ item }}
+    && echo installed
+    || echo absent
+  with_items: "{{ carbonio_storages_packages }}"
+  register: check_services
+  changed_when: false
+  when:
+    - inventory_hostname in groups['filesServers']
+  tags:
+    - install-carbonio-storages
+
+- name: Install carbonio-storages if not found in Consul [Ubuntu]
+  become: true
+  apt:
+    name: "{{ item.item }}"
+    state: present
+  with_items: "{{ check_services.results }}"
+  when:
+    - ansible_os_family == "Debian"
+    - inventory_hostname in groups['filesServers']
+    - item.stdout == "absent"
+  tags:
+    - install-carbonio-storages
+
+- name: Install carbonio-storages if not found in Consul [RHEL]
+  become: true
+  yum:
+    name: "{{ item.item }}"
+    state: present
+  with_items: "{{ check_services.results }}"
+  when:
+    - ansible_os_family in ["RedHat", "CentOS"]
+    - inventory_hostname in groups['filesServers']
+    - item.stdout == "absent"
+  tags:
+    - install-carbonio-storages
+
+- name: Debug message for already installed carbonio-storages
+  debug:
+    msg: "carbonio-storages is already installed"
+  with_items: "{{ check_services.results }}"
+  when:
+    - inventory_hostname in groups['filesServers']
+    - item.stdout == "installed"
+  tags:
+    - install-carbonio-storages

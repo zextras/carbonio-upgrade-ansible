@@ -9,5 +9,7 @@
 - import_tasks: install-carbonio-storages.yml
 - import_tasks: install-carbonio-user-management.yml
 - import_tasks: install-carbonio-catalog.yml
+- import_tasks: install-carbonio-search-ui.yml
+- import_tasks: install-carbonio-syslog.yml
 - import_tasks: install-db-connectors.yml
 - import_tasks: remove-unneeded-packages.yml

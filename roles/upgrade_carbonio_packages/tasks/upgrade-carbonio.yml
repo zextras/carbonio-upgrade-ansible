@@ -59,6 +59,31 @@
   debug:
     msg: "{{ pkgr }}"
 
+- name: Gather package facts
+  ansible.builtin.package_facts:
+    manager: auto
+  when: inventory_hostname in groups['dbsConnectorServers'] or inventory_hostname in groups['applicationServers']
+
+- name: Set fact with carbonio-core version if installed
+  set_fact:
+    carbonio_core_version: "{{ ansible_facts.packages['carbonio-core'][0].version }}"
+  when: 
+    - "'carbonio-core' in ansible_facts.packages"
+    - inventory_hostname in groups['dbsConnectorServers'] or inventory_hostname in groups['applicationServers']
+
+- name: Display installed carbonio-core version
+  debug:
+    msg: "Installed carbonio-core version: {{ carbonio_core_version | default('Package not installed') }}"
+  when: inventory_hostname in groups['dbsConnectorServers'] or inventory_hostname in groups['applicationServers']
+
+- name: Stop carbonio using zmcontrol if carbonio-core version is less than 4.2.0
+  ansible.builtin.command: zmcontrol stop
+  become: yes
+  become_user: zextras
+  when: 
+    - carbonio_core_version is defined and (carbonio_core_version is version('4.2', '<'))
+    - inventory_hostname in groups['dbsConnectorServers'] or inventory_hostname in groups['applicationServers']
+      
 - name: Update all packages to their latest version
   ansible.builtin.apt:
     upgrade: full

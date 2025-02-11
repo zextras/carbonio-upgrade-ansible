@@ -76,8 +76,8 @@
         | regex_replace('^carbonio-core/[^ ]+ ([^ ]+).*', '\\1')
       }}
   when:
-    - (apt_installed.stdout_lines | select('match', '^carbonio-core/') | list) | length > 0
     - inventory_hostname in groups['dbsConnectorServers'] or inventory_hostname in groups['applicationServers']
+    - (apt_installed.stdout_lines | select('match', '^carbonio-core/') | list) | length > 0
 
 - name: Display installed carbonio-core version
   debug:

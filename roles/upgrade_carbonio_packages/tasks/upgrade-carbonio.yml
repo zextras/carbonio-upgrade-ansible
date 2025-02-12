@@ -64,33 +64,42 @@
   register: apt_installed
   changed_when: false
   when: inventory_hostname in groups['dbsConnectorServers'] or inventory_hostname in groups['applicationServers']
+  tags:
+    - ugrade-carbonio
+
+- name: Display the raw output of apt_installed.stdout
+  debug:
+    msg: "{{ apt_installed.stdout }}"
+  when: inventory_hostname in groups['dbsConnectorServers'] or inventory_hostname in groups['applicationServers']
 
 - name: Set fact with carbonio-core version if installed
   set_fact:
-    carbonio_core_version: >-
-      {{
-        (apt_installed.stdout_lines
-          | select('match', '^carbonio-core/')
-          | list
-        )[0]
-        | regex_replace('^carbonio-core/[^ ]+ ([^ ]+).*', '\\1')
-      }}
+#    carbonio_core_version: "{{ apt_installed.stdout | regex_search('(?m)^carbonio-core/\\S+\\s+(\\S+)') }}"
+    carbonio_core_version: "{{ (apt_installed.stdout | regex_findall('(?m)^carbonio-core/\\S+\\s+(\\S+)'))[0] }}"
   when:
     - inventory_hostname in groups['dbsConnectorServers'] or inventory_hostname in groups['applicationServers']
     - (apt_installed.stdout_lines | select('match', '^carbonio-core/') | list) | length > 0
+  tags:
+    - ugrade-carbonio
 
 - name: Display installed carbonio-core version
   debug:
     msg: "Installed carbonio-core version: {{ carbonio_core_version | default('Package not installed') }}"
   when: inventory_hostname in groups['dbsConnectorServers'] or inventory_hostname in groups['applicationServers']
+  tags:
+    - ugrade-carbonio
 
-- name: Stop carbonio using zmcontrol if carbonio-core version is less than 4.2.0
-  command: zmcontrol stop
-  become: yes
+- name: Stop application service if carbonio-core version is less than 4.2.0
+  become: true
+  become_method: su
   become_user: zextras
-  when:
+  command: '/opt/zextras/bin/zmmailboxdctl stop'
+  when: 
     - inventory_hostname in groups['dbsConnectorServers'] or inventory_hostname in groups['applicationServers']
-    - carbonio_core_version is defined and (carbonio_core_version is version('4.2', '<'))      
+    - carbonio_core_version is defined and (carbonio_core_version is version('4.2', '<'))
+  register: appserver_status
+  tags:
+    - ugrade-carbonio
 
 - name: Update all packages to their latest version
   ansible.builtin.apt:

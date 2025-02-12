@@ -67,14 +67,8 @@
   tags:
     - ugrade-carbonio
 
-- name: Display the raw output of apt_installed.stdout
-  debug:
-    msg: "{{ apt_installed.stdout }}"
-  when: inventory_hostname in groups['dbsConnectorServers'] or inventory_hostname in groups['applicationServers']
-
 - name: Set fact with carbonio-core version if installed
   set_fact:
-#    carbonio_core_version: "{{ apt_installed.stdout | regex_search('(?m)^carbonio-core/\\S+\\s+(\\S+)') }}"
     carbonio_core_version: "{{ (apt_installed.stdout | regex_findall('(?m)^carbonio-core/\\S+\\s+(\\S+)'))[0] }}"
   when:
     - inventory_hostname in groups['dbsConnectorServers'] or inventory_hostname in groups['applicationServers']
@@ -99,7 +93,15 @@
     - carbonio_core_version is defined and (carbonio_core_version is version('4.2', '<'))
   tags:
     - ugrade-carbonio
-    - stop-services
+
+- name: Wait for 30 seconds to stop carbonio before the upgrade
+  ansible.builtin.pause:
+    seconds: 30
+  when: 
+    - inventory_hostname in groups['dbsConnectorServers'] or inventory_hostname in groups['applicationServers']
+    - carbonio_core_version is defined and (carbonio_core_version is version('4.2', '<'))
+  tags:
+    - ugrade-carbonio
 
 - name: Update all packages to their latest version
   ansible.builtin.apt:

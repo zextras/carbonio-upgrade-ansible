@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 * Added the carbonio-search-ui package
 * Implemented Consul-side checks for packages (carbonio-catalog, carbonio-storages, carbonio-user-management, carbonio-message-broker) added in previous versions and installed them if missing
 * Added automatic installation of Proxy packages if not already installed
+* Added a check for the presence of the [workStreamServers] group in the inventory
 
 
 ### Bug Fixes

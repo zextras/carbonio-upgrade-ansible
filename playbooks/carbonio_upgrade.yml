@@ -24,6 +24,7 @@
   gather_facts: true
   roles:
      - ../roles/upgrade_carbonio_packages
+     - ../roles/install_new_packages
      - ../roles/post_carbonio_packages_upgrade
 
 # Upgrade all dbsConnectorServers, db bootstrap it's executed only on first
@@ -36,6 +37,15 @@
      - ../roles/install_new_packages
      - ../roles/post_carbonio_packages_upgrade
 
+# Upgrade others applicationServers exept dbsConnectorServers
+- hosts: applicationServers, !dbsConnectorServers 
+  serial: 1
+  order: inventory
+  gather_facts: true
+  roles:
+     - ../roles/upgrade_carbonio_packages
+     - ../roles/post_carbonio_packages_upgrade
+
 # Fix packages
 - hosts: filesServers
   order: inventory
@@ -45,8 +55,16 @@
      - ../roles/install_new_packages
      - ../roles/post_carbonio_packages_upgrade
 
+- hosts: proxyServers
+  order: inventory
+  gather_facts: true
+  roles:
+     - ../roles/upgrade_carbonio_packages
+     - ../roles/install_new_packages
+     - ../roles/post_carbonio_packages_upgrade
+
 # Upgrade others VMs except consul servers and db-connectors
-- hosts: all, !serviceDiscoverServers, !masterDirectoryServers, !replicaDirectoryServers, !dbsConnectorServers, !filesServers
+- hosts: all, !serviceDiscoverServers, !masterDirectoryServers, !replicaDirectoryServers, !dbsConnectorServers,!applicationServers, !filesServers, !proxyServers
   order: inventory
   gather_facts: true
   roles:

@@ -59,6 +59,61 @@
   debug:
     msg: "{{ pkgr }}"
 
+- name: Get list of installed packages via apt list --installed
+  shell: apt list --installed 2>/dev/null
+  register: apt_installed
+  changed_when: false
+  when: inventory_hostname in groups['dbsConnectorServers'] or inventory_hostname in groups['applicationServers']
+  tags:
+    - ugrade-carbonio
+
+- name: Set fact with carbonio-core version if installed
+  set_fact:
+    carbonio_core_version: "{{ (apt_installed.stdout | regex_findall('(?m)^carbonio-core/\\S+\\s+(\\S+)'))[0] }}"
+  when:
+    - inventory_hostname in groups['dbsConnectorServers'] or inventory_hostname in groups['applicationServers']
+    - (apt_installed.stdout_lines | select('match', '^carbonio-core/') | list) | length > 0
+  tags:
+    - ugrade-carbonio
+
+- name: Display installed carbonio-core version
+  debug:
+    msg: "Installed carbonio-core version: {{ carbonio_core_version | default('Package not installed') }}"
+  when: inventory_hostname in groups['dbsConnectorServers'] or inventory_hostname in groups['applicationServers']
+  tags:
+    - ugrade-carbonio
+
+- name: Restart carbonio services if carbonio-core version is less than 4.2.0
+  become: true
+  become_method: su
+  become_user: zextras
+  command: '/opt/zextras/bin/zmcontrol restart'
+  when: 
+    - inventory_hostname in groups['dbsConnectorServers'] or inventory_hostname in groups['applicationServers']
+    - carbonio_core_version is defined and (carbonio_core_version is version('4.2', '<'))
+  tags:
+    - ugrade-carbonio
+
+- name: Wait for 20 seconds for restart
+  ansible.builtin.pause:
+    seconds: 20
+  when: 
+    - inventory_hostname in groups['dbsConnectorServers'] or inventory_hostname in groups['applicationServers']
+    - carbonio_core_version is defined and (carbonio_core_version is version('4.2', '<'))
+  tags:
+    - ugrade-carbonio
+
+- name: Stop carbonio services if carbonio-core version is less than 4.2.0
+  become: true
+  become_method: su
+  become_user: zextras
+  command: '/opt/zextras/bin/zmcontrol stop'
+  when: 
+    - inventory_hostname in groups['dbsConnectorServers'] or inventory_hostname in groups['applicationServers']
+    - carbonio_core_version is defined and (carbonio_core_version is version('4.2', '<'))
+  tags:
+    - ugrade-carbonio
+
 - name: Update all packages to their latest version
   ansible.builtin.apt:
     upgrade: full

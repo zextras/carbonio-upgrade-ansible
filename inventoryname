@@ -30,6 +30,9 @@
 [videoServers]
 #hostname public_ip_address=x.y.z.t
 
+[workStreamServers]
+#This is only for a server upgrade if it was installed 
+
 [prometheusServers]
 
 [syslogServer]

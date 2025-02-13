@@ -98,7 +98,7 @@
         - upgrade-carbonio
 
   when:
-    - ansible_os_family == 'RedHat'
+    - ansible_os_family in ["RedHat", "CentOS"]
     - inventory_hostname in groups['dbsConnectorServers'] or inventory_hostname in groups['applicationServers']
 
 #Common tasks

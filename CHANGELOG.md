@@ -14,7 +14,8 @@ All notable changes to this project will be documented in this file.
 * Added automatic installation of Proxy packages if not already installed
 
 
-
+### Bug Fixes
+* Added check if /etc/carbonio exists before saving this
 
 # Changelog
 

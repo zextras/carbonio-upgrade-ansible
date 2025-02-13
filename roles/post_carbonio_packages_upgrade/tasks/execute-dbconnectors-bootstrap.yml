@@ -175,7 +175,6 @@
     - db-connectors-bootstrap
 
 ### RHEL
-
 - name: Check if patroni is installed [RHEL] 24.9 -> 24.12 (Standard)
   become: true
   shell: rpm -qa 2>/dev/null | grep -w '^patroni'

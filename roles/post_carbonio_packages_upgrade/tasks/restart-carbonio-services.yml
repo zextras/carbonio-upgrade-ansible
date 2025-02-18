@@ -10,7 +10,7 @@
 #  5 start service-discover agent, all sidecars, proxyServers
 #  6 start service-discover agent, all sidecars, mtaServers
 
-- name: Check if patroni is installed (Debian) 24.9 -> 24.12
+- name: Check if patroni is installed (Debian) 24.9 -> 25.3.0
   become: true
   shell: apt list --installed 2>/dev/null | grep -w '^patroni'
   register: patroni_check_debian
@@ -51,7 +51,7 @@
     - restart-carbonio-services
     - postgresServers
 
-- name: Check if patroni is installed [RHEL] 24.9 -> 24.12
+- name: Check if patroni is installed [RHEL] 24.9 -> 25.3.0
   become: true
   shell: rpm -qa 2>/dev/null | grep -w '^patroni'
   register: patroni_check_rhel

@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 ---
-- name: Check if patroni is installed (Debian) 24.9 -> 24.12
+- name: Check if patroni is installed (Debian) 24.9 -> 25.3.0
   become: true
   shell: apt list --installed 2>/dev/null | grep -w '^patroni'
   register: patroni_check_debian
@@ -14,7 +14,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Check if pgpool is installed (Debian) 24.9 -> 24.12
+- name: Check if pgpool is installed (Debian) 24.9 -> 25.3.0
   become: true
   shell: apt list --installed 2>/dev/null | grep -w '^pgpool2'
   register: pgpool_check_debian
@@ -24,7 +24,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Disable pgpool service if installed (Debian) 24.9 -> 24.12
+- name: Disable pgpool service if installed (Debian) 24.9 -> 25.3.0
   become: true
   systemd:
     name: pgpool2
@@ -36,7 +36,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Uninstall pgpool package if installed (Debian) 24.9 -> 24.12
+- name: Uninstall pgpool package if installed (Debian) 24.9 -> 25.3.0
   become: true
   apt:
     name: pgpool2
@@ -48,7 +48,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Check if carbonio-prometheus-pgpool-exporter is installed (Debian) 24.9 -> 24.12
+- name: Check if carbonio-prometheus-pgpool-exporter is installed (Debian) 24.9 -> 25.3.0
   become: true
   shell: apt list --installed 2>/dev/null | grep -w '^carbonio-prometheus-pgpool-exporter' 
   register: pgpool_exporter_check_debian
@@ -58,7 +58,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Disable carbonio-prometheus-pgpool-exporter service if installed (Debian) 24.9 -> 24.12
+- name: Disable carbonio-prometheus-pgpool-exporter service if installed (Debian) 24.9 -> 25.3.0
   become: true
   systemd:
     name: carbonio-prometheus-pgpool-exporter
@@ -70,7 +70,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Uninstall carbonio-prometheus-pgpool-exporter package if installed (Debian) 24.9 -> 24.12
+- name: Uninstall carbonio-prometheus-pgpool-exporter package if installed (Debian) 24.9 -> 25.3.0
   become: true
   apt:
     name: carbonio-prometheus-pgpool-exporter
@@ -82,7 +82,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Disable mailbox db connector (Debian) 24.9 -> 24.12
+- name: Disable mailbox db connector (Debian) 24.9 -> 25.3.0
   become: true
   systemd:
     name: "{{ item }}"
@@ -97,7 +97,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Remove mailbox db connector packages (Debian) 24.9 -> 24.12
+- name: Remove mailbox db connector packages (Debian) 24.9 -> 25.3.0
   become: true
   apt: 
     name: "{{ item }}"
@@ -112,7 +112,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Disable files db connector (Debian) 24.9 -> 24.12
+- name: Disable files db connector (Debian) 24.9 -> 25.3.0
   become: true
   systemd:
     name: "{{ item }}"
@@ -128,7 +128,7 @@
   tags:
     - remove-carbonio-dbconnectors
     
-- name: Remove files db connector packages (Debian) 24.9 -> 24.12
+- name: Remove files db connector packages (Debian) 24.9 -> 25.3.0
   become: true
   apt: 
     name: "{{ item }}"
@@ -144,7 +144,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Disable docs db connector (Debian) 24.9 -> 24.12
+- name: Disable docs db connector (Debian) 24.9 -> 25.3.0
   become: true
   systemd:
     name: "{{ item }}"
@@ -160,7 +160,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Remove docs db connector packages (Debian) 24.9 -> 24.12
+- name: Remove docs db connector packages (Debian) 24.9 -> 25.3.0
   become: true
   apt: 
     name: "{{ item }}"
@@ -176,7 +176,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Disable tasks db connector (Debian) 24.9 -> 24.12
+- name: Disable tasks db connector (Debian) 24.9 -> 25.3.0
   become: true
   systemd:
     name: "{{ item }}"
@@ -192,7 +192,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Remove tasks db connector packages (Debian) 24.9 -> 24.12
+- name: Remove tasks db connector packages (Debian) 24.9 -> 25.3.0
   become: true
   apt: 
     name: "{{ item }}"
@@ -233,7 +233,7 @@
 
 #RHEL
 
-- name: Check if patroni is installed [RHEL] 24.9 -> 24.12
+- name: Check if patroni is installed [RHEL] 24.9 -> 25.3.0
   become: true
   shell: rpm -qa 2>/dev/null | grep -w '^patroni'
   register: patroni_check_rhel
@@ -244,7 +244,7 @@
   tags:
     - install-carbonio-dbconnectors
 
-- name: Check if pgpool is installed [RHEL] 24.9 -> 24.12
+- name: Check if pgpool is installed [RHEL] 24.9 -> 25.3.0
   become: true
   shell: rpm -qa 2>/dev/null | grep -w '^pgpool-II'
   register: pgpool_check_rhel
@@ -254,7 +254,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Disable pgpool service if installed [RHEL] 24.9 -> 24.12
+- name: Disable pgpool service if installed [RHEL] 24.9 -> 25.3.0
   become: true
   systemd:
     name: pgpool-II
@@ -266,7 +266,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Uninstall pgpool package if installed [RHEL] 24.9 -> 24.12
+- name: Uninstall pgpool package if installed [RHEL] 24.9 -> 25.3.0
   become: true
   yum:
     name: pgpool-II
@@ -277,7 +277,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Remove pgpool configuration files [RHEL] 24.9 -> 24.12
+- name: Remove pgpool configuration files [RHEL] 24.9 -> 25.3.0
   become: true
   file:
     path: /etc/pgpool-II
@@ -288,7 +288,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Check if carbonio-prometheus-pgpool-exporter is installed [RHEL] 24.9 -> 24.12
+- name: Check if carbonio-prometheus-pgpool-exporter is installed [RHEL] 24.9 -> 25.3.0
   become: true
   shell: rpm -qa 2>/dev/null | grep -w '^carbonio-prometheus-pgpool-exporter'
   register: pgpool_exporter_check_rhel
@@ -298,7 +298,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Disable carbonio-prometheus-pgpool-exporter service if installed [RHEL] 24.9 -> 24.12 24.9 -> 24.12
+- name: Disable carbonio-prometheus-pgpool-exporter service if installed [RHEL] 24.9 -> 25.3.0 24.9 -> 25.3.0
   become: true
   systemd:
     name: carbonio-prometheus-pgpool-exporter
@@ -310,7 +310,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Uninstall carbonio-prometheus-pgpool-exporter package if installed [RHEL] 24.9 -> 24.12
+- name: Uninstall carbonio-prometheus-pgpool-exporter package if installed [RHEL] 24.9 -> 25.3.0
   become: true
   package:
     name: carbonio-prometheus-pgpool-exporter
@@ -321,7 +321,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Disable mailbox db connector [RHEL] 24.9 -> 24.12
+- name: Disable mailbox db connector [RHEL] 24.9 -> 25.3.0
   become: true
   systemd:
     name: "{{ item }}"
@@ -337,7 +337,7 @@
     - remove-carbonio-dbconnectors
 
 
-- name: Remove mailbox db connector packages [RHEL] 24.9 -> 24.12
+- name: Remove mailbox db connector packages [RHEL] 24.9 -> 25.3.0
   become: true
   yum:
     name: "{{ item }}"
@@ -351,7 +351,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Disable files db connector [RHEL] 24.9 -> 24.12
+- name: Disable files db connector [RHEL] 24.9 -> 25.3.0
   become: true
   systemd:
     name: "{{ item }}"
@@ -367,7 +367,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Remove files db connector packages [RHEL] 24.9 -> 24.12
+- name: Remove files db connector packages [RHEL] 24.9 -> 25.3.0
   become: true
   yum:
     name: "{{ item }}"
@@ -382,7 +382,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Disable docs db connector [RHEL] 24.9 -> 24.12
+- name: Disable docs db connector [RHEL] 24.9 -> 25.3.0
   become: true
   systemd:
     name: "{{ item }}"
@@ -398,7 +398,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Remove docs db connector packages [RHEL] 24.9 -> 24.12
+- name: Remove docs db connector packages [RHEL] 24.9 -> 25.3.0
   become: true
   yum:
     name: "{{ item }}"
@@ -413,7 +413,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Disable tasks db connector [RHEL] 24.9 -> 24.12
+- name: Disable tasks db connector [RHEL] 24.9 -> 25.3.0
   become: true
   systemd:
     name: "{{ item }}"
@@ -429,7 +429,7 @@
   tags:
     - remove-carbonio-dbconnectors
 
-- name: Remove tasks db connector packages [RHEL] 24.9 -> 24.12
+- name: Remove tasks db connector packages [RHEL] 24.9 -> 25.3.0
   become: true
   yum:
     name: "{{ item }}"

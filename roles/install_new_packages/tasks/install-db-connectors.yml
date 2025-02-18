@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 ---
-- name: Check if patroni is installed (Debian) 24.9 -> 24.12
+- name: Check if patroni is installed (Debian) 24.9 -> 25.3.0
   become: true
   shell: apt list --installed 2>/dev/null | grep -w '^patroni'
   register: patroni_check_debian
@@ -13,7 +13,7 @@
   tags:
     - install-carbonio-dbconnectors
 
-- name: Check if pgpool is installed Ubuntu 24.9 -> 24.12
+- name: Check if pgpool is installed Ubuntu 24.9 -> 25.3.0
   become: true
   shell: apt list --installed 2>/dev/null | grep -w '^pgpool2'
   register: pgpool_check_debian
@@ -24,7 +24,7 @@
   tags:
     - install-carbonio-dbconnectors
 
-- name: Install mailbox db connector Ubuntu 24.9 -> 24.12
+- name: Install mailbox db connector Ubuntu 24.9 -> 25.3.0
   become: true
   apt: name={{ item }} state=present
   with_items:
@@ -36,7 +36,7 @@
   tags:
     - install-carbonio-dbconnectors
     
-- name: Install files db connector Ubuntu 24.9 -> 24.12
+- name: Install files db connector Ubuntu 24.9 -> 25.3.0
   become: true
   apt: name={{ item }} state=present
   with_items:
@@ -49,7 +49,7 @@
   tags:
     - install-carbonio-dbconnectors
     
-- name: Install docs db connector Ubuntu 24.9 -> 24.12
+- name: Install docs db connector Ubuntu 24.9 -> 25.3.0
   become: true
   apt: name={{ item }} state=present
   with_items:
@@ -62,7 +62,7 @@
   tags:
     - install-carbonio-dbconnectors
 
-- name: Install tasks db connector Ubuntu 24.9 -> 24.12
+- name: Install tasks db connector Ubuntu 24.9 -> 25.3.0
   become: true
   apt: name={{ item }} state=present
   with_items:
@@ -77,7 +77,7 @@
 
 ##### RHEL
 
-- name: Check if patroni is installed [RHEL] 24.9 -> 24.12
+- name: Check if patroni is installed [RHEL] 24.9 -> 25.3.0
   become: true
   shell: rpm -qa 2>/dev/null | grep -w '^patroni'
   register: patroni_check_rhel
@@ -87,7 +87,7 @@
   tags:
     - install-carbonio-dbconnectors
 
-- name: Check if pgpool is installed (RHEL) 24.9 -> 24.12
+- name: Check if pgpool is installed (RHEL) 24.9 -> 25.3.0
   become: true
   shell: rpm -qa 2>/dev/null | grep -w '^pgpool-II'
   register: pgpool_check_rhel
@@ -98,7 +98,7 @@
   tags:
     - install-carbonio-dbconnectors
 
-- name: Install mailbox db connector RHEL 24.9 -> 24.12
+- name: Install mailbox db connector RHEL 24.9 -> 25.3.0
   become: true
   yum:
     name: "{{ item }}"
@@ -113,7 +113,7 @@
   tags:
     - install-carbonio-dbconnectors
 
-- name: Install files db connector RHEL 24.9 -> 24.12
+- name: Install files db connector RHEL 24.9 -> 25.3.0
   become: true
   yum:
     name: "{{ item }}"
@@ -128,7 +128,7 @@
   tags:
     - install-carbonio-dbconnectors
 
-- name: Install docs db connector RHEL 24.9 -> 24.12
+- name: Install docs db connector RHEL 24.9 -> 25.3.0
   become: true
   yum:
     name: "{{ item }}"
@@ -144,7 +144,7 @@
   tags:
     - install-carbonio-dbconnectors
 
-- name: Install tasks db connector RHEL 24.9 -> 24.12
+- name: Install tasks db connector RHEL 24.9 -> 25.3.0
   become: true
   yum:
     name: "{{ item }}"

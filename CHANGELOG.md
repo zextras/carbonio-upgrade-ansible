@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 
 ### Features
-* Introduced support for upgrading WSC installations from previous Carbonio versions
+* Introduced support for upgrading WSC and Notification Push installations from previous Carbonio versions
 * Implemented Carbonio HA upgrade
 * Added validation to ensure inventory password files reside in the same folder as the inventory file
 * Implemented Consul-side checks for packages (carbonio-catalog, carbonio-storages, carbonio-user-management, carbonio-message-broker) added in previous versions and installed them if missing

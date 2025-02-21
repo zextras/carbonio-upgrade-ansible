@@ -284,7 +284,7 @@
   command: /usr/bin/carbonio-ws-collaboration-db-bootstrap carbonio_adm 127.0.0.1
   when: 
     - groups['workStreamServers'] | length > 0 and groups['dbsConnectorServers'] | length > 0
-    - ansible_os_family == "Debian"
+    - ansible_os_family == "RedHat" 
     - inventory_hostname in groups["dbsConnectorServers"][0]
     - "'patroni' in patroni_check_rhel.stdout"
   tags:
@@ -297,7 +297,7 @@
   command: /usr/bin/carbonio-notification-push-db-bootstrap carbonio_adm 127.0.0.1
   when: 
     - groups['workStreamServers'] | length > 0 and groups['dbsConnectorServers'] | length > 0
-    - ansible_os_family == "Debian"
+    - ansible_os_family == "RedHat" 
     - inventory_hostname in groups["dbsConnectorServers"][0]
     - "'patroni' in patroni_check_rhel.stdout"
   tags:
@@ -376,7 +376,7 @@
   command: /usr/bin/carbonio-ws-collaboration-db-bootstrap carbonio_adm 127.0.0.1
   when: 
     - groups['workStreamServers'] | length > 0
-    - ansible_os_family == "Debian"
+    - ansible_os_family == "RedHat" 
     - inventory_hostname in groups["postgresServers"][0]
     - "'patroni' not in patroni_check_rhel.stdout"
   tags:
@@ -389,7 +389,7 @@
   command: /usr/bin/carbonio-notification-push-db-bootstrap carbonio_adm 127.0.0.1
   when: 
     - groups['workStreamServers'] | length > 0
-    - ansible_os_family == "Debian"
+    - ansible_os_family == "RedHat" 
     - inventory_hostname in groups["postgresServers"][0]
     - "'patroni' not in patroni_check_rhel.stdout"
   tags:

@@ -300,16 +300,27 @@
     - restart-carbonio-service
     - previewServers
 
-- name: Restart video carbonio services
+- name: Get all videoserver services
+  become: true
+  shell:
+    cmd: "set -o pipefail && systemctl list-unit-files --state=enabled | awk '/videoserver/ {print $1}'"
+    executable: /bin/bash
+  register: videoserver_services_in_memory
+  changed_when: false
+  when: inventory_hostname in groups["videoServers"]
+  tags:
+    - restart-videoserver-services
+    - videoServers
+    
+- name: Restart carbonio videoservers
   become: true
   ansible.builtin.service:
     name: "{{ item }}"
     state: restarted
   when: inventory_hostname in groups["videoServers"]
-  loop:
-    - videoserver.service
+  loop: "{{ videoserver_services_in_memory.stdout_lines }}"
   tags:
-    - restart-carbonio-service
+    - restart-videoserver-services
     - videoServers
 
 # Remove restart file on all VMs

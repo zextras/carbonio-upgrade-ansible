@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-only
 ---
-  - name: Install Notification Push on WSC Server [Ubuntu]
+  - name: Install Notification Push on WSC Server [Ubuntu] 24.12 -> 25.3.0
     become: true
     apt: name={{ item }} state=present
     with_items:
@@ -12,7 +12,7 @@
       - install-carbonio-notification-push
 
 ### RHEL
-  - name: Install Notification Push on WSC Server [RHEL]
+  - name: Install Notification Push on WSC Server [RHEL] 24.12 -> 25.3.0
     become: true
     yum: name={{ item }} state=present
     with_items:

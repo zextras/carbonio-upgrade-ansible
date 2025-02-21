@@ -174,7 +174,7 @@
   tags:
       - db-connectors-bootstrap
 
-- name: run carbonio-ws-collaboration-db Bootstrap
+- name: run carbonio-ws-collaboration-db Bootstrap (Standard)
   environment:
     PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
@@ -182,7 +182,7 @@
   when: 
     - groups['workStreamServers'] | length > 0
     - ansible_os_family == "Debian"
-    - inventory_hostname in groups["dbsConnectorServers"][0]
+    - inventory_hostname in groups["postgresServers"][0]
     - "'patroni' not in patroni_check_debian.stdout"
   tags:
     - db-connectors-bootstrap
@@ -195,7 +195,7 @@
   when: 
     - groups['workStreamServers'] | length > 0
     - ansible_os_family == "Debian"
-    - inventory_hostname in groups["dbsConnectorServers"][0]
+    - inventory_hostname in groups["postgresServers"][0]
     - "'patroni' not in patroni_check_debian.stdout"
   tags:
     - db-connectors-bootstrap
@@ -377,7 +377,7 @@
   when: 
     - groups['workStreamServers'] | length > 0
     - ansible_os_family == "Debian"
-    - inventory_hostname in groups["dbsConnectorServers"][0]
+    - inventory_hostname in groups["postgresServers"][0]
     - "'patroni' not in patroni_check_rhel.stdout"
   tags:
     - db-connectors-bootstrap
@@ -390,7 +390,7 @@
   when: 
     - groups['workStreamServers'] | length > 0
     - ansible_os_family == "Debian"
-    - inventory_hostname in groups["dbsConnectorServers"][0]
+    - inventory_hostname in groups["postgresServers"][0]
     - "'patroni' not in patroni_check_rhel.stdout"
   tags:
     - db-connectors-bootstrap

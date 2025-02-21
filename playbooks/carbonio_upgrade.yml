@@ -55,6 +55,7 @@
      - ../roles/install_new_packages
      - ../roles/post_carbonio_packages_upgrade
 
+#Upgrade proxy servers
 - hosts: proxyServers
   order: inventory
   gather_facts: true
@@ -63,8 +64,17 @@
      - ../roles/install_new_packages
      - ../roles/post_carbonio_packages_upgrade
 
+# Upgrade WSC
+- hosts: workStreamServers
+  order: inventory
+  gather_facts: true
+  roles:
+     - ../roles/upgrade_carbonio_packages
+     - ../roles/install_new_packages
+     - ../roles/post_carbonio_packages_upgrade
+
 # Upgrade others VMs except consul servers and db-connectors
-- hosts: all, !serviceDiscoverServers, !masterDirectoryServers, !replicaDirectoryServers, !dbsConnectorServers,!applicationServers, !filesServers, !proxyServers
+- hosts: all, !serviceDiscoverServers, !masterDirectoryServers, !replicaDirectoryServers, !dbsConnectorServers,!applicationServers, !filesServers, !proxyServers, !workStreamServers
   order: inventory
   gather_facts: true
   roles:

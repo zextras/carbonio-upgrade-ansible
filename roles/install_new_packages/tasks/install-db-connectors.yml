@@ -75,6 +75,21 @@
   tags:
     - install-carbonio-dbconnectors
 
+- name: Install notification push db connector Ubuntu 24.12 -> 25.3.0
+  become: true
+  apt: name={{ item }} state=present
+  with_items:
+    - "{{ notification_push_dbconnectors_packages }}"
+  when: 
+    - ansible_os_family == "Debian"
+    - (
+        (inventory_hostname in groups['postgresServers'][0] and groups['dbsConnectorServers'] | length == 0) or 
+        (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'][0] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0])
+      )
+    - groups['workStreamServers'] | length > 0 
+  tags:
+    - install-carbonio-dbconnectors
+
 ##### RHEL
 
 - name: Check if patroni is installed [RHEL] 24.9 -> 25.3.0
@@ -157,5 +172,20 @@
     - "'pgpool-II' in pgpool_check_rhel.stdout"
     - "'patroni' not in patroni_check_rhel.stdout"
     - groups['taskServers'] | length > 0
+  tags:
+    - install-carbonio-dbconnectors
+  
+- name: Install notification push db connector RHEL 24.12 -> 25.3.0
+  become: true
+  yum: name={{ item }} state=present
+  with_items:
+    - "{{ notification_push_dbconnectors_packages }}"
+  when: 
+    - ansible_os_family == "RedHat" or ansible_os_family == "CentOS"
+    - (
+        (inventory_hostname in groups['postgresServers'][0] and groups['dbsConnectorServers'] | length == 0) or 
+        (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'][0] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0])
+      ) 
+    - groups['workStreamServers'] | length > 0 
   tags:
     - install-carbonio-dbconnectors

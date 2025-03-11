@@ -125,3 +125,4 @@
     
   syslog_packages:
     - carbonio-pflogsumm
+    - carbonio-perl-mailtools

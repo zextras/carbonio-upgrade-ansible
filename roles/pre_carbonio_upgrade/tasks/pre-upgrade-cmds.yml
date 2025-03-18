@@ -54,9 +54,17 @@
   tags:
     - pre-upgrade-cmds
 
-- name: Save /etc/carbonio
+- name: Check if /etc/carbonio was created on the server
+  stat:
+    path: /etc/carbonio
+  register: carbonio_dir
+  tags:
+  - pre-upgrade-cmds
+
+- name: Save /etc/carbonio 
   become: true
   become_method: su
-  command: 'rsync  -av /etc/carbonio /bck/{{ ansible_date_time.date }}/etc/'
+  command: "rsync -av /etc/carbonio /bck/{{ ansible_date_time.date }}/etc/"
+  when: carbonio_dir.stat.isdir is defined and carbonio_dir.stat.isdir
   tags:
     - pre-upgrade-cmds

@@ -3,102 +3,117 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 ---
-- name: Check if patroni is installed (Debian) 24.9 -> 24.12
+- name: Check if patroni is installed (Debian) 24.9 -> 25.3.0
   become: true
   shell: apt list --installed 2>/dev/null | grep -w '^patroni'
   register: patroni_check_debian
   failed_when: false
   changed_when: false 
-  when: inventory_hostname in groups["postgresServers"][0] and ansible_os_family == "Debian"
+  when: inventory_hostname in groups["postgresServers"][0] and ansible_os_family == "Debian"  and groups['dbsConnectorServers'] | length > 0
   tags:
     - install-carbonio-dbconnectors
 
-- name: Check if pgpool is installed Ubuntu 24.9 -> 24.12
+- name: Check if pgpool is installed Ubuntu 24.9 -> 25.3.0
   become: true
   shell: apt list --installed 2>/dev/null | grep -w '^pgpool2'
   register: pgpool_check_debian
   failed_when: false
   changed_when: false 
-  when: ansible_os_family == "Debian"
+  when: ansible_os_family == "Debian"  and groups['dbsConnectorServers'] | length > 0
   delegate_to: "{{ groups['dbsConnectorServers'][0] }}"
   tags:
     - install-carbonio-dbconnectors
 
-- name: Install mailbox db connector Ubuntu 24.9 -> 24.12
+- name: Install mailbox db connector Ubuntu 24.9 -> 25.3.0
   become: true
   apt: name={{ item }} state=present
   with_items:
     - "{{ mailbox_dbconnectors_packages }}"
   when: 
-    - ansible_os_family == "Debian" and inventory_hostname in groups["postgresServers"][0]  
+    - ansible_os_family == "Debian" and inventory_hostname in groups["postgresServers"][0] and groups['dbsConnectorServers'] | length > 0
     - "'pgpool2' in pgpool_check_debian.stdout"
     - "'patroni' not in patroni_check_debian.stdout"
   tags:
     - install-carbonio-dbconnectors
     
-- name: Install files db connector Ubuntu 24.9 -> 24.12
+- name: Install files db connector Ubuntu 24.9 -> 25.3.0
   become: true
   apt: name={{ item }} state=present
   with_items:
     - "{{ files_dbconnectors_packages }}"
   when: 
-    - ansible_os_family == "Debian" and inventory_hostname in groups["postgresServers"][0]
+    - ansible_os_family == "Debian" and inventory_hostname in groups["postgresServers"][0] and groups['dbsConnectorServers'] | length > 0
     - "'pgpool2' in pgpool_check_debian.stdout"
     - "'patroni' not in patroni_check_debian.stdout"
     - groups['filesServers'] | length > 0
   tags:
     - install-carbonio-dbconnectors
     
-- name: Install docs db connector Ubuntu 24.9 -> 24.12
+- name: Install docs db connector Ubuntu 24.9 -> 25.3.0
   become: true
   apt: name={{ item }} state=present
   with_items:
     - "{{ docs_dbconnectors_packages }}"
   when: 
-    - ansible_os_family == "Debian" and inventory_hostname in groups["postgresServers"][0]
+    - ansible_os_family == "Debian" and inventory_hostname in groups["postgresServers"][0] and groups['dbsConnectorServers'] | length > 0
     - "'pgpool2' in pgpool_check_debian.stdout"
     - "'patroni' not in patroni_check_debian.stdout"
     - groups['docsServers'] | length > 0 
   tags:
     - install-carbonio-dbconnectors
 
-- name: Install tasks db connector Ubuntu 24.9 -> 24.12
+- name: Install tasks db connector Ubuntu 24.9 -> 25.3.0
   become: true
   apt: name={{ item }} state=present
   with_items:
     - "{{ task_dbconnectors_packages }}"
   when: 
-    - ansible_os_family == "Debian" and inventory_hostname in groups["postgresServers"][0] 
+    - ansible_os_family == "Debian" and inventory_hostname in groups["postgresServers"][0] and groups['dbsConnectorServers'] | length > 0
     - "'pgpool2' in pgpool_check_debian.stdout"
     - "'patroni' not in patroni_check_debian.stdout"
     - groups['taskServers'] | length > 0
   tags:
     - install-carbonio-dbconnectors
 
+- name: Install notification push db connector Ubuntu 24.12 -> 25.3.0
+  become: true
+  apt: name={{ item }} state=present
+  with_items:
+    - "{{ notification_push_dbconnectors_packages }}"
+  when: 
+    - ansible_os_family == "Debian"
+    - (
+        (inventory_hostname in groups['postgresServers'][0] and groups['dbsConnectorServers'] | length == 0) or 
+        (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'][0] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0])
+      )
+    - groups['workStreamServers'] | length > 0 
+  tags:
+    - install-carbonio-dbconnectors
+
 ##### RHEL
 
-- name: Check if patroni is installed [RHEL] 24.9 -> 24.12
+- name: Check if patroni is installed [RHEL] 24.9 -> 25.3.0
   become: true
   shell: rpm -qa 2>/dev/null | grep -w '^patroni'
   register: patroni_check_rhel
   failed_when: false 
   changed_when: false
-  when: ansible_os_family == "RedHat" and inventory_hostname in groups["postgresServers"][0]
+  when: ansible_os_family == "RedHat" and inventory_hostname in groups["postgresServers"][0] and groups['dbsConnectorServers'] | length > 0
   tags:
     - install-carbonio-dbconnectors
 
-- name: Check if pgpool is installed (RHEL) 24.9 -> 24.12
+- name: Check if pgpool is installed (RHEL) 24.9 -> 25.3.0
   become: true
   shell: rpm -qa 2>/dev/null | grep -w '^pgpool-II'
   register: pgpool_check_rhel
   failed_when: false 
   changed_when: false
   delegate_to: "{{ groups['dbsConnectorServers'][0] }}"
-  when: ansible_os_family == "RedHat" 
+  when: ansible_os_family == "RedHat" and groups['dbsConnectorServers'] | length > 0
   tags:
     - install-carbonio-dbconnectors
 
-- name: Install mailbox db connector RHEL 24.9 -> 24.12
+- name: Install mailbox db connector RHEL 24.9 -> 25.3.0
   become: true
   yum:
     name: "{{ item }}"
@@ -106,14 +121,14 @@
   with_items:
     - "{{ mailbox_dbconnectors_packages }}"
   when: 
-    - ansible_os_family == "RedHat" 
+    - ansible_os_family == "RedHat" and groups['dbsConnectorServers'] | length > 0
     - inventory_hostname in groups["postgresServers"][0] 
     - "'pgpool-II' in pgpool_check_rhel.stdout"
     - "'patroni' not in patroni_check_rhel.stdout"
   tags:
     - install-carbonio-dbconnectors
 
-- name: Install files db connector RHEL 24.9 -> 24.12
+- name: Install files db connector RHEL 24.9 -> 25.3.0
   become: true
   yum:
     name: "{{ item }}"
@@ -121,14 +136,14 @@
   with_items:
     - "{{ files_dbconnectors_packages }}"
   when: 
-    - ansible_os_family == "RedHat" and inventory_hostname in groups["postgresServers"][0]
+    - ansible_os_family == "RedHat" and inventory_hostname in groups["postgresServers"][0] and groups['dbsConnectorServers'] | length > 0
     - "'pgpool-II' in pgpool_check_rhel.stdout"
     - "'patroni' not in patroni_check_rhel.stdout"
     - groups['filesServers'] | length > 0
   tags:
     - install-carbonio-dbconnectors
 
-- name: Install docs db connector RHEL 24.9 -> 24.12
+- name: Install docs db connector RHEL 24.9 -> 25.3.0
   become: true
   yum:
     name: "{{ item }}"
@@ -136,7 +151,7 @@
   with_items:
     - "{{ docs_dbconnectors_packages }}"
   when: 
-    - ansible_os_family == "RedHat" 
+    - ansible_os_family == "RedHat" and groups['dbsConnectorServers'] | length > 0
     - inventory_hostname in groups["postgresServers"][0]
     - "'pgpool-II' in pgpool_check_rhel.stdout"
     - "'patroni' not in patroni_check_rhel.stdout"
@@ -144,7 +159,7 @@
   tags:
     - install-carbonio-dbconnectors
 
-- name: Install tasks db connector RHEL 24.9 -> 24.12
+- name: Install tasks db connector RHEL 24.9 -> 25.3.0
   become: true
   yum:
     name: "{{ item }}"
@@ -152,10 +167,25 @@
   with_items:
     - "{{ task_dbconnectors_packages }}"
   when: 
-    - ansible_os_family == "RedHat"
+    - ansible_os_family == "RedHat" and groups['dbsConnectorServers'] | length > 0
     - inventory_hostname in groups["postgresServers"][0]
     - "'pgpool-II' in pgpool_check_rhel.stdout"
     - "'patroni' not in patroni_check_rhel.stdout"
     - groups['taskServers'] | length > 0
+  tags:
+    - install-carbonio-dbconnectors
+  
+- name: Install notification push db connector RHEL 24.12 -> 25.3.0
+  become: true
+  yum: name={{ item }} state=present
+  with_items:
+    - "{{ notification_push_dbconnectors_packages }}"
+  when: 
+    - ansible_os_family == "RedHat" or ansible_os_family == "CentOS"
+    - (
+        (inventory_hostname in groups['postgresServers'][0] and groups['dbsConnectorServers'] | length == 0) or 
+        (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'][0] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0])
+      ) 
+    - groups['workStreamServers'] | length > 0 
   tags:
     - install-carbonio-dbconnectors

@@ -27,7 +27,13 @@
 
   task_dbconnectors_packages:
     - carbonio-tasks-db
-    
+
+  ws_collaboration_dbconnectors_packages:
+    - carbonio-ws-collaboration-db
+
+  notification_push_dbconnectors_packages:
+    - carbonio-notification-push-db
+
   pgpool_packages_ubuntu: 
     - postgresql-client-16
     - pgpool2    
@@ -59,8 +65,9 @@
     - carbonio-admin-ui
     - carbonio-admin-console-ui
     - carbonio-avdb-updater
-      
+
   preview_packages: 
+    - carbonio-docs-editor
     - carbonio-preview
 
   task_packages:
@@ -75,14 +82,31 @@
   
   task_ui_packages:
       - carbonio-tasks-ui
-  
+
+  ws_ui_packages:
+    - carbonio-ws-collaboration-ui
+
   docs_packages: 
     - carbonio-docs-editor
     - carbonio-docs-connector
   
   videoserver_packages: 
-    - carbonio-videoserver
-    - carbonio-videoserver-recorder
+    - carbonio-videoserver-advanced
+    - carbonio-videorecorder
+
+  workstream_packages:
+    - carbonio-message-dispatcher
+    - carbonio-ws-collaboration
+
+  notification_push_packages:
+    - carbonio-notification-push
+    - carbonio-push-connector
+
+  postgres_clent_package_ubuntu:
+    - postgresql-client-16
+
+  postgres_clent_package_rhel:
+    - postgresql16
     
   sda_packages: 
     - service-discover-agent    
@@ -101,3 +125,4 @@
     
   syslog_packages:
     - carbonio-pflogsumm
+    - carbonio-perl-mailtools

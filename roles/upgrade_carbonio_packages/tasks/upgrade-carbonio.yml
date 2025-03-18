@@ -59,6 +59,91 @@
   debug:
     msg: "{{ pkgr }}"
 
+#carbonio-core version check (Ubuntu)
+- block:
+    - name: Get list of installed packages (Debian/Ubuntu)
+      shell: apt list --installed 2>/dev/null
+      register: apt_installed
+      changed_when: false
+      tags:
+        - upgrade-carbonio
+
+    - name: Set fact with carbonio-core version if installed (Debian/Ubuntu)
+      set_fact:
+        carbonio_core_version: "{{ (apt_installed.stdout | regex_findall('(?m)^carbonio-core/\\S+\\s+(\\S+)'))[0] }}"
+      when:
+        - (apt_installed.stdout_lines | select('match', '^carbonio-core/') | list) | length > 0
+      tags:
+        - upgrade-carbonio
+
+  when:
+    - ansible_os_family == 'Debian'
+    - inventory_hostname in groups['dbsConnectorServers'] or inventory_hostname in groups['applicationServers']
+
+#carbonio-core version check (RHEL/Centos)
+- block:
+    - name: Get list of installed packages (RHEL/CentOS)
+      shell: yum list installed 2>/dev/null
+      register: yum_installed
+      changed_when: false
+      tags:
+        - upgrade-carbonio
+
+    - name: Set fact with carbonio-core version if installed (RHEL/CentOS)
+      set_fact:
+        carbonio_core_version: "{{ (yum_installed.stdout | regex_findall('(?m)^carbonio-core\\.\\S+\\s+(\\S+)'))[0] }}"
+      when:
+        - (yum_installed.stdout_lines | select('match', '^carbonio-core\\.') | list) | length > 0
+      tags:
+        - upgrade-carbonio
+
+  when:
+    - ansible_os_family in ["RedHat", "CentOS"]
+    - inventory_hostname in groups['dbsConnectorServers'] or inventory_hostname in groups['applicationServers']
+
+#Common tasks
+- name: Display installed carbonio-core version
+  debug:
+    msg: "Installed carbonio-core version: {{ carbonio_core_version | default('Package not installed') }}"
+  when:
+    - inventory_hostname in groups['dbsConnectorServers'] or inventory_hostname in groups['applicationServers']
+  tags:
+    - upgrade-carbonio
+
+- name: Restart carbonio services if carbonio-core version is less than 4.2.0
+  become: true
+  become_method: su
+  become_user: zextras
+  command: '/opt/zextras/bin/zmcontrol restart'
+  when:
+    - inventory_hostname in groups['dbsConnectorServers'] or inventory_hostname in groups['applicationServers']
+    - carbonio_core_version is defined
+    - carbonio_core_version is version('4.2', '<')
+  tags:
+    - upgrade-carbonio
+
+- name: Wait for 20 seconds for restart
+  ansible.builtin.pause:
+    seconds: 20
+  when:
+    - inventory_hostname in groups['dbsConnectorServers'] or inventory_hostname in groups['applicationServers']
+    - carbonio_core_version is defined
+    - carbonio_core_version is version('4.2', '<')
+  tags:
+    - upgrade-carbonio
+
+- name: Stop carbonio services if carbonio-core version is less than 4.2.0
+  become: true
+  become_method: su
+  become_user: zextras
+  command: '/opt/zextras/bin/zmcontrol stop'
+  when:
+    - inventory_hostname in groups['dbsConnectorServers'] or inventory_hostname in groups['applicationServers']
+    - carbonio_core_version is defined
+    - carbonio_core_version is version('4.2', '<')
+  tags:
+    - upgrade-carbonio
+
 - name: Update all packages to their latest version
   ansible.builtin.apt:
     upgrade: full

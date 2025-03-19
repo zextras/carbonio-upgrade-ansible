@@ -336,5 +336,21 @@
   ansible.builtin.service:
     name: "carbonio"
     state: restarted
+  when: >
+    (ansible_distribution == "Ubuntu" and ansible_distribution_version | regex_search('^22'))
+    or
+    (ansible_distribution == "RedHat" and ansible_distribution_major_version == "8")
   tags:
-    - restart-carbonio-service
+    - restart-carbonio-configd
+
+- name: Restart zmconfigd
+  become: true
+  ansible.builtin.service:
+    name: "carbonio-configd"
+    state: restarted
+  when: >
+    (ansible_distribution == "Ubuntu" and ansible_distribution_version | regex_search('^24'))
+    or
+    (ansible_distribution == "RedHat" and ansible_distribution_major_version == "9")
+  tags:
+    - restart-carbonio-configd

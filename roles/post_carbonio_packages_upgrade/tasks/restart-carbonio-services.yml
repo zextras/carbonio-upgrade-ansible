@@ -198,16 +198,28 @@
   become_method: su
   become_user: zextras
   command: '/opt/zextras/bin/zmcontrol restart'
-  register: appserver_status
-  changed_when: appserver_status.rc == 0
   when: >
+    (ansible_distribution_major_version != "9" or ansible_distribution_major_version != "24") and
     inventory_hostname not in groups["masterDirectoryServers"] and
     inventory_hostname not in groups["replicaDirectoryServers"] and
     restart_zmcontrol_var.stdout | bool
   tags:
     - restart-carbonio-services
-    - applicationServers
 
+- name: Restart carbonio services [Sysd]
+  become: true
+  ansible.builtin.systemd:
+    name: carbonio.target
+    state: restarted
+  when: >
+    (ansible_distribution_major_version == "9" or ansible_distribution_major_version == "24") and
+    inventory_hostname not in groups["masterDirectoryServers"] and
+    inventory_hostname not in groups["replicaDirectoryServers"] and
+    restart_zmcontrol_var.stdout | bool
+  tags:
+    - restart-carbonio-services
+
+    
 # set content for restart file to false. For all VMs except LDAP master and LDAP replica
 - name: Modify restart file
   when: >
@@ -244,9 +256,19 @@
   become_method: su
   become_user: zextras
   command: '/opt/zextras/bin/zmmailboxdctl restart'
-  when: inventory_hostname in groups["applicationServers"]
+  when: inventory_hostname in groups["applicationServers"] and ansible_distribution_major_version != "9" and ansible_distribution_major_version != "24"
   register: appserver_status
   changed_when: appserver_status.rc == 0
+  tags:
+    - restart-carbonio-services
+    - applicationServers
+
+- name: Restart application services [Sysd]
+  become: true
+  ansible.builtin.systemd:
+    name: carbonio-appserver.target
+    state: restarted
+  when: inventory_hostname in groups["applicationServers"] and ansible_distribution_major_version == "9" or ansible_distribution_major_version == "24")
   tags:
     - restart-carbonio-services
     - applicationServers
@@ -259,6 +281,7 @@
   when: inventory_hostname in groups["filesServers"]
   loop:
     - carbonio-files.service
+    - carbonio-storages.service
   tags:
     - restart-carbonio-service
     - filesServers

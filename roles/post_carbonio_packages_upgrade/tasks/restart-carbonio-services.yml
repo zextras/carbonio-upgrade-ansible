@@ -346,6 +346,42 @@
     - restart-videoserver-services
     - videoServers
 
+- name: Restart carbonio-message-dispatcher services
+  become: true
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: restarted
+  when: inventory_hostname in groups["workStreamServers"]
+  loop:
+    - carbonio-message-dispatcher.service
+  tags:
+    - restart-wsc-services
+    - workStreamServers
+
+
+- name: Collect WSC carbonio services
+  become: true
+  shell:
+    cmd: "set -o pipefail && systemctl list-unit-files --state=enabled | awk '/ws/ {print $1}'"
+    executable: /bin/bash
+  register: wsc_services_in_memory
+  changed_when: false
+  when: inventory_hostname in groups["workStreamServers"]
+  tags:
+    - restart-carbonio-service
+    - workStreamServers
+
+- name: Restart carbonio WSC
+  become: true
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: restarted
+  when: inventory_hostname in groups["workStreamServers"]
+  loop: "{{ wsc_services_in_memory.stdout_lines }}"
+  tags:
+    - restart-wsc-services
+    - workStreamServers
+    
 # Remove restart file on all VMs
 - name: Remove restart file
   file:

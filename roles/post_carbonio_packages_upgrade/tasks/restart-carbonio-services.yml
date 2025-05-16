@@ -10,7 +10,7 @@
 #  5 start service-discover agent, all sidecars, proxyServers
 #  6 start service-discover agent, all sidecars, mtaServers
 
-- name: Check if patroni is installed (Debian) 24.9 -> 25.3.0
+- name: Check if patroni is installed (Debian) 24.9 -> 25.6.0
   become: true
   shell: apt list --installed 2>/dev/null | grep -w '^patroni'
   register: patroni_check_debian
@@ -51,7 +51,7 @@
     - restart-carbonio-services
     - postgresServers
 
-- name: Check if patroni is installed [RHEL] 24.9 -> 25.3.0
+- name: Check if patroni is installed [RHEL] 24.9 -> 25.6.0
   become: true
   shell: rpm -qa 2>/dev/null | grep -w '^patroni'
   register: patroni_check_rhel
@@ -199,7 +199,8 @@
   become_user: zextras
   command: '/opt/zextras/bin/zmcontrol restart'
   when: >
-    (ansible_distribution_major_version != "9" or ansible_distribution_major_version != "24") and
+    ansible_distribution_major_version != "9" and 
+    ansible_distribution_major_version != "24" and
     inventory_hostname not in groups["masterDirectoryServers"] and
     inventory_hostname not in groups["replicaDirectoryServers"] and
     restart_zmcontrol_var.stdout | bool
@@ -268,7 +269,7 @@
   ansible.builtin.systemd:
     name: carbonio-appserver.target
     state: restarted
-  when: inventory_hostname in groups["applicationServers"] and ansible_distribution_major_version == "9" or ansible_distribution_major_version == "24")
+  when: inventory_hostname in groups["applicationServers"] and (ansible_distribution_major_version == "9" or ansible_distribution_major_version == "24")
   tags:
     - restart-carbonio-services
     - applicationServers
@@ -394,6 +395,7 @@
   become: true
   ansible.builtin.service:
     name: "carbonio"
-    state: restarted
+    state: restarted  
+  when: ansible_os_family in ["RedHat", "CentOS"] and ansible_distribution_major_version != "9"
   tags:
     - restart-carbonio-service

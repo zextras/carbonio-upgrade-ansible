@@ -9,6 +9,7 @@
   become_user: zextras
   command: '/opt/zextras/bin/zmcontrol status'
   register: zmcontrol_chk_status
+  when: ansible_distribution_major_version != "9" and ansible_distribution_major_version != "24"
   changed_when: false
   tags:
     - check-carbonio-upgrade
@@ -16,6 +17,7 @@
 - name: Debug zmcontrol status
   debug:
     msg: "{{ zmcontrol_chk_status.stdout_lines }}"
+  when: ansible_distribution_major_version != "9" and ansible_distribution_major_version != "24"
 
 - name: Check Carbonio services
   become: true
@@ -70,6 +72,7 @@
   become_user: zextras
   command: '/opt/zextras/bin/zmcontrol -v'
   register: version_chk_version
+  when: ansible_distribution_major_version != "9" and ansible_distribution_major_version != "24"
   changed_when: false
   tags:
     - check-carbonio-upgrade

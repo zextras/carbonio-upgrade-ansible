@@ -71,33 +71,13 @@
   become_method: su
   become_user: zextras
   command: '/opt/zextras/bin/zmcontrol -v'
-  register: version_chk_version_old
-  when: ansible_distribution_major_version != "9" and ansible_distribution_major_version != "24"
+  register: version_chk_version
   changed_when: false
   tags:
     - check-carbonio-upgrade
 
 - name: Debug version output
   debug:
-    msg: "{{ version_chk_version_old.stdout_lines }}"
-  when: ansible_distribution_major_version != "9" and ansible_distribution_major_version != "24"  
-  tags:
-    - check-carbonio-upgrade
-
-- name: Check Carbonio version
-  become: true
-  become_method: su
-  become_user: zextras
-  command: '/opt/zextras/bin/carbonio core getVersion'
-  register: version_chk_version_new
-  when: inventory_hostname in groups["applicationServers"] and (ansible_distribution_major_version == "9" or ansible_distribution_major_version == "24")
-  changed_when: false
-  tags:
-    - check-carbonio-upgrade
-
-- name: Debug version output (Sysd)
-  debug:
-    msg: "{{ version_chk_version_new.stdout_lines }}"
-  when: inventory_hostname in groups["applicationServers"] and (ansible_distribution_major_version == "9" or ansible_distribution_major_version == "24")
+    msg: "{{ version_chk_version.stdout_lines }}"
   tags:
     - check-carbonio-upgrade

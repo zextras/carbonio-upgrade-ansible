@@ -2,6 +2,7 @@
 
 All notable changes to this project will be documented in this file. 
 
+
 ### [25.6.0] (2025-5-16)
 
 
@@ -10,7 +11,6 @@ All notable changes to this project will be documented in this file.
 
 ### Bug Fixes
 * Added restart of missed services
-
 
 ### [25.3.0] (2025-3-11)
 

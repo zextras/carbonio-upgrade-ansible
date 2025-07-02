@@ -4,3 +4,10 @@
 
 ---
 # handlers file for post-carbonio-packages-upgrade
+handlers:
+  - name: restart_carbonio_services
+    become: true
+    ansible.builtin.service:
+      name: "{{ item }}"
+      state: restarted
+    loop: "{{ carbonio_services_in_memory.stdout_lines }}"

@@ -232,26 +232,7 @@
         false
   tags:
     - track-zmcontrol
-
-- name: Get all carbonio sidecar services
-  become: true
-  shell:
-    cmd: "set -o pipefail && systemctl list-unit-files --state=enabled  | awk '/sidecar/ {print $1}'"
-    executable: /bin/bash
-  register: carbonio_sidecar_services_in_memory
-  changed_when: false
-  tags:
-    - restart-carbonio-services
-
-- name: Restart sidecars
-  become: true
-  ansible.builtin.service:
-    name: "{{ item }}"
-    state: restarted
-  loop: "{{ carbonio_sidecar_services_in_memory.stdout_lines }}"
-  tags:
-    - restart-carbonio-services
-
+    
 - name: Restart application service
   become: true
   become_method: su
@@ -274,52 +255,57 @@
     - restart-carbonio-services
     - applicationServers
 
-- name: Restart files carbonio services
+- name: Get all carbonio services
   become: true
-  ansible.builtin.service:
-    name: "{{ item }}"
-    state: restarted
+  shell:
+    cmd: "set -o pipefail && systemctl list-unit-files --state=enabled  | awk '/carbonio/ {print $1}'"
+    executable: /bin/bash
+  register: carbonio_services_in_memory
+  changed_when: false
+  tags:
+    - restart-carbonio-services
+
+- name: Notify restart of all carbonio services on applicationServers
+  debug:
+    msg: "Trigger handler to restart carbonio files services"
+  when: inventory_hostname in groups["applicationServers"]
+  notify: restart_carbonio_services
+  tags:
+    - restart-carbonio-service
+    - applicationServers
+
+- name: Notify restart of all carbonio services on filesServers
+  debug:
+    msg: "Trigger handler to restart carbonio files services"
   when: inventory_hostname in groups["filesServers"]
-  loop:
-    - carbonio-files.service
-    - carbonio-storages.service
+  notify: restart_carbonio_services
   tags:
     - restart-carbonio-service
     - filesServers
 
-- name: Restart docs carbonio services
-  become: true
-  ansible.builtin.service:
-    name: "{{ item }}"
-    state: restarted
+- name: Notify restart of all carbonio services on docsServers
+  debug:
+    msg: "Trigger handler to restart carbonio docs services"
   when: inventory_hostname in groups["docsServers"]
-  loop:
-    - carbonio-docs-editor.service
-    - carbonio-docs-connector.service
+  notify: restart_carbonio_services
   tags:
     - restart-carbonio-service
     - docsServers
 
-- name: Restart task carbonio services
-  become: true
-  ansible.builtin.service:
-    name: "{{ item }}"
-    state: restarted
+- name: Notify restart of all carbonio services on taskServers
+  debug:
+    msg: "Trigger handler to restart carbonio tasks services"
   when: inventory_hostname in groups["taskServers"]
-  loop:
-    - carbonio-tasks.service
+  notify: restart_carbonio_services
   tags:
     - restart-carbonio-service
     - taskServers
 
-- name: Restart preview carbonio services
-  become: true
-  ansible.builtin.service:
-    name: "{{ item }}"
-    state: restarted
+- name: Notify restart of all carbonio services on previewServers
+  debug:
+    msg: "Trigger handler to restart carbonio preview services"
   when: inventory_hostname in groups["previewServers"]
-  loop:
-    - carbonio-preview.service
+  notify: restart_carbonio_services
   tags:
     - restart-carbonio-service
     - previewServers

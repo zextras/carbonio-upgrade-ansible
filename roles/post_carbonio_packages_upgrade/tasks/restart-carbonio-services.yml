@@ -333,7 +333,7 @@
   ansible.builtin.service:
     name: "{{ item }}"
     state: restarted
-  when: inventory_hostname in groups["workStreamServers"]
+  when: inventory_hostname in groups["workStreamServers"][0]
   loop:
     - carbonio-message-dispatcher.service
   tags:

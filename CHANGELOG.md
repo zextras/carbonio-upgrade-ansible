@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file. 
 
 
+### [25.6.1] (2025-7-08)
+
+
+### Bug Fixes
+* Added restart of carbonio-storages if this service was installed on servers from another group (not [filesServers] group)
+* Moved videoServers upgrade after workStreamServers to maintain the order of server upgrades
+* Reworked service restart to avoid multiple restarts for services
+
 ### [25.6.0] (2025-5-16)
 
 

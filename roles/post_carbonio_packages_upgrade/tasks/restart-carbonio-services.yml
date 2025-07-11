@@ -232,26 +232,7 @@
         false
   tags:
     - track-zmcontrol
-
-- name: Get all carbonio sidecar services
-  become: true
-  shell:
-    cmd: "set -o pipefail && systemctl list-unit-files --state=enabled  | awk '/sidecar/ {print $1}'"
-    executable: /bin/bash
-  register: carbonio_sidecar_services_in_memory
-  changed_when: false
-  tags:
-    - restart-carbonio-services
-
-- name: Restart sidecars
-  become: true
-  ansible.builtin.service:
-    name: "{{ item }}"
-    state: restarted
-  loop: "{{ carbonio_sidecar_services_in_memory.stdout_lines }}"
-  tags:
-    - restart-carbonio-services
-
+    
 - name: Restart application service
   become: true
   become_method: su
@@ -274,55 +255,115 @@
     - restart-carbonio-services
     - applicationServers
 
-- name: Restart files carbonio services
-  become: true
-  ansible.builtin.service:
-    name: "{{ item }}"
-    state: restarted
-  when: inventory_hostname in groups["filesServers"]
-  loop:
-    - carbonio-files.service
-    - carbonio-storages.service
+- name: Ensure restart flag is initialized
+  set_fact:
+    carbonio_restarted: "{{ carbonio_restarted | default(false) }}"
   tags:
-    - restart-carbonio-service
+    - restart-carbonio-services
+
+- name: Get all carbonio services
+  become: true
+  shell:
+    cmd: "set -o pipefail && systemctl list-unit-files --state=enabled  | awk '/carbonio/ {print $1}'"
+    executable: /bin/bash
+  register: carbonio_services_in_memory
+  changed_when: false
+  tags:
+    - restart-carbonio-services
+
+- name: Notify restart of all carbonio services on applicationServers
+  debug:
+    msg: "Trigger handler to restart carbonio files services"
+  changed_when: true
+  when: inventory_hostname in groups["applicationServers"] and ansible_distribution_major_version != "9" and ansible_distribution_major_version != "24" and (not carbonio_restarted | bool)
+  notify: restart_carbonio_services
+  tags:
+    - restart-carbonio-services
+    - applicationServers
+
+- name: Notify restart of all carbonio services on filesServers
+  debug:
+    msg: "Trigger handler to restart carbonio files services"
+  changed_when: true
+  when: inventory_hostname in groups["filesServers"] and ansible_distribution_major_version != "9" and ansible_distribution_major_version != "24" and (not carbonio_restarted | bool)
+  notify: restart_carbonio_services
+  tags:
+    - restart-carbonio-services
     - filesServers
 
-- name: Restart docs carbonio services
-  become: true
-  ansible.builtin.service:
-    name: "{{ item }}"
-    state: restarted
-  when: inventory_hostname in groups["docsServers"]
-  loop:
-    - carbonio-docs-editor.service
-    - carbonio-docs-connector.service
+- name: Notify restart of all carbonio services on docsServers
+  debug:
+    msg: "Trigger handler to restart carbonio docs services"
+  changed_when: true
+  when: inventory_hostname in groups["docsServers"] and ansible_distribution_major_version != "9" and ansible_distribution_major_version != "24" and (not carbonio_restarted | bool)
+  notify: restart_carbonio_services
   tags:
-    - restart-carbonio-service
+    - restart-carbonio-services
     - docsServers
 
-- name: Restart task carbonio services
-  become: true
-  ansible.builtin.service:
-    name: "{{ item }}"
-    state: restarted
-  when: inventory_hostname in groups["taskServers"]
-  loop:
-    - carbonio-tasks.service
+- name: Notify restart of all carbonio services on taskServers
+  debug:
+    msg: "Trigger handler to restart carbonio tasks services"
+  changed_when: true
+  when: inventory_hostname in groups["taskServers"] and ansible_distribution_major_version != "9" and ansible_distribution_major_version != "24" and (not carbonio_restarted | bool)
+  notify: restart_carbonio_services
   tags:
-    - restart-carbonio-service
+    - restart-carbonio-services
     - taskServers
 
-- name: Restart preview carbonio services
-  become: true
-  ansible.builtin.service:
-    name: "{{ item }}"
-    state: restarted
-  when: inventory_hostname in groups["previewServers"]
-  loop:
-    - carbonio-preview.service
+- name: Notify restart of all carbonio services on previewServers
+  debug:
+    msg: "Trigger handler to restart carbonio preview services"
+  changed_when: true
+  when: inventory_hostname in groups["previewServers"] and ansible_distribution_major_version != "9" and ansible_distribution_major_version != "24" and (not carbonio_restarted | bool)
+  notify: restart_carbonio_services
   tags:
     - restart-carbonio-service
     - previewServers
+
+- name: Mark carbonio services as restarted
+  set_fact:
+    carbonio_restarted: true
+  when: carbonio_restarted | bool == false
+  tags:
+    - restart-carbonio-services
+
+- name: Restart carbonio-message-dispatcher services
+  become: true
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: restarted
+  when:
+    - groups["workStreamServers"] | length > 0
+    - inventory_hostname in groups["workStreamServers"][0]
+  loop:
+    - carbonio-message-dispatcher.service
+  tags:
+    - restart-wsc-services
+    - workStreamServers
+
+- name: Collect WSC carbonio services
+  become: true
+  shell:
+    cmd: "set -o pipefail && systemctl list-unit-files --state=enabled | awk '/ws/ {print $1}'"
+    executable: /bin/bash
+  register: wsc_services_in_memory
+  changed_when: false
+  when: inventory_hostname in groups["workStreamServers"]
+  tags:
+    - restart-carbonio-service
+    - workStreamServers
+
+- name: Restart carbonio WSC
+  become: true
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: restarted
+  when: inventory_hostname in groups["workStreamServers"]
+  loop: "{{ wsc_services_in_memory.stdout_lines }}"
+  tags:
+    - restart-wsc-services
+    - workStreamServers
 
 - name: Get all videoserver services
   become: true
@@ -347,42 +388,6 @@
     - restart-videoserver-services
     - videoServers
 
-- name: Restart carbonio-message-dispatcher services
-  become: true
-  ansible.builtin.service:
-    name: "{{ item }}"
-    state: restarted
-  when: inventory_hostname in groups["workStreamServers"]
-  loop:
-    - carbonio-message-dispatcher.service
-  tags:
-    - restart-wsc-services
-    - workStreamServers
-
-
-- name: Collect WSC carbonio services
-  become: true
-  shell:
-    cmd: "set -o pipefail && systemctl list-unit-files --state=enabled | awk '/ws/ {print $1}'"
-    executable: /bin/bash
-  register: wsc_services_in_memory
-  changed_when: false
-  when: inventory_hostname in groups["workStreamServers"]
-  tags:
-    - restart-carbonio-service
-    - workStreamServers
-
-- name: Restart carbonio WSC
-  become: true
-  ansible.builtin.service:
-    name: "{{ item }}"
-    state: restarted
-  when: inventory_hostname in groups["workStreamServers"]
-  loop: "{{ wsc_services_in_memory.stdout_lines }}"
-  tags:
-    - restart-wsc-services
-    - workStreamServers
-    
 # Remove restart file on all VMs
 - name: Remove restart file
   file:
@@ -396,6 +401,6 @@
   ansible.builtin.service:
     name: "carbonio"
     state: restarted  
-  when: ansible_os_family in ["RedHat", "CentOS"] and ansible_distribution_major_version != "9"
+  when: ansible_distribution_major_version != "9" and ansible_distribution_major_version != "24"
   tags:
-    - restart-carbonio-service
+    - restart-carbonio-services

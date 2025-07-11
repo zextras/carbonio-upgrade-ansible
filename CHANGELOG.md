@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file. 
 
 
-### [25.6.1] (2025-7-08)
+### [25.6.1] (2025-7-11)
 
 
 ### Bug Fixes

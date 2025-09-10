@@ -10,8 +10,6 @@
 
 [mtaServers]
 
-[antivirusServers]
-
 [proxyServers]
 
 [proxyServers:vars]

@@ -5,12 +5,13 @@
 ---
 #  1 start ldap, postgres, service-discover server
 #  2 start service-discover agent, all sidecars, application server
-#  3 start service-discover agent, all sidecars, files/docs
-#  4 start service-discover agent, all sidecars, videoserver
-#  5 start service-discover agent, all sidecars, proxyServers
-#  6 start service-discover agent, all sidecars, mtaServers
+#  3 start service-discover agent, all sidecars, proxyServers
+#  4 start service-discover agent, all sidecars, mtaServers
+#  5 start service-discover agent, all sidecars, files/docs
+#  7 start service-discover agent, all sidecars, workStreamServers
+#  7 start service-discover agent, all sidecars, videoserver 
 
-- name: Check if patroni is installed (Debian) 24.9 -> 25.9
+- name: Check if patroni is installed (Debian) 24.9 -> 25.6.0
   become: true
   shell: apt list --installed 2>/dev/null | grep -w '^patroni'
   register: patroni_check_debian
@@ -51,7 +52,7 @@
     - restart-carbonio-services
     - postgresServers
 
-- name: Check if patroni is installed [RHEL] 24.9 -> 25.9
+- name: Check if patroni is installed [RHEL] 24.9 -> 25.6.0
   become: true
   shell: rpm -qa 2>/dev/null | grep -w '^patroni'
   register: patroni_check_rhel
@@ -280,6 +281,36 @@
   tags:
     - restart-carbonio-services
     - applicationServers
+
+- name: Notify restart of all carbonio services on applicationServers
+  debug:
+    msg: "Trigger handler to restart carbonio files services"
+  changed_when: true
+  when: inventory_hostname in groups["applicationServers"] and ansible_distribution_major_version != "9" and ansible_distribution_major_version != "24" and (not carbonio_restarted | bool)
+  notify: restart_carbonio_services
+  tags:
+    - restart-carbonio-services
+    - applicationServers
+
+- name: Notify restart of all carbonio services on mtaServers
+  debug:
+    msg: "Trigger handler to restart carbonio files services"
+  changed_when: true
+  when: inventory_hostname in groups["mtaServers"] and ansible_distribution_major_version != "9" and ansible_distribution_major_version != "24" and (not carbonio_restarted | bool)
+  notify: restart_carbonio_services
+  tags:
+    - restart-carbonio-services
+    - mtaServers
+
+- name: Notify restart of all carbonio services on proxyServers
+  debug:
+    msg: "Trigger handler to restart carbonio files services"
+  changed_when: true
+  when: inventory_hostname in groups["proxyServers"] and ansible_distribution_major_version != "9" and ansible_distribution_major_version != "24" and (not carbonio_restarted | bool)
+  notify: restart_carbonio_services
+  tags:
+    - restart-carbonio-services
+    - proxyServers
 
 - name: Notify restart of all carbonio services on filesServers
   debug:

@@ -8,6 +8,10 @@ All notable changes to this project will be documented in this file.
 * Added restart of MTA/Proxy services
 * Reconfigured zimbraMemcachedBindAddress attribute as zimbraMemcachedBindAddress ""
 
+### Bug Fixes
+* Added restart of MTA/Proxy services
+* Reconfigured zimbraMemcachedBindAddress attribute as zimbraMemcachedBindAddress ""
+
 ### [25.6.1] (2025-7-11)
 
 

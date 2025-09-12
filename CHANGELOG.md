@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ### [25.9.0] (2025-9-11)
 
+
 ### Bug Fixes
 * Added restart of MTA/Proxy services
 * Reconfigured zimbraMemcachedBindAddress attribute as zimbraMemcachedBindAddress ""

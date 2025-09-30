@@ -3,14 +3,17 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 ---
-#  1 start ldap, postgres, service-discover server
-#  2 start service-discover agent, all sidecars, application server
-#  3 start service-discover agent, all sidecars, files/docs
-#  4 start service-discover agent, all sidecars, videoserver
-#  5 start service-discover agent, all sidecars, proxyServers
-#  6 start service-discover agent, all sidecars, mtaServers
+# Startup order (for reference):
+# 1) ldap, postgres, service-discover server
+# 2) service-discover agent, sidecars, application server
+# 3) service-discover agent, sidecars, proxyServers
+# 4) service-discover agent, sidecars, mtaServers
+# 5) service-discover agent, sidecars, files/docs
+# 7) service-discover agent, sidecars, workStreamServers
+# 7) service-discover agent, sidecars, videoserver
 
-- name: Check if patroni is installed (Debian) 24.9 -> 25.6.0
+### Detect Patroni and restart the right service (Ubuntu/Debian)
+- name: Check if patroni is installed (Debian) 24.9 -> 25.9.0
   become: true
   shell: apt list --installed 2>/dev/null | grep -w '^patroni'
   register: patroni_check_debian
@@ -23,6 +26,7 @@
     - restart-carbonio-services
     - postgresServers
 
+# If Patroni is absent → restart PostgreSQL
 - name: Restart postgres(Ubuntu)
   become: true
   ansible.builtin.service:
@@ -37,6 +41,7 @@
     - restart-carbonio-services
     - postgresServers
 
+# If Patroni is present → restart Patroni; will pause later
 - name: Restart patroni(Ubuntu)
   become: true
   ansible.builtin.service:
@@ -51,7 +56,8 @@
     - restart-carbonio-services
     - postgresServers
 
-- name: Check if patroni is installed [RHEL] 24.9 -> 25.6.0
+### Detect Patroni and restart the right service (RHEL)
+- name: Check if patroni is installed [RHEL] 24.9 -> 25.9.0
   become: true
   shell: rpm -qa 2>/dev/null | grep -w '^patroni'
   register: patroni_check_rhel
@@ -64,6 +70,7 @@
     - restart-carbonio-services
     - postgresServers
 
+# Patroni absent → restart the PostgreSQL unit
 - name: Restart postgres(RHEL)
   become: true
   ansible.builtin.service:
@@ -78,6 +85,7 @@
     - restart-carbonio-services
     - postgresServers
 
+# Patroni present → restart Patroni
 - name: Restart patroni(RHEL)
   become: true
   ansible.builtin.service:
@@ -92,6 +100,7 @@
     - restart-carbonio-services
     - postgresServers
 
+# After Patroni restart, give cluster time to stabilize
 - name: Wait for 60 seconds after Patroni restart (Ubuntu)
   ansible.builtin.pause:
     seconds: 60
@@ -114,6 +123,7 @@
     - restart-carbonio-services
     - postgresServers
 
+# Debug outputs for visibility of what actually restarted
 - name: Debug postgres restart status (Ubuntu)
   debug:
     msg: "{{ postgres_ubuntu }}"
@@ -157,7 +167,8 @@
   tags:
     - restart-carbonio-services
     - postgresServers
-    
+
+# Restart service-discover
 - name: Restart Service-discover service
   become: true
   ansible.builtin.service:
@@ -166,6 +177,7 @@
   tags:
     - restart-carbonio-services
 
+# On MTAs: force Amavis to bind IPv4
 - name: Fix amavis ipv6
   ansible.builtin.lineinfile:
     path: /opt/zextras/conf/amavisd.conf.in
@@ -176,7 +188,7 @@
   tags:
     - amavis
 
-# Check status of restart file. For all VMs except LDAP master and LDAP replica
+### zmcontrol restart controlled by a flag file (skip LDAP master/replica)
 - name: Check restart file value
   command: "cat {{ restart_file }}"
   register: restart_zmcontrol_var
@@ -193,6 +205,7 @@
   debug:
     msg: "{{ restart_zmcontrol_var.stdout }}"
 
+# Restart via zmcontrol (if flag true) (Ubuntu22/RHEL8)
 - name: Restart zmcontrol
   become: true
   become_method: su
@@ -207,6 +220,7 @@
   tags:
     - restart-carbonio-services
 
+# Restart via systemd target (if flag true) (Ubuntu24/RHEL9)
 - name: Restart carbonio services [Sysd]
   become: true
   ansible.builtin.systemd:
@@ -220,8 +234,7 @@
   tags:
     - restart-carbonio-services
 
-    
-# set content for restart file to false. For all VMs except LDAP master and LDAP replica
+# After acting on the flag, reset it to "false" (prevents repeated restarts)
 - name: Modify restart file
   when: >
     inventory_hostname not in groups["masterDirectoryServers"] and
@@ -232,7 +245,8 @@
         false
   tags:
     - track-zmcontrol
-    
+
+# AppServer (mailboxd) restart (Ubuntu22/RHEL8)
 - name: Restart application service
   become: true
   become_method: su
@@ -245,6 +259,7 @@
     - restart-carbonio-services
     - applicationServers
 
+# AppServer (mailboxd) restart (Ubuntu24/RHEL9)
 - name: Restart application services [Sysd]
   become: true
   ansible.builtin.systemd:
@@ -255,12 +270,14 @@
     - restart-carbonio-services
     - applicationServers
 
+# Run the common handler only once per host 
 - name: Ensure restart flag is initialized
   set_fact:
     carbonio_restarted: "{{ carbonio_restarted | default(false) }}"
   tags:
     - restart-carbonio-services
 
+# List enabled carbonio units
 - name: Get all carbonio services
   become: true
   shell:
@@ -271,15 +288,36 @@
   tags:
     - restart-carbonio-services
 
+### Trigger a shared handler once per role to restart services from the list (app/mta/proxy/files/docs/tasks/preview) (Ubuntu22/RHEL8)
 - name: Notify restart of all carbonio services on applicationServers
   debug:
-    msg: "Trigger handler to restart carbonio files services"
+    msg: "Trigger handler to restart carbonio application services"
   changed_when: true
   when: inventory_hostname in groups["applicationServers"] and ansible_distribution_major_version != "9" and ansible_distribution_major_version != "24" and (not carbonio_restarted | bool)
   notify: restart_carbonio_services
   tags:
     - restart-carbonio-services
     - applicationServers
+
+- name: Notify restart of all carbonio services on mtaServers
+  debug:
+    msg: "Trigger handler to restart carbonio mta services"
+  changed_when: true
+  when: inventory_hostname in groups["mtaServers"] and ansible_distribution_major_version != "9" and ansible_distribution_major_version != "24" and (not carbonio_restarted | bool)
+  notify: restart_carbonio_services
+  tags:
+    - restart-carbonio-services
+    - mtaServers
+
+- name: Notify restart of all carbonio services on proxyServers
+  debug:
+    msg: "Trigger handler to restart carbonio proxy services"
+  changed_when: true
+  when: inventory_hostname in groups["proxyServers"] and ansible_distribution_major_version != "9" and ansible_distribution_major_version != "24" and (not carbonio_restarted | bool)
+  notify: restart_carbonio_services
+  tags:
+    - restart-carbonio-services
+    - proxyServers
 
 - name: Notify restart of all carbonio services on filesServers
   debug:
@@ -321,6 +359,7 @@
     - restart-carbonio-service
     - previewServers
 
+# Mark as restarted to prevent duplicate handler triggers on the same host
 - name: Mark carbonio services as restarted
   set_fact:
     carbonio_restarted: true
@@ -328,6 +367,7 @@
   tags:
     - restart-carbonio-services
 
+### Restart WSC: message-dispatcher + all ws* services 
 - name: Restart carbonio-message-dispatcher services
   become: true
   ansible.builtin.service:
@@ -365,6 +405,7 @@
     - restart-wsc-services
     - workStreamServers
 
+### Video servers: restart all video* units ( only enabled units)
 - name: Get all videoserver services
   become: true
   shell:
@@ -388,7 +429,7 @@
     - restart-videoserver-services
     - videoServers
 
-# Remove restart file on all VMs
+# Remove the flag on all hosts (final hygiene)
 - name: Remove restart file
   file:
       path: "{{ restart_file }}"
@@ -396,6 +437,7 @@
   tags:
     - track-zmcontrol
 
+# Restart "carbonio" service (Ubuntu22/RHEL8)
 - name: Restart zmconfigd
   become: true
   ansible.builtin.service:

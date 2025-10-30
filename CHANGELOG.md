@@ -2,15 +2,13 @@
 
 All notable changes to this project will be documented in this file. 
 
-### [25.9.0] (2025-9-11)
+### [25.9.0] (2025-9-30)
+
 
 ### Bug Fixes
 * Added restart of MTA/Proxy services
 * Reconfigured zimbraMemcachedBindAddress attribute as zimbraMemcachedBindAddress ""
-
-### Bug Fixes
-* Added restart of MTA/Proxy services
-* Reconfigured zimbraMemcachedBindAddress attribute as zimbraMemcachedBindAddress ""
+* Made carbonio prov write values directly to LDAP without SOAP calls to the application server
 
 ### [25.6.1] (2025-7-11)
 

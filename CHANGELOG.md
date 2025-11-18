@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. 
 
+### [25.12.0] (2025-11-18)
+
+
+### Featore
+* Removed carbonio-admin-ui package from the list of Proxy packages
+
+
 ### [25.9.0] (2025-9-30)
 
 

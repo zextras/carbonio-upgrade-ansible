@@ -13,7 +13,7 @@
 # 7) service-discover agent, sidecars, videoserver
 
 ### Detect Patroni and restart the right service (Ubuntu/Debian)
-- name: Check if patroni is installed (Debian) 24.9 -> 25.9.0
+- name: Check if patroni is installed (Debian) 24.9 -> 25.12.0
   become: true
   shell: apt list --installed 2>/dev/null | grep -w '^patroni'
   register: patroni_check_debian
@@ -57,7 +57,7 @@
     - postgresServers
 
 ### Detect Patroni and restart the right service (RHEL)
-- name: Check if patroni is installed [RHEL] 24.9 -> 25.9.0
+- name: Check if patroni is installed [RHEL] 24.9 -> 25.12.0
   become: true
   shell: rpm -qa 2>/dev/null | grep -w '^patroni'
   register: patroni_check_rhel

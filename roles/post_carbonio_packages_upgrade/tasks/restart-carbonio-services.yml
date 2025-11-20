@@ -177,17 +177,6 @@
   tags:
     - restart-carbonio-services
 
-# On MTAs: force Amavis to bind IPv4
-- name: Fix amavis ipv6
-  ansible.builtin.lineinfile:
-    path: /opt/zextras/conf/amavisd.conf.in
-    insertafter: '# \$inet_socket_port = \[10024,10026\];.*'
-    line: "$inet_socket_bind = '127.0.0.1';"
-    regexp: \$inet_socket_bind.*
-  when: inventory_hostname in groups["mtaServers"]
-  tags:
-    - amavis
-
 ### zmcontrol restart controlled by a flag file (skip LDAP master/replica)
 - name: Check restart file value
   command: "cat {{ restart_file }}"

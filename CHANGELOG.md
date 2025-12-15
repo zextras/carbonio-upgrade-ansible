@@ -2,13 +2,14 @@
 
 All notable changes to this project will be documented in this file. 
 
-### [25.12.0] (2025-11-27)
+### [25.12.0] (2025-12-15)
 
 
 ### Featore
 * Removed carbonio-admin-ui package from the list of Proxy packages
 * Introduced the allowerasing parameter into the RHEL upgrade procedure to handle package replacement conflicts
 * Checked inventory to be sure that the workStreamServers server is defined in the inventory if videoServers server is defined
+* Updated MongooseIM from version 6.3.1 to 6.3.2
 
 
 ### [25.9.0] (2025-9-30)

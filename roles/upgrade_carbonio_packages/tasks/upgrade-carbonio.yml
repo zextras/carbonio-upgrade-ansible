@@ -151,11 +151,12 @@
     #state: latest
   when: ansible_os_family == "Debian"
 
-- name: Upgrade RHEL Family OS packages
+- name: Upgrade all packages (RHEL/CentOS)
   become: true
   yum:
     name: "*"
     state: latest
+    allowerasing: true
   register: update
   when: ansible_os_family == "RedHat"
 

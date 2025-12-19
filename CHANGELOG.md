@@ -2,12 +2,14 @@
 
 All notable changes to this project will be documented in this file. 
 
-### [25.12.0] (2025-11-24)
+### [25.12.0] (2025-12-15)
 
 
 ### Featore
 * Removed carbonio-admin-ui package from the list of Proxy packages
 * Introduced the allowerasing parameter into the RHEL upgrade procedure to handle package replacement conflicts
+* Checked inventory to be sure that the workStreamServers server is defined in the inventory if videoServers server is defined
+* Updated MongooseIM from version 6.3.1 to 6.3.2
 
 
 ### [25.9.0] (2025-9-30)
@@ -18,6 +20,7 @@ All notable changes to this project will be documented in this file.
 * Reconfigured zimbraMemcachedBindAddress attribute as zimbraMemcachedBindAddress ""
 * Made carbonio prov write values directly to LDAP without SOAP calls to the application server
 
+
 ### [25.6.1] (2025-7-11)
 
 
@@ -25,6 +28,7 @@ All notable changes to this project will be documented in this file.
 * Added restart of carbonio-storages if this service was installed on servers from another group (not [filesServers] group)
 * Moved videoServers upgrade after workStreamServers to maintain the order of server upgrades
 * Reworked service restart to avoid multiple restarts for services
+
 
 ### [25.6.0] (2025-5-16)
 
@@ -34,6 +38,7 @@ All notable changes to this project will be documented in this file.
 
 ### Bug Fixes
 * Added restart of missed services
+
 
 ### [25.3.0] (2025-3-11)
 

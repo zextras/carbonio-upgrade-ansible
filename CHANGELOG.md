@@ -9,10 +9,17 @@ All notable changes to this project will be documented in this file.
 * Removed message-dispatcher-migration steps (now handled by application)
 
 
+### [25.12.1] (2025-12-23)
+
+
+### Bug Fixes
+* Fixed IndexError for empty groups in delegate_to (ansible-core 2.19 compatibility)
+
+
 ### [25.12.0] (2025-12-15)
 
 
-### Featore
+### Features
 * Removed carbonio-admin-ui package from the list of Proxy packages
 * Introduced the allowerasing parameter into the RHEL upgrade procedure to handle package replacement conflicts
 * Checked inventory to be sure that the workStreamServers server is defined in the inventory if videoServers server is defined

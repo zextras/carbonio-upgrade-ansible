@@ -8,5 +8,4 @@
 - import_tasks: execute-carbonio-pending-setups.yml
 - import_tasks: execute-dbconnectors-bootstrap.yml
 - import_tasks: execute-config-fixes.yml
-- import_tasks: message-dispatcher-migration.yml
 - import_tasks: restart-carbonio-services.yml

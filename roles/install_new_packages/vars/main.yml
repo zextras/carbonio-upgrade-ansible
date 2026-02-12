@@ -34,6 +34,9 @@
   notification_push_dbconnectors_packages:
     - carbonio-notification-push-db
 
+  videorecorder_dbconnectors_packages:
+    - carbonio-videorecorder-db
+    
   postgres_packages_ubuntu: 
     - python3-psycopg2
     - postgresql-16

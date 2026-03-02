@@ -79,7 +79,7 @@
   files_ui_packages: 
     - carbonio-files-public-folder-ui
     - carbonio-files-ui
-  
+
   task_ui_packages:
       - carbonio-tasks-ui
   

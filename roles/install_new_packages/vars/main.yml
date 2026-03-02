@@ -9,7 +9,7 @@
     - carbonio-appserver
     - carbonio-zal
     - carbonio-advanced
-  
+
   carbonio_storages_packages: 
     - carbonio-storages
 
@@ -18,7 +18,7 @@
 
   mailbox_dbconnectors_packages: 
     - carbonio-mailbox-db
-    
+
   files_dbconnectors_packages: 
     - carbonio-files-db
 
@@ -36,7 +36,7 @@
 
   videorecorder_dbconnectors_packages:
     - carbonio-videorecorder-db
-    
+
   postgres_packages_ubuntu: 
     - python3-psycopg2
     - postgresql-16
@@ -44,13 +44,13 @@
   postgres_packages_rhel: 
     - python38-psycopg2
     - postgresql16-server
-    
+
   ds_packages: 
     - carbonio-directory-server
 
   memcached_packages:
     - carbonio-memcached
-    
+
   mta_packages: 
     - carbonio-mta
 
@@ -66,30 +66,30 @@
 
   preview_packages: 
     - carbonio-preview
-  
+
   preview_dependencies_packages:
     - carbonio-docs-editor
 
   task_packages:
     - carbonio-tasks
-    
+
   files_packages: 
     - carbonio-files  
-    
+
   files_ui_packages: 
     - carbonio-files-public-folder-ui
     - carbonio-files-ui
 
   task_ui_packages:
       - carbonio-tasks-ui
-  
+
   ws_ui_packages:
     - carbonio-ws-collaboration-ui
 
   docs_packages: 
     - carbonio-docs-connector
     - carbonio-docs-editor
-  
+
   videoserver_packages: 
     - carbonio-videoserver-advanced
     - carbonio-videorecorder
@@ -101,13 +101,13 @@
   notification_push_packages:
     - carbonio-notification-push
     - carbonio-push-connector
-    
+
   sda_packages: 
     - service-discover-agent    
-    
+
   sds_packages: 
     - service-discover-server
-  
+
   message_broker_packages:
     - carbonio-message-broker
 
@@ -116,7 +116,7 @@
 
   grafana_packages:
     - grafana 
-    
+
   syslog_packages:
     - carbonio-pflogsumm
     - carbonio-perl-mailtools

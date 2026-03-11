@@ -4,6 +4,7 @@
 
 ---
 # tasks file for install_new_packages
+- import_tasks: install-carbonio-memcached.yml
 - import_tasks: install-carbonio-message-broker.yml
 - import_tasks: install-new-proxy-packages.yml
 - import_tasks: install-carbonio-storages.yml

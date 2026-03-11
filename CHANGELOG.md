@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. 
 
+### [26.3.0] (2026-03-11)
+
+### Features
+* Added new DBConnector package carbonio-videorecorder-db for DB-backed metadata storage and job management support
+* Updated the Ansible playbook to install the carbonio-memcached package only on the first proxy, since memcached runs behind the service mesh and currently supports a single instance.
+
+### Bug Fixes
+* Removed message-dispatcher-migration steps (now handled by application)
+
+
 ### [25.12.1] (2025-12-23)
 
 

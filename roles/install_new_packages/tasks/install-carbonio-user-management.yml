@@ -25,7 +25,7 @@
     state: present
   with_items: "{{ check_services.results }}"
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - inventory_hostname in groups['serviceDiscoverServers']
     - groups['filesServers'] | length > 0
     - item.stdout == "absent"
@@ -39,7 +39,7 @@
     state: present
   with_items: "{{ check_services.results }}"
   when:
-    - ansible_os_family in ["RedHat", "CentOS"]
+    - ansible_facts.os_family in ["RedHat", "CentOS"]
     - inventory_hostname in groups['serviceDiscoverServers']
     - groups['filesServers'] | length > 0
     - item.stdout == "absent"

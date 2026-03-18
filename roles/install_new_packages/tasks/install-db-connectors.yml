@@ -9,7 +9,7 @@
   register: patroni_check_debian
   failed_when: false
   changed_when: false
-  when: inventory_hostname in groups["postgresServers"][0] and ansible_os_family == "Debian"  and groups['dbsConnectorServers'] | length > 0
+  when: inventory_hostname in groups["postgresServers"][0] and ansible_facts.os_family == "Debian"  and groups['dbsConnectorServers'] | length > 0
   tags:
     - install-carbonio-dbconnectors
 
@@ -19,7 +19,7 @@
   register: pgpool_check_debian
   failed_when: false
   changed_when: false
-  when: ansible_os_family == "Debian"  and groups['dbsConnectorServers'] | length > 0
+  when: ansible_facts.os_family == "Debian"  and groups['dbsConnectorServers'] | length > 0
   delegate_to: "{{ groups['dbsConnectorServers'] | first | default('localhost') }}"
   tags:
     - install-carbonio-dbconnectors
@@ -30,7 +30,7 @@
   with_items:
     - "{{ mailbox_dbconnectors_packages }}"
   when:
-    - ansible_os_family == "Debian" and inventory_hostname in groups["postgresServers"][0] and groups['dbsConnectorServers'] | length > 0
+    - ansible_facts.os_family == "Debian" and inventory_hostname in groups["postgresServers"][0] and groups['dbsConnectorServers'] | length > 0
     - "'pgpool2' in pgpool_check_debian.stdout"
     - "'patroni' not in patroni_check_debian.stdout"
   tags:
@@ -42,7 +42,7 @@
   with_items:
     - "{{ files_dbconnectors_packages }}"
   when:
-    - ansible_os_family == "Debian" and inventory_hostname in groups["postgresServers"][0] and groups['dbsConnectorServers'] | length > 0
+    - ansible_facts.os_family == "Debian" and inventory_hostname in groups["postgresServers"][0] and groups['dbsConnectorServers'] | length > 0
     - "'pgpool2' in pgpool_check_debian.stdout"
     - "'patroni' not in patroni_check_debian.stdout"
     - groups['filesServers'] | length > 0
@@ -55,7 +55,7 @@
   with_items:
     - "{{ docs_dbconnectors_packages }}"
   when:
-    - ansible_os_family == "Debian" and inventory_hostname in groups["postgresServers"][0] and groups['dbsConnectorServers'] | length > 0
+    - ansible_facts.os_family == "Debian" and inventory_hostname in groups["postgresServers"][0] and groups['dbsConnectorServers'] | length > 0
     - "'pgpool2' in pgpool_check_debian.stdout"
     - "'patroni' not in patroni_check_debian.stdout"
     - groups['docsServers'] | length > 0
@@ -68,7 +68,7 @@
   with_items:
     - "{{ task_dbconnectors_packages }}"
   when:
-    - ansible_os_family == "Debian" and inventory_hostname in groups["postgresServers"][0] and groups['dbsConnectorServers'] | length > 0
+    - ansible_facts.os_family == "Debian" and inventory_hostname in groups["postgresServers"][0] and groups['dbsConnectorServers'] | length > 0
     - "'pgpool2' in pgpool_check_debian.stdout"
     - "'patroni' not in patroni_check_debian.stdout"
     - groups['taskServers'] | length > 0
@@ -81,7 +81,7 @@
   with_items:
     - "{{ notification_push_dbconnectors_packages }}"
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - (
         (inventory_hostname in groups['postgresServers'][0] and groups['dbsConnectorServers'] | length == 0) or
         (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'][0] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0])
@@ -98,7 +98,7 @@
   register: patroni_check_rhel
   failed_when: false
   changed_when: false
-  when: ansible_os_family == "RedHat" and inventory_hostname in groups["postgresServers"][0] and groups['dbsConnectorServers'] | length > 0
+  when: ansible_facts.os_family == "RedHat" and inventory_hostname in groups["postgresServers"][0] and groups['dbsConnectorServers'] | length > 0
   tags:
     - install-carbonio-dbconnectors
 
@@ -109,7 +109,7 @@
   failed_when: false
   changed_when: false
   delegate_to: "{{ groups['dbsConnectorServers'] | first | default('localhost') }}"
-  when: ansible_os_family == "RedHat" and groups['dbsConnectorServers'] | length > 0
+  when: ansible_facts.os_family == "RedHat" and groups['dbsConnectorServers'] | length > 0
   tags:
     - install-carbonio-dbconnectors
 
@@ -121,7 +121,7 @@
   with_items:
     - "{{ mailbox_dbconnectors_packages }}"
   when:
-    - ansible_os_family == "RedHat" and groups['dbsConnectorServers'] | length > 0
+    - ansible_facts.os_family == "RedHat" and groups['dbsConnectorServers'] | length > 0
     - inventory_hostname in groups["postgresServers"][0]
     - "'pgpool-II' in pgpool_check_rhel.stdout"
     - "'patroni' not in patroni_check_rhel.stdout"
@@ -136,7 +136,7 @@
   with_items:
     - "{{ files_dbconnectors_packages }}"
   when:
-    - ansible_os_family == "RedHat" and inventory_hostname in groups["postgresServers"][0] and groups['dbsConnectorServers'] | length > 0
+    - ansible_facts.os_family == "RedHat" and inventory_hostname in groups["postgresServers"][0] and groups['dbsConnectorServers'] | length > 0
     - "'pgpool-II' in pgpool_check_rhel.stdout"
     - "'patroni' not in patroni_check_rhel.stdout"
     - groups['filesServers'] | length > 0
@@ -151,7 +151,7 @@
   with_items:
     - "{{ docs_dbconnectors_packages }}"
   when:
-    - ansible_os_family == "RedHat" and groups['dbsConnectorServers'] | length > 0
+    - ansible_facts.os_family == "RedHat" and groups['dbsConnectorServers'] | length > 0
     - inventory_hostname in groups["postgresServers"][0]
     - "'pgpool-II' in pgpool_check_rhel.stdout"
     - "'patroni' not in patroni_check_rhel.stdout"
@@ -167,7 +167,7 @@
   with_items:
     - "{{ task_dbconnectors_packages }}"
   when:
-    - ansible_os_family == "RedHat" and groups['dbsConnectorServers'] | length > 0
+    - ansible_facts.os_family == "RedHat" and groups['dbsConnectorServers'] | length > 0
     - inventory_hostname in groups["postgresServers"][0]
     - "'pgpool-II' in pgpool_check_rhel.stdout"
     - "'patroni' not in patroni_check_rhel.stdout"
@@ -181,7 +181,7 @@
   with_items:
     - "{{ notification_push_dbconnectors_packages }}"
   when:
-    - ansible_os_family == "RedHat" or ansible_os_family == "CentOS"
+    - ansible_facts.os_family == "RedHat" or ansible_facts.os_family == "CentOS"
     - (
         (inventory_hostname in groups['postgresServers'][0] and groups['dbsConnectorServers'] | length == 0) or
         (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'][0] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0])

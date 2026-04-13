@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. 
 
 
+### [26.3.2] (2026-04-13)
+
+
+### Bug Fixes
+* Removed deprecated zimbraMemcachedBindAddress reconfiguration
+
+
 ### [26.3.1] (2026-03-24)
 
 

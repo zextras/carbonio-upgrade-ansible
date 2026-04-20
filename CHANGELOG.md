@@ -6,6 +6,9 @@ All notable changes to this project will be documented in this file.
 ### [26.6.0] (2026-06-10)
 
 
+### Features
+* Added pre-check task (rsyslog-config-check.yml) to detect and re-apply rsyslog.conf on syslogServer group after OS upgrade from Ubuntu 22.04 to 24.04.
+
 ### Bug Fixes
 * Fixed deprecated ansible_* facts usage by migrating to ansible_facts for compatibility with ansible-core 2.24
 

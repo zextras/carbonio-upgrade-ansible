@@ -5,12 +5,12 @@
   register: rsyslog_check
   changed_when: false
   failed_when: false
-  when: ansible_os_family == "Debian" and inventory_hostname in groups["syslogServer"]
+  when: inventory_hostname in groups["syslogServer"]
   tags:
   - check-rsyslog
 
 - name: Re-apply syslog configuration if remote listeners are commented
   ansible.builtin.include_tasks: configure-syslog-aggregator.yml
-  when: ansible_os_family == "Debian" and inventory_hostname in groups["syslogServer"] and rsyslog_check.stdout | default('0') | int > 0
+  when: inventory_hostname in groups["syslogServer"] and rsyslog_check.stdout | default('0') | int > 0
   tags:
   - check-rsyslog

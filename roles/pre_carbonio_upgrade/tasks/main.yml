@@ -7,3 +7,4 @@
 - import_tasks: password-checks.yml
 - import_tasks: workstreamservers_check.yml
 - import_tasks: pre-upgrade-cmds.yml
+- import_tasks: rsyslog-config-check.yml

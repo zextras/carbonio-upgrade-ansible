@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 * Added pre-check task (rsyslog-config-check.yml) to detect and re-apply rsyslog.conf on syslogServer group after OS upgrade from Ubuntu 22.04 to 24.04.
 * Added new pacakge carbonio-storage-ui for installation
 * Added validation for inventory values (hostnames, domains, and IP addresses) to prevent misconfigurations caused by INI parsing
+* Removed from the installation list deprecated carbonio-chats-ui
 
 ### Bug Fixes
 * Fixed deprecated ansible_* facts usage by migrating to ansible_facts for compatibility with ansible-core 2.24

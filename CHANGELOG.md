@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 * Added new pacakge carbonio-storage-ui for installation
 * Added validation for inventory values (hostnames, domains, and IP addresses) to prevent misconfigurations caused by INI parsing
 * Removed from the installation list deprecated carbonio-chats-ui
+* Added netaddr dependency handling for inventory IP address validation
 
 ### Bug Fixes
 * Fixed deprecated ansible_* facts usage by migrating to ansible_facts for compatibility with ansible-core 2.24

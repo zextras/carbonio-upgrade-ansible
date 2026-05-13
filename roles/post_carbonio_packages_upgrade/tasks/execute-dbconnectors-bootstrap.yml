@@ -121,6 +121,19 @@
   tags:
     - db-connectors-bootstrap
 
+- name: run carbonio-videorecorder-db Bootstrap (HA)
+  environment:
+    PGPASSWORD: "{{ carbonio_postgres_password }}"
+  become: true
+  command: /usr/bin/carbonio-videorecorder-db-bootstrap carbonio_adm 127.0.0.1
+  when: 
+    - groups['videoServers'] | length > 0 and groups['dbsConnectorServers'] | length > 0
+    - ansible_os_family == "Debian"
+    - inventory_hostname in groups["dbsConnectorServers"][0]
+    - "'patroni' in patroni_check_debian.stdout"
+  tags:
+    - db-connectors-bootstrap
+
 # If Partoni is not installd
 - name: Manage Postgres password (Standard)
   ansible.builtin.set_fact:
@@ -221,6 +234,19 @@
   when: 
     - groups['videoServers'] | length > 0
     - ansible_facts.os_family == "Debian"
+    - inventory_hostname in groups["postgresServers"][0]
+    - "'patroni' not in patroni_check_debian.stdout"
+  tags:
+    - db-connectors-bootstrap
+
+- name: run carbonio-videorecorder-db Bootstrap
+  environment:
+    PGPASSWORD: "{{ carbonio_postgres_password }}"
+  become: true
+  command: /usr/bin/carbonio-videorecorder-db-bootstrap carbonio_adm 127.0.0.1
+  when: 
+    - groups['videoServers'] | length > 0
+    - ansible_os_family == "Debian"
     - inventory_hostname in groups["postgresServers"][0]
     - "'patroni' not in patroni_check_debian.stdout"
   tags:
@@ -337,6 +363,19 @@
   when: 
     - groups['videoServers'] | length > 0 and groups['dbsConnectorServers'] | length > 0
     - ansible_facts.os_family == "RedHat" 
+    - inventory_hostname in groups["dbsConnectorServers"][0]
+    - "'patroni' in patroni_check_rhel.stdout"
+  tags:
+    - db-connectors-bootstrap
+
+- name: run carbonio-videorecorder-db Bootstrap (HA)
+  environment:
+    PGPASSWORD: "{{ carbonio_postgres_password }}"
+  become: true
+  command: /usr/bin/carbonio-videorecorder-db-bootstrap carbonio_adm 127.0.0.1
+  when: 
+    - groups['videoServers'] | length > 0 and groups['dbsConnectorServers'] | length > 0
+    - ansible_os_family == "RedHat" 
     - inventory_hostname in groups["dbsConnectorServers"][0]
     - "'patroni' in patroni_check_rhel.stdout"
   tags:

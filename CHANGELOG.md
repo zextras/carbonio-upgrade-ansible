@@ -19,6 +19,20 @@ All notable changes to this project will be documented in this file.
 * Fixed Advanced module status detection for RHEL 9 and Ubuntu 24 by migrating to zmcontrol status, which replaces the deprecated getversion command.
 
 
+### [26.3.2] (2026-04-13)
+
+
+### Bug Fixes
+* Removed deprecated zimbraMemcachedBindAddress reconfiguration
+
+
+### [26.3.1] (2026-03-24)
+
+
+### Bug Fixes
+* Fixed an issue where inline comments in inventory variable examples were propagated as part of the value into generated configuration files, causing invalid Postfix configuration
+
+
 ### [26.3.0] (2026-03-11)
 
 

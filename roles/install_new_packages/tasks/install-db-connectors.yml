@@ -84,7 +84,7 @@
     - ansible_facts.os_family == "Debian"
     - (
         (inventory_hostname in groups['postgresServers'][0] and groups['dbsConnectorServers'] | length == 0) or
-        (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'][0] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0])
+        (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0])
       )
     - groups['workStreamServers'] | length > 0
   tags:
@@ -184,7 +184,7 @@
     - ansible_facts.os_family == "RedHat" or ansible_facts.os_family == "CentOS"
     - (
         (inventory_hostname in groups['postgresServers'][0] and groups['dbsConnectorServers'] | length == 0) or
-        (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'][0] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0])
+        (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0])
       )
     - groups['workStreamServers'] | length > 0
   tags:

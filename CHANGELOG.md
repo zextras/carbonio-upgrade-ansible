@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file.
 * Fixed deprecated ansible_* facts usage by migrating to ansible_facts for compatibility with ansible-core 2.24
 * Replaced ansible_facts.fqdn with inventory_hostname to avoid incorrect hostname resolution when hosts file entries are misconfigured
 * Fixed Advanced module status detection for RHEL 9 and Ubuntu 24 by migrating to zmcontrol status, which replaces the deprecated getversion command.
+* Updated the `ansible.posix` dependency to version `2.2.0` to remove deprecation warnings related to the deprecated `to_native` import path in newer `ansible-core` versions.
 
 
 ### [26.3.2] (2026-04-13)

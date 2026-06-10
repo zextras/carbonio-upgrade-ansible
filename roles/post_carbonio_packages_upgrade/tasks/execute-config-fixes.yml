@@ -1,0 +1,13 @@
+# SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
+---
+- name: Disable memcached service on additional proxy servers
+  become: true
+  become_method: su
+  become_user: zextras
+  ansible.builtin.command: /opt/zextras/bin/carbonio prov -l ms {{ inventory_hostname }} -zimbraServiceEnabled memcached
+  when: groups["proxyServers"] | length > 1 and inventory_hostname in groups["proxyServers"] and inventory_hostname != groups["proxyServers"][0]
+  tags:
+    - fix-config

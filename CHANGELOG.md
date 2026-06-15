@@ -16,8 +16,10 @@ All notable changes to this project will be documented in this file.
 ### Bug Fixes
 * Fixed deprecated ansible_* facts usage by migrating to ansible_facts for compatibility with ansible-core 2.24
 * Replaced ansible_facts.fqdn with inventory_hostname to avoid incorrect hostname resolution when hosts file entries are misconfigured
-* Fixed Advanced module status detection for RHEL 9 and Ubuntu 24 by migrating to zmcontrol status, which replaces the deprecated getversion command.
-* Updated the `ansible.posix` dependency to version `2.2.0` to remove deprecation warnings related to the deprecated `to_native` import path in newer `ansible-core` versions.
+* Fixed Advanced module status detection for RHEL 9 and Ubuntu 24 by migrating to zmcontrol status, which replaces the deprecated getversion command
+* Updated the `ansible.posix` dependency to version `2.2.0` to remove deprecation warnings related to the deprecated `to_native` import path in newer `ansible-core` versions
+* Removed the legacy pgpool-related upgrade logic for Carbonio 24.9, as it is now considered a legacy release. This also prevents upgrade failures with an empty dbsConnectorServers group when using newer ansible-core versions
+* Disabled the memcached service on additional proxy nodes when multiple proxy servers are configured. Memcached remains enabled only on the first proxy server
 
 
 ### [26.3.2] (2026-04-13)

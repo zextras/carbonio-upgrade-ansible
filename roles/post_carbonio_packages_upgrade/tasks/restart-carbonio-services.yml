@@ -9,7 +9,7 @@
 # 3) service-discover agent, sidecars, proxyServers
 # 4) service-discover agent, sidecars, mtaServers
 # 5) service-discover agent, sidecars, files/docs
-# 7) service-discover agent, sidecars, workStreamServers
+# 7) service-discover agent, sidecars, chats
 # 7) service-discover agent, sidecars, videoserver
 
 ### Detect Patroni and restart the right service (Ubuntu/Debian)
@@ -356,7 +356,7 @@
   tags:
     - restart-carbonio-services
 
-### Restart WSC: message-dispatcher + all ws* services 
+### Restart Chats: message-dispatcher + all ws* services 
 - name: Restart carbonio-message-dispatcher services
   become: true
   ansible.builtin.service:
@@ -368,31 +368,31 @@
   loop:
     - carbonio-message-dispatcher.service
   tags:
-    - restart-wsc-services
-    - workStreamServers
+    - restart-chats-services
+    - chats
 
-- name: Collect WSC carbonio services
+- name: Collect Chats carbonio services
   become: true
   shell:
     cmd: "set -o pipefail && systemctl list-unit-files --state=enabled | awk '/ws/ {print $1}'"
     executable: /bin/bash
-  register: wsc_services_in_memory
+  register: chats_services_in_memory
   changed_when: false
   when: inventory_hostname in groups["workStreamServers"]
   tags:
     - restart-carbonio-service
-    - workStreamServers
+    - chats
 
-- name: Restart carbonio WSC
+- name: Restart carbonio Chats
   become: true
   ansible.builtin.service:
     name: "{{ item }}"
     state: restarted
   when: inventory_hostname in groups["workStreamServers"]
-  loop: "{{ wsc_services_in_memory.stdout_lines }}"
+  loop: "{{ chats_services_in_memory.stdout_lines }}"
   tags:
-    - restart-wsc-services
-    - workStreamServers
+    - restart-chats-services
+    - chats
 
 ### Video servers: restart all video* units ( only enabled units)
 - name: Get all videoserver services

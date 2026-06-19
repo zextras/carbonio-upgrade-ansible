@@ -20,6 +20,7 @@ All notable changes to this project will be documented in this file.
 * Updated the `ansible.posix` dependency to version `2.2.0` to remove deprecation warnings related to the deprecated `to_native` import path in newer `ansible-core` versions
 * Removed the legacy pgpool-related upgrade logic for Carbonio 24.9, as it is now considered a legacy release. This also prevents upgrade failures with an empty dbsConnectorServers group when using newer ansible-core versions
 * Disabled the memcached service on additional proxy nodes when multiple proxy servers are configured. Memcached remains enabled only on the first proxy server
+* Replaced the term “WSC” with “Chats” in task names
 
 
 ### [26.3.2] (2026-04-13)

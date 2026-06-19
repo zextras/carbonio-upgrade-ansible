@@ -96,7 +96,7 @@
     - carbonio-videoserver-advanced
     - carbonio-videorecorder
 
-  workstream_packages:
+  chats_packages:
     - carbonio-message-dispatcher
     - carbonio-ws-collaboration
 

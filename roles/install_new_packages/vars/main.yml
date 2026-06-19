@@ -97,8 +97,10 @@
     - carbonio-videorecorder
 
   chats_packages:
-    - carbonio-message-dispatcher
     - carbonio-ws-collaboration
+
+  message_dispatcher_packages:
+    - carbonio-message-dispatcher
 
   notification_push_packages:
     - carbonio-notification-push

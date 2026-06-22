@@ -9,7 +9,7 @@
 # 3) service-discover agent, sidecars, proxyServers
 # 4) service-discover agent, sidecars, mtaServers
 # 5) service-discover agent, sidecars, files/docs
-# 7) service-discover agent, sidecars, chats
+# 7) service-discover agent, sidecars, workStreamServers
 # 7) service-discover agent, sidecars, videoserver
 
 ### Detect Patroni and restart the right service (Ubuntu/Debian)
@@ -345,7 +345,7 @@
   when: inventory_hostname in groups["previewServers"] and ansible_facts.distribution_major_version != "9" and ansible_facts.distribution_major_version != "24" and (not carbonio_restarted | bool)
   notify: restart_carbonio_services
   tags:
-    - restart-carbonio-service
+    - restart-carbonio-services
     - previewServers
 
 # Mark as restarted to prevent duplicate handler triggers on the same host
@@ -368,30 +368,30 @@
   loop:
     - carbonio-message-dispatcher.service
   tags:
-    - restart-chats-services
+    - restart-carbonio-services
     - chats
 
-- name: Collect Chats carbonio services
+- name: Collect WSC carbonio services
   become: true
   shell:
     cmd: "set -o pipefail && systemctl list-unit-files --state=enabled | awk '/ws/ {print $1}'"
     executable: /bin/bash
-  register: chats_services_in_memory
+  register: wsc_services_in_memory
   changed_when: false
   when: inventory_hostname in groups["workStreamServers"]
   tags:
-    - restart-carbonio-service
+    - restart-carbonio-services
     - chats
 
-- name: Restart carbonio Chats
+- name: Restart carbonio WSC
   become: true
   ansible.builtin.service:
     name: "{{ item }}"
     state: restarted
   when: inventory_hostname in groups["workStreamServers"]
-  loop: "{{ chats_services_in_memory.stdout_lines }}"
+  loop: "{{ wsc_services_in_memory.stdout_lines }}"
   tags:
-    - restart-chats-services
+    - restart-carbonio-services
     - chats
 
 ### Video servers: restart all video* units ( only enabled units)
@@ -404,7 +404,7 @@
   changed_when: false
   when: inventory_hostname in groups["videoServers"]
   tags:
-    - restart-videoserver-services
+    - restart-carbonio-services
     - videoServers
 
 - name: Restart carbonio videoservers
@@ -415,7 +415,7 @@
   when: inventory_hostname in groups["videoServers"]
   loop: "{{ videoserver_services_in_memory.stdout_lines }}"
   tags:
-    - restart-videoserver-services
+    - restart-carbonio-services
     - videoServers
 
 # Remove the flag on all hosts (final hygiene)

@@ -64,7 +64,7 @@
      - ../roles/install_new_packages
      - ../roles/post_carbonio_packages_upgrade
 
-# Upgrade Chats
+# Upgrade WSC
 - hosts: workStreamServers
   order: inventory
   gather_facts: true

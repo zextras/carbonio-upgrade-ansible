@@ -345,7 +345,7 @@
   when: inventory_hostname in groups["previewServers"] and ansible_facts.distribution_major_version != "9" and ansible_facts.distribution_major_version != "24" and (not carbonio_restarted | bool)
   notify: restart_carbonio_services
   tags:
-    - restart-carbonio-service
+    - restart-carbonio-services
     - previewServers
 
 # Mark as restarted to prevent duplicate handler triggers on the same host
@@ -356,7 +356,7 @@
   tags:
     - restart-carbonio-services
 
-### Restart WSC: message-dispatcher + all ws* services 
+### Restart Chats: message-dispatcher + all ws* services 
 - name: Restart carbonio-message-dispatcher services
   become: true
   ansible.builtin.service:
@@ -368,8 +368,8 @@
   loop:
     - carbonio-message-dispatcher.service
   tags:
-    - restart-wsc-services
-    - workStreamServers
+    - restart-carbonio-services
+    - chats
 
 - name: Collect WSC carbonio services
   become: true
@@ -380,8 +380,8 @@
   changed_when: false
   when: inventory_hostname in groups["workStreamServers"]
   tags:
-    - restart-carbonio-service
-    - workStreamServers
+    - restart-carbonio-services
+    - chats
 
 - name: Restart carbonio WSC
   become: true
@@ -391,8 +391,8 @@
   when: inventory_hostname in groups["workStreamServers"]
   loop: "{{ wsc_services_in_memory.stdout_lines }}"
   tags:
-    - restart-wsc-services
-    - workStreamServers
+    - restart-carbonio-services
+    - chats
 
 ### Video servers: restart all video* units ( only enabled units)
 - name: Get all videoserver services
@@ -404,7 +404,7 @@
   changed_when: false
   when: inventory_hostname in groups["videoServers"]
   tags:
-    - restart-videoserver-services
+    - restart-carbonio-services
     - videoServers
 
 - name: Restart carbonio videoservers
@@ -415,7 +415,7 @@
   when: inventory_hostname in groups["videoServers"]
   loop: "{{ videoserver_services_in_memory.stdout_lines }}"
   tags:
-    - restart-videoserver-services
+    - restart-carbonio-services
     - videoServers
 
 # Remove the flag on all hosts (final hygiene)

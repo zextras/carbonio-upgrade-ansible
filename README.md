@@ -12,7 +12,7 @@ To perform the upgrade, follow these steps:
 4. Execute the upgrade playbook using the following command:
 
 ```bash
-ansible-playbook -i inventoryname carbonio-upgrade-ansible/carbonio-upgrade/upgrade-carbonio.yml
+ansible-playbook -i inventoryname carbonio-upgrade-ansible/playbooks/carbonio_upgrade.yml
 
 #or upgrade from Ansible Galaxy
 
@@ -23,7 +23,7 @@ ansible-playbook -i inventoryname zxbot.carbonio_upgrade.carbonio_upgrade
 If you want to skip autoremove option use --extra-vars:
 
 ```bash
-ansible-playbook -i inventoryname carbonio-upgrade-ansible/carbonio-upgrade/upgrade-carbonio.yml --extra-vars "skip_autoremove=1"
+ansible-playbook -i inventoryname carbonio-upgrade-ansible/playbooks/carbonio_upgrade.yml --extra-vars "skip_autoremove=1"
 
 #or upgrade from Ansible Galaxy
 

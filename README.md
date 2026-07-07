@@ -67,4 +67,4 @@ ansible-playbook -i inventoryname zxbot.carbonio_upgrade.carbonio_upgrade --extr
 
 ## License
 
-See `COPYING` file for detail.
+See [COPYING](COPYING.md) file for detail.

@@ -65,6 +65,6 @@ ansible-galaxy collection install zxbot.carbonio_upgrade
 ansible-playbook -i inventoryname -u root zxbot.carbonio_upgrade.carbonio_upgrade --extra-vars "skip_autoremove=1"
 ```
 
-## License
+## License(s)
 
 See [COPYING](COPYING.md) file for detail.

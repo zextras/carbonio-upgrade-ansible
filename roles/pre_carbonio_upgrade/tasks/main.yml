@@ -5,5 +5,8 @@
 ---
 # tasks file for pre-carbonio-upgrade
 - import_tasks: password-checks.yml
-- import_tasks: workstreamservers_check.yml
+- import_tasks: chats_check.yml
+- import_tasks: ansible_controller_dependencies.yml
+- import_tasks: inventory_values_checks.yml
 - import_tasks: pre-upgrade-cmds.yml
+- import_tasks: rsyslog-config-check.yml

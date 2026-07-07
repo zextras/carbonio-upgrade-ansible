@@ -60,7 +60,6 @@
   proxy_packages: 
     - carbonio-proxy
     - carbonio-webui
-    - carbonio-chats-ui
     - carbonio-admin-console-ui
     - carbonio-avdb-updater
 
@@ -85,6 +84,9 @@
 
   ws_ui_packages:
     - carbonio-ws-collaboration-ui
+  
+  storage_ui_packages:
+    - carbonio-storages-ui
 
   docs_packages: 
     - carbonio-docs-connector
@@ -95,8 +97,10 @@
     - carbonio-videorecorder
 
   workstream_packages:
-    - carbonio-message-dispatcher
     - carbonio-ws-collaboration
+
+  message_dispatcher_packages:
+    - carbonio-message-dispatcher
 
   notification_push_packages:
     - carbonio-notification-push

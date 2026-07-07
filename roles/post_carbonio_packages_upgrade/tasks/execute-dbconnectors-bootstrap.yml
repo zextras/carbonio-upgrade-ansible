@@ -11,7 +11,7 @@
   register: patroni_check_debian
   failed_when: false
   changed_when: false 
-  when: ansible_os_family == "Debian"
+  when: ansible_facts.os_family == "Debian"
   delegate_to: "{{ groups['postgresServers'][0] }}"
   tags:
     - install-carbonio-dbconnectors
@@ -21,7 +21,7 @@
   ansible.builtin.set_fact:
       carbonio_postgres_password: "{{ lookup('ansible.builtin.password', inventory_file + '_postgrespassword', chars=['ascii_letters']) }}"
   when: 
-    - ansible_os_family == "Debian" and groups['dbsConnectorServers'] | length > 0
+    - ansible_facts.os_family == "Debian" and groups['dbsConnectorServers'] | length > 0
     - inventory_hostname in groups["dbsConnectorServers"][0] 
     - "'patroni' in patroni_check_debian.stdout"
   tags:
@@ -34,7 +34,7 @@
   command: /usr/bin/carbonio-mailbox-db-bootstrap carbonio_adm 127.0.0.1
   become: true
   when: 
-    - ansible_os_family == "Debian" and groups['dbsConnectorServers'] | length > 0
+    - ansible_facts.os_family == "Debian" and groups['dbsConnectorServers'] | length > 0
     - inventory_hostname in groups["dbsConnectorServers"][0] 
     - "'patroni' in patroni_check_debian.stdout"
   tags:
@@ -48,7 +48,7 @@
   run_once: true
   when: 
     - groups['filesServers'] | length > 0 and groups['dbsConnectorServers'] | length > 0
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - inventory_hostname in groups["dbsConnectorServers"][0]
     - "'patroni' in patroni_check_debian.stdout"
   tags:
@@ -62,7 +62,7 @@
   command: /usr/bin/carbonio-docs-connector-db-bootstrap carbonio_adm 127.0.0.1
   when: 
     - groups['docsServers'] | length > 0 and groups['dbsConnectorServers'] | length > 0
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - inventory_hostname in groups["dbsConnectorServers"][0]
     - "'patroni' in patroni_check_debian.stdout"
   tags:
@@ -76,7 +76,7 @@
   command: /usr/bin/carbonio-tasks-db-bootstrap carbonio_adm 127.0.0.1
   when:  
     - groups['taskServers'] | length > 0 and groups['dbsConnectorServers'] | length > 0
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - inventory_hostname in groups["dbsConnectorServers"][0]
     - "'patroni' in patroni_check_debian.stdout"
   tags:
@@ -89,7 +89,7 @@
   command: /usr/bin/carbonio-ws-collaboration-db-bootstrap carbonio_adm 127.0.0.1
   when: 
     - groups['workStreamServers'] | length > 0 and groups['dbsConnectorServers'] | length > 0
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - inventory_hostname in groups["dbsConnectorServers"][0]
     - "'patroni' in patroni_check_debian.stdout"
   tags:
@@ -102,7 +102,20 @@
   command: /usr/bin/carbonio-notification-push-db-bootstrap carbonio_adm 127.0.0.1
   when: 
     - groups['workStreamServers'] | length > 0 and groups['dbsConnectorServers'] | length > 0
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
+    - inventory_hostname in groups["dbsConnectorServers"][0]
+    - "'patroni' in patroni_check_debian.stdout"
+  tags:
+    - db-connectors-bootstrap
+
+- name: run carbonio-videorecorder-db Bootstrap (HA)
+  environment:
+    PGPASSWORD: "{{ carbonio_postgres_password }}"
+  become: true
+  command: /usr/bin/carbonio-videorecorder-db-bootstrap carbonio_adm 127.0.0.1
+  when: 
+    - groups['videoServers'] | length > 0 and groups['dbsConnectorServers'] | length > 0
+    - ansible_facts.os_family == "Debian"
     - inventory_hostname in groups["dbsConnectorServers"][0]
     - "'patroni' in patroni_check_debian.stdout"
   tags:
@@ -126,7 +139,7 @@
   ansible.builtin.set_fact:
       carbonio_postgres_password: "{{ lookup('ansible.builtin.password', inventory_file + '_postgrespassword', chars=['ascii_letters']) }}"
   when: 
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - inventory_hostname in groups["postgresServers"][0]
     - "'patroni' not in patroni_check_debian.stdout"
   tags:
@@ -139,7 +152,7 @@
   command: /usr/bin/carbonio-mailbox-db-bootstrap carbonio_adm 127.0.0.1
   become: true
   when: 
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - inventory_hostname in groups["postgresServers"][0]
     - "'patroni' not in patroni_check_debian.stdout"
   tags:
@@ -153,7 +166,7 @@
   run_once: true
   when: 
     - groups['filesServers'] | length > 0 
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - inventory_hostname in groups["postgresServers"][0]
     - "'patroni' not in patroni_check_debian.stdout"
   tags:
@@ -167,7 +180,7 @@
   command: /usr/bin/carbonio-docs-connector-db-bootstrap carbonio_adm 127.0.0.1
   when: 
     - groups['docsServers'] | length > 0 
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - inventory_hostname in groups["postgresServers"][0]
     - "'patroni' not in patroni_check_debian.stdout"
   tags:
@@ -181,7 +194,7 @@
   command: /usr/bin/carbonio-tasks-db-bootstrap carbonio_adm 127.0.0.1
   when:  
     - groups['taskServers'] | length > 0 
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - inventory_hostname in groups["postgresServers"][0]
     - "'patroni' not in patroni_check_debian.stdout"
   tags:
@@ -194,7 +207,7 @@
   command: /usr/bin/carbonio-ws-collaboration-db-bootstrap carbonio_adm 127.0.0.1
   when: 
     - groups['workStreamServers'] | length > 0
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - inventory_hostname in groups["postgresServers"][0]
     - "'patroni' not in patroni_check_debian.stdout"
   tags:
@@ -207,7 +220,20 @@
   command: /usr/bin/carbonio-notification-push-db-bootstrap carbonio_adm 127.0.0.1
   when: 
     - groups['workStreamServers'] | length > 0
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
+    - inventory_hostname in groups["postgresServers"][0]
+    - "'patroni' not in patroni_check_debian.stdout"
+  tags:
+    - db-connectors-bootstrap
+
+- name: run carbonio-videorecorder-db Bootstrap
+  environment:
+    PGPASSWORD: "{{ carbonio_postgres_password }}"
+  become: true
+  command: /usr/bin/carbonio-videorecorder-db-bootstrap carbonio_adm 127.0.0.1
+  when: 
+    - groups['videoServers'] | length > 0
+    - ansible_facts.os_family == "Debian"
     - inventory_hostname in groups["postgresServers"][0]
     - "'patroni' not in patroni_check_debian.stdout"
   tags:
@@ -233,7 +259,7 @@
   register: patroni_check_rhel
   failed_when: false 
   changed_when: false
-  when: ansible_os_family == "RedHat"
+  when: ansible_facts.os_family == "RedHat"
   delegate_to: "{{ groups['postgresServers'][0] }}"
   tags:
     - install-carbonio-dbconnectors
@@ -243,7 +269,7 @@
   ansible.builtin.set_fact:
       carbonio_postgres_password: "{{ lookup('ansible.builtin.password', inventory_file + '_postgrespassword', chars=['ascii_letters']) }}"
   when: 
-    - ansible_os_family == "RedHat" and groups['dbsConnectorServers'] | length > 0
+    - ansible_facts.os_family == "RedHat" and groups['dbsConnectorServers'] | length > 0
     - inventory_hostname in groups['dbsConnectorServers'][0] 
     - "'patroni' in patroni_check_rhel.stdout"
   tags:
@@ -255,7 +281,7 @@
   command: /usr/bin/carbonio-mailbox-db-bootstrap carbonio_adm 127.0.0.1
   become: true
   when: 
-    - ansible_os_family == "RedHat" and groups['dbsConnectorServers'] | length > 0
+    - ansible_facts.os_family == "RedHat" and groups['dbsConnectorServers'] | length > 0
     - inventory_hostname in groups['dbsConnectorServers'][0] 
     - "'patroni' in patroni_check_rhel.stdout"
   tags:
@@ -269,7 +295,7 @@
   run_once: true
   when: 
     - groups['filesServers'] | length > 0 and groups['dbsConnectorServers'] | length > 0
-    - ansible_os_family == "RedHat" 
+    - ansible_facts.os_family == "RedHat" 
     - inventory_hostname in groups['dbsConnectorServers'][0] 
     - "'patroni' in patroni_check_rhel.stdout" 
   tags:
@@ -283,7 +309,7 @@
   command: /usr/bin/carbonio-docs-connector-db-bootstrap carbonio_adm 127.0.0.1
   when: 
     - groups['docsServers'] | length > 0 and groups['dbsConnectorServers'] | length > 0
-    - ansible_os_family == "RedHat" 
+    - ansible_facts.os_family == "RedHat" 
     - inventory_hostname in groups['dbsConnectorServers'][0] 
     - "'patroni' in patroni_check_rhel.stdout"
   tags:
@@ -297,7 +323,7 @@
   command: /usr/bin/carbonio-tasks-db-bootstrap carbonio_adm 127.0.0.1
   when:  
     - groups['taskServers'] | length > 0 and groups['dbsConnectorServers'] | length > 0
-    - ansible_os_family == "RedHat" 
+    - ansible_facts.os_family == "RedHat" 
     - inventory_hostname in groups['dbsConnectorServers'][0] 
     - "'patroni' in patroni_check_rhel.stdout"
   tags:
@@ -310,7 +336,7 @@
   command: /usr/bin/carbonio-ws-collaboration-db-bootstrap carbonio_adm 127.0.0.1
   when: 
     - groups['workStreamServers'] | length > 0 and groups['dbsConnectorServers'] | length > 0
-    - ansible_os_family == "RedHat" 
+    - ansible_facts.os_family == "RedHat" 
     - inventory_hostname in groups["dbsConnectorServers"][0]
     - "'patroni' in patroni_check_rhel.stdout"
   tags:
@@ -323,7 +349,20 @@
   command: /usr/bin/carbonio-notification-push-db-bootstrap carbonio_adm 127.0.0.1
   when: 
     - groups['workStreamServers'] | length > 0 and groups['dbsConnectorServers'] | length > 0
-    - ansible_os_family == "RedHat" 
+    - ansible_facts.os_family == "RedHat" 
+    - inventory_hostname in groups["dbsConnectorServers"][0]
+    - "'patroni' in patroni_check_rhel.stdout"
+  tags:
+    - db-connectors-bootstrap
+
+- name: run carbonio-videorecorder-db Bootstrap (HA)
+  environment:
+    PGPASSWORD: "{{ carbonio_postgres_password }}"
+  become: true
+  command: /usr/bin/carbonio-videorecorder-db-bootstrap carbonio_adm 127.0.0.1
+  when: 
+    - groups['videoServers'] | length > 0 and groups['dbsConnectorServers'] | length > 0
+    - ansible_facts.os_family == "RedHat" 
     - inventory_hostname in groups["dbsConnectorServers"][0]
     - "'patroni' in patroni_check_rhel.stdout"
   tags:
@@ -348,7 +387,7 @@
   ansible.builtin.set_fact:
       carbonio_postgres_password: "{{ lookup('ansible.builtin.password', inventory_file + '_postgrespassword', chars=['ascii_letters']) }}"
   when: 
-    - ansible_os_family == "RedHat" 
+    - ansible_facts.os_family == "RedHat" 
     - inventory_hostname in groups["postgresServers"][0]
     - "'patroni' not in patroni_check_rhel.stdout"
   tags:
@@ -360,7 +399,7 @@
   command: /usr/bin/carbonio-mailbox-db-bootstrap carbonio_adm 127.0.0.1
   become: true
   when: 
-    - ansible_os_family == "RedHat" 
+    - ansible_facts.os_family == "RedHat" 
     - inventory_hostname in groups["postgresServers"][0]
     - "'patroni' not in patroni_check_rhel.stdout"
   tags:
@@ -374,7 +413,7 @@
   run_once: true
   when: 
     - groups['filesServers'] | length > 0 
-    - ansible_os_family == "RedHat" 
+    - ansible_facts.os_family == "RedHat" 
     - inventory_hostname in groups["postgresServers"][0]
     - "'patroni' not in patroni_check_rhel.stdout"
   tags:
@@ -388,7 +427,7 @@
   command: /usr/bin/carbonio-docs-connector-db-bootstrap carbonio_adm 127.0.0.1
   when: 
     - groups['docsServers'] | length > 0 
-    - ansible_os_family == "RedHat" 
+    - ansible_facts.os_family == "RedHat" 
     - inventory_hostname in groups["postgresServers"][0]
     - "'patroni' not in patroni_check_rhel.stdout"
   tags:
@@ -402,7 +441,7 @@
   command: /usr/bin/carbonio-tasks-db-bootstrap carbonio_adm 127.0.0.1
   when:  
     - groups['taskServers'] | length > 0 
-    - ansible_os_family == "RedHat" 
+    - ansible_facts.os_family == "RedHat" 
     - inventory_hostname in groups["postgresServers"][0]
     - "'patroni' not in patroni_check_rhel.stdout"
   tags:
@@ -415,7 +454,7 @@
   command: /usr/bin/carbonio-ws-collaboration-db-bootstrap carbonio_adm 127.0.0.1
   when: 
     - groups['workStreamServers'] | length > 0
-    - ansible_os_family == "RedHat" 
+    - ansible_facts.os_family == "RedHat" 
     - inventory_hostname in groups["postgresServers"][0]
     - "'patroni' not in patroni_check_rhel.stdout"
   tags:
@@ -428,7 +467,7 @@
   command: /usr/bin/carbonio-videorecorder-db-bootstrap carbonio_adm 127.0.0.1
   when: 
     - groups['videoServers'] | length > 0
-    - ansible_os_family == "RedHat" 
+    - ansible_facts.os_family == "RedHat" 
     - inventory_hostname in groups["postgresServers"][0]
     - "'patroni' not in patroni_check_rhel.stdout"
   tags:

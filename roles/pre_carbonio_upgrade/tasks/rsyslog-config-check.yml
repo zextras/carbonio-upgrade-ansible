@@ -1,0 +1,16 @@
+---
+- name: Check if rsyslog remote logging is commented out on logger server
+  ansible.builtin.command: >
+    grep -cE '^\s*#\s*(module\(load="imudp"\)|input\(type="imudp" port="514"\)|module\(load="imtcp"\)|input\(type="imtcp" port="514"\))' /etc/rsyslog.conf
+  register: rsyslog_check
+  changed_when: false
+  failed_when: false
+  when: inventory_hostname in groups["syslogServer"]
+  tags:
+  - check-rsyslog
+
+- name: Re-apply syslog configuration if remote listeners are commented
+  ansible.builtin.include_tasks: configure-syslog-aggregator.yml
+  when: inventory_hostname in groups["syslogServer"] and rsyslog_check.stdout | default('0') | int > 0
+  tags:
+  - check-rsyslog

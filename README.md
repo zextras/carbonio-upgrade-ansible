@@ -38,14 +38,14 @@ The upgrade playbook applies the following automatically; no extra action is nee
 **From this repository:**
 
 ```
-ansible-playbook -i inventoryname carbonio-upgrade-ansible/playbooks/carbonio_upgrade.yml
+ansible-playbook -i inventoryname -u root carbonio-upgrade-ansible/playbooks/carbonio_upgrade.yml
 ```
 
 **Or from Ansible Galaxy:**
 
 ```
 ansible-galaxy collection install zxbot.carbonio_upgrade
-ansible-playbook -i inventoryname zxbot.carbonio_upgrade.carbonio_upgrade
+ansible-playbook -i inventoryname -u root zxbot.carbonio_upgrade.carbonio_upgrade
 ```
 
 ### Skipping autoremove
@@ -55,14 +55,14 @@ To skip the `autoremove` step, pass `skip_autoremove=1` via `--extra-vars`:
 **From this repository:**
 
 ```
-ansible-playbook -i inventoryname carbonio-upgrade-ansible/playbooks/carbonio_upgrade.yml --extra-vars "skip_autoremove=1"
+ansible-playbook -i inventoryname -u root carbonio-upgrade-ansible/playbooks/carbonio_upgrade.yml --extra-vars "skip_autoremove=1"
 ```
 
 **Or from Ansible Galaxy:**
 
 ```
 ansible-galaxy collection install zxbot.carbonio_upgrade
-ansible-playbook -i inventoryname zxbot.carbonio_upgrade.carbonio_upgrade --extra-vars "skip_autoremove=1"
+ansible-playbook -i inventoryname -u root zxbot.carbonio_upgrade.carbonio_upgrade --extra-vars "skip_autoremove=1"
 ```
 
 ## License

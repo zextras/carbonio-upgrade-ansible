@@ -10,12 +10,16 @@
   command: '/opt/zextras/bin/zmcontrol status'
   register: zmcontrol_chk_status
   changed_when: false
+  when: inventory_hostname in groups["applicationServers"]
   tags:
     - check-carbonio-upgrade
 
 - name: Debug zmcontrol status
   debug:
     msg: "{{ zmcontrol_chk_status.stdout_lines }}"
+  when: inventory_hostname in groups["applicationServers"]
+  tags:
+    - check-carbonio-upgrade
 
 - name: Check Carbonio services
   become: true
@@ -31,6 +35,8 @@
 - name: Debug list of carbonio services status
   debug:
     msg: "{{ carbonio_chk_services.stdout_lines }}"
+  tags:
+    - check-carbonio-upgrade
 
 - name: Check Consul services
   become: true
@@ -63,6 +69,8 @@
   when: inventory_hostname in groups["videoServers"]
   debug:
     msg: "{{ video_chk_services.stdout_lines }}"
+  tags:
+    - check-carbonio-upgrade
 
 - name: Check Carbonio version
   become: true

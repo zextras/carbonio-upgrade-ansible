@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. 
 
+### [26.6.1] (2026-07-08)
+
+
+### Bug Fixes
+* Added the missing Notification Push DB bootstrap for Standard RHEL installations.
+* Limited the zmcontrol status advanced check to mailbox servers. Its output on non-mailbox servers is inconsistent and may return a non-zero exit code even when the relevant services are operating as expected.
+
 
 ### [26.6.0] (2026-07-07)
 

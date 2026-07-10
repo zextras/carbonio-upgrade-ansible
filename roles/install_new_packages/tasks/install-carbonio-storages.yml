@@ -22,7 +22,7 @@
   ansible.builtin.apt:
     name: "{{ item.item }}"
     state: present
-  with_items: "{{ check_services.results | default([]) }}"
+  with_items: "{{ check_services.results }}"
   when:
     - ansible_facts.os_family == "Debian"
     - inventory_hostname in groups['mtaServers'] or inventory_hostname in groups['filesServers']
@@ -36,7 +36,7 @@
   ansible.builtin.yum:
     name: "{{ item.item }}"
     state: present
-  with_items: "{{ check_services.results | default([]) }}"
+  with_items: "{{ check_services.results }}"
   when:
     - ansible_facts.os_family in ["RedHat", "CentOS"]
     - inventory_hostname in groups['mtaServers'] or inventory_hostname in groups['filesServers']
@@ -47,7 +47,7 @@
 - name: Debug message for already installed carbonio-storages
   ansible.builtin.debug:
     msg: "carbonio-storages is already installed"
-  with_items: "{{ check_services.results | default([]) }}"
+  with_items: "{{ check_services.results }}"
   when:
     - inventory_hostname in groups['mtaServers'] or inventory_hostname in groups['filesServers']
     - item.stdout == "installed"

@@ -5,7 +5,7 @@
 ---
 - name: Check if carbonio-storages service is present in Consul
   become: true
-  shell: >
+  ansible.builtin.shell: >
     consul catalog services | grep -q {{ item }}
     && echo installed
     || echo absent
@@ -13,42 +13,43 @@
   register: check_services
   changed_when: false
   when:
-    - inventory_hostname in groups['filesServers']
+    - inventory_hostname in groups['mtaServers'] or inventory_hostname in groups['filesServers']
   tags:
     - install-carbonio-storages
 
 - name: Install carbonio-storages if not found in Consul [Ubuntu]
   become: true
-  apt:
+  ansible.builtin.apt:
     name: "{{ item.item }}"
     state: present
-  with_items: "{{ check_services.results }}"
+  with_items: "{{ check_services.results | default([]) }}"
   when:
     - ansible_facts.os_family == "Debian"
-    - inventory_hostname in groups['filesServers']
+    - inventory_hostname in groups['mtaServers'] or inventory_hostname in groups['filesServers']
     - item.stdout == "absent"
   tags:
     - install-carbonio-storages
 
+###RHEL
 - name: Install carbonio-storages if not found in Consul [RHEL]
   become: true
-  yum:
+  ansible.builtin.yum:
     name: "{{ item.item }}"
     state: present
-  with_items: "{{ check_services.results }}"
+  with_items: "{{ check_services.results | default([]) }}"
   when:
     - ansible_facts.os_family in ["RedHat", "CentOS"]
-    - inventory_hostname in groups['filesServers']
+    - inventory_hostname in groups['mtaServers'] or inventory_hostname in groups['filesServers']
     - item.stdout == "absent"
   tags:
     - install-carbonio-storages
 
 - name: Debug message for already installed carbonio-storages
-  debug:
+  ansible.builtin.debug:
     msg: "carbonio-storages is already installed"
-  with_items: "{{ check_services.results }}"
+  with_items: "{{ check_services.results | default([]) }}"
   when:
-    - inventory_hostname in groups['filesServers']
+    - inventory_hostname in groups['mtaServers'] or inventory_hostname in groups['filesServers']
     - item.stdout == "installed"
   tags:
     - install-carbonio-storages

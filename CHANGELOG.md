@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file. 
 
 
+### [26.9.0] (2026-07-10)
+
+
+### Features 
+* Removed the obsolete carbonio-core < 4.2 compatibility block, including version detection and the related restart, wait, and stop sequence.
+* Removed outdated Carbonio version references from task names that are not conditionally executed based on the installed Carbonio version.
+
+
 ### [26.6.2] (2026-07-10)
 
 

@@ -121,6 +121,20 @@
   tags:
     - db-connectors-bootstrap
 
+- name: run preview-db Bootstrap (HA)
+  environment:
+      PGPASSWORD: "{{ carbonio_postgres_password }}"
+  become: true
+  run_once: true
+  command: /usr/bin/carbonio-preview-db-bootstrap carbonio_adm 127.0.0.1
+  when:
+    - groups['previewServers'] | length > 0 and groups['dbsConnectorServers'] | length > 0
+    - ansible_facts.os_family == "Debian"
+    - inventory_hostname in groups["dbsConnectorServers"][0]
+    - "'patroni' in patroni_check_debian.stdout"
+  tags:
+      - db-connectors-bootstrap
+
 # If Partoni is not installd
 - name: Manage Postgres password (Standard)
   ansible.builtin.set_fact:
@@ -131,7 +145,6 @@
     - "'patroni' not in patroni_check_debian.stdout"
   tags:
       - db-connectors-bootstrap
-
 
 - name: run mailbox db-connectors Bootstrap (Standard)
   environment:
@@ -225,6 +238,20 @@
     - "'patroni' not in patroni_check_debian.stdout"
   tags:
     - db-connectors-bootstrap
+
+- name: run preview-db Bootstrap (Standard)
+  environment:
+      PGPASSWORD: "{{ carbonio_postgres_password }}"
+  become: true
+  run_once: true
+  command: /usr/bin/carbonio-preview-db-bootstrap carbonio_adm 127.0.0.1
+  when:
+    - groups['previewServers'] | length > 0
+    - ansible_facts.os_family == "Debian"
+    - inventory_hostname in groups["postgresServers"][0]
+    - "'patroni' not in patroni_check_debian.stdout"
+  tags:
+      - db-connectors-bootstrap
 
 ### RHEL
 - name: Check if patroni is installed [RHEL] (Standard)
@@ -342,6 +369,20 @@
   tags:
     - db-connectors-bootstrap
 
+- name: run preview-db Bootstrap (HA)
+  environment:
+      PGPASSWORD: "{{ carbonio_postgres_password }}"
+  become: true
+  run_once: true
+  command: /usr/bin/carbonio-preview-db-bootstrap carbonio_adm 127.0.0.1
+  when:
+    - groups['previewServers'] | length > 0 and groups['dbsConnectorServers'] | length > 0
+    - ansible_facts.os_family == "RedHat"
+    - inventory_hostname in groups["dbsConnectorServers"][0]
+    - "'patroni' in patroni_check_rhel.stdout"
+  tags:
+      - db-connectors-bootstrap
+
 ### If Patroni is not installed 
 
 - name: Manage Postgres password (Standard)
@@ -447,3 +488,17 @@
     - "'patroni' not in patroni_check_rhel.stdout"
   tags:
     - db-connectors-bootstrap
+    
+- name: run preview-db Bootstrap (Standard)
+  environment:
+      PGPASSWORD: "{{ carbonio_postgres_password }}"
+  become: true
+  run_once: true
+  command: /usr/bin/carbonio-preview-db-bootstrap carbonio_adm 127.0.0.1
+  when:
+    - groups['previewServers'] | length > 0
+    - ansible_facts.os_family == "RedHat"
+    - inventory_hostname in groups["postgresServers"][0]
+    - "'patroni' not in patroni_check_rhel.stdout"
+  tags:
+      - db-connectors-bootstrap

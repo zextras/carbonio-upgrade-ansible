@@ -27,7 +27,7 @@
     - postgresServers
 
 # If Patroni is absent → restart PostgreSQL
-- name: Restart postgres(Ubuntu)
+- name: Restart postgres[Ubuntu]
   become: true
   ansible.builtin.service:
     name: "postgresql"
@@ -42,7 +42,7 @@
     - postgresServers
 
 # If Patroni is present → restart Patroni; will pause later
-- name: Restart patroni(Ubuntu)
+- name: Restart patroni[Ubuntu]
   become: true
   ansible.builtin.service:
     name: "patroni"
@@ -56,7 +56,7 @@
     - restart-carbonio-services
     - postgresServers
 
-### Detect Patroni and restart the right service (RHEL)
+### Detect Patroni and restart the right service [RHEL]
 - name: Check if patroni is installed [RHEL]
   become: true
   ansible.builtin.shell: rpm -qa 2>/dev/null | grep -w '^patroni'
@@ -71,7 +71,7 @@
     - postgresServers
 
 # Patroni absent → restart the PostgreSQL unit
-- name: Restart postgres(RHEL)
+- name: Restart postgres [RHEL]
   become: true
   ansible.builtin.service:
     name: "postgresql-16.service"
@@ -86,7 +86,7 @@
     - postgresServers
 
 # Patroni present → restart Patroni
-- name: Restart patroni(RHEL)
+- name: Restart patroni [RHEL]
   become: true
   ansible.builtin.service:
     name: "patroni.service"
@@ -101,7 +101,7 @@
     - postgresServers
 
 # After Patroni restart, give cluster time to stabilize
-- name: Wait for 60 seconds after Patroni restart (Ubuntu)
+- name: Wait for 60 seconds after Patroni restart [Ubuntu]
   ansible.builtin.pause:
     seconds: 60
   when: 
@@ -112,7 +112,7 @@
     - restart-carbonio-services
     - postgresServers
 
-- name: Wait for 60 seconds after Patroni restart (RHEL)
+- name: Wait for 60 seconds after Patroni restart [RHEL]
   ansible.builtin.pause:
     seconds: 60
   when: 
@@ -124,7 +124,7 @@
     - postgresServers
 
 # Debug outputs for visibility of what actually restarted
-- name: Debug postgres restart status (Ubuntu)
+- name: Debug postgres restart status [Ubuntu]
   ansible.builtin.debug:
     msg: "{{ postgres_ubuntu }}"
   when: 
@@ -135,7 +135,7 @@
     - restart-carbonio-services
     - postgresServers
 
-- name: Debug postgres restart status (RHEL)
+- name: Debug postgres restart status [RHEL]
   ansible.builtin.debug:
     msg: "{{ postgres_rhel }}"
   when: 
@@ -146,7 +146,7 @@
     - restart-carbonio-services
     - postgresServers
 
-- name: Debug patroni restart status (Ubuntu)
+- name: Debug patroni restart status [Ubuntu]
   ansible.builtin.debug:
     msg: "{{ patroni_ubuntu }}"
   when: 
@@ -157,7 +157,7 @@
     - restart-carbonio-services
     - postgresServers
 
-- name: Debug patroni restart status (RHEL)
+- name: Debug patroni restart status [RHEL]
   ansible.builtin.debug:
     msg: "{{ patroni_rhel }}"
   when: 

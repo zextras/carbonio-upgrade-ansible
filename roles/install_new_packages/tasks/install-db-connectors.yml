@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 ---
-- name: Install notification push db connector Ubuntu
+- name: Install notification push db connector [Ubuntu]
   become: true
   ansible.builtin.apt: name={{ item }} state=present
   with_items:
@@ -19,7 +19,7 @@
     - install-carbonio-dbconnectors
     - install-carbonio-notification-push
 
-- name: Install videorecorder db connector Ubuntu
+- name: Install videorecorder db connector [Ubuntu]
   become: true
   ansible.builtin.apt: name={{ item }} state=present
   with_items:
@@ -35,7 +35,7 @@
     - install-carbonio-dbconnectors
     - install-carbonio-videoserver
 
-- name: Install preview db connector Ubuntu
+- name: Install preview db connector [Ubuntu]
   become: true
   ansible.builtin.apt: name={{ item }} state=present
   with_items:
@@ -53,7 +53,7 @@
 
 ##### RHEL
 
-- name: Install notification push db connector RHEL
+- name: Install notification push db connector [RHEL]
   become: true
   ansible.builtin.yum: name={{ item }} state=present
   with_items:
@@ -70,7 +70,7 @@
     - install-carbonio-notification-push
  
 
-- name: Install videorecorder db connector RHEL
+- name: Install videorecorder db connector [RHEL]
   become: true
   ansible.builtin.yum: name={{ item }} state=present
   with_items:
@@ -86,7 +86,7 @@
     - install-carbonio-dbconnectors
     - install-carbonio-videoserver
 
-- name: Install preview db connector RHEL
+- name: Install preview db connector [RHEL]
   become: true
   ansible.builtin.yum: name={{ item }} state=present
   with_items:

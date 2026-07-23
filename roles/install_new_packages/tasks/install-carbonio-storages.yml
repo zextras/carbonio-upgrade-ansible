@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 ---
-- name: Install carbonio-storages Ubuntu
+- name: Install carbonio-storages [Ubuntu]
   become: true
   ansible.builtin.apt:
     name: "{{ carbonio_storages_packages }}"
@@ -15,7 +15,7 @@
     - install-carbonio-storages
 
 ###RHEL
-- name: Install carbonio-storages RHEL
+- name: Install carbonio-storages [RHEL]
   become: true
   ansible.builtin.yum:
     name: "{{ carbonio_storages_packages }}"

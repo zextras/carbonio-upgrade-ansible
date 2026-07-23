@@ -12,7 +12,7 @@
     tags:
       - install-carbonio-proxy 
   
-  - name: Install Carbonio storage UI Ubuntu
+  - name: Install Carbonio storage UI [Ubuntu]
     become: true
     ansible.builtin.apt: name={{ item }} state=present
     with_items:
@@ -31,7 +31,7 @@
     tags:
       - install-carbonio-proxy  
 
-  - name: Install Carbonio storage UI RHEL
+  - name: Install Carbonio storage UI [RHEL]
     become: true
     ansible.builtin.yum: name={{ item }} state=present
     with_items:

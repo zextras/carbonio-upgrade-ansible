@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 ---
-- name: Update repositories cache
+- name: Update repositories cache [Ubuntu]
   become: true
   ansible.builtin.apt:
     update_cache: true
@@ -11,7 +11,7 @@
   tags:
     - ugrade-carbonio
 
-- name: Run scripts to get packages to upgrade(Ubuntu)
+- name: Run scripts to get packages to upgrade [Ubuntu]
   become: true
   ansible.builtin.shell:
     cmd: 'set -o pipefail && apt list --upgradable 2>/dev/null | cut -f 1 -d / | tail -n +2'
@@ -21,7 +21,7 @@
   tags:
     - ugrade-carbonio
 
-- name: Run scripts to get packages to upgrade(RedHat)
+- name: Run scripts to get packages to upgrade [RHEL]
   become: true
   ansible.builtin.shell:
     cmd: "set -o pipefail && yum check-update -y 2>/dev/null |  awk '/zextras/ {print $1}'"
@@ -49,24 +49,24 @@
   tags:
     - track-zmcontrol
 
-- name: Debug list packages(Ubuntu)
+- name: Debug list packages [Ubuntu]
   when: ansible_facts.os_family == "Debian"
   ansible.builtin.debug:
     msg: "{{ pkgu }}"
 
-- name: Debug list packages(RedHat)
+- name: Debug list packages [RHEL]
   when: ansible_facts.os_family == "RedHat"
   ansible.builtin.debug:
     msg: "{{ pkgr }}"
 
-- name: Update all packages to their latest version
+- name: Update all packages to their latest version [Ubuntu]
   ansible.builtin.apt:
     upgrade: full
     #name: "*"
     #state: latest
   when: ansible_facts.os_family == "Debian"
 
-- name: Upgrade all packages (RHEL/CentOS)
+- name: Upgrade all packages [RHEL]
   become: true
   ansible.builtin.yum:
     name: "*"

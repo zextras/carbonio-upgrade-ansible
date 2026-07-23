@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 ---
-  - name: Install Memcached on Ubuntu
+  - name: Install Memcached on [Ubuntu]
     become: true
     ansible.builtin.apt: name={{ item }} state=present
     with_items:
@@ -13,7 +13,7 @@
       - install-carbonio-memcached
 
 ######## RHEL
-  - name: Install Memcached on RHEL
+  - name: Install Memcached on [RHEL]
     become: true
     ansible.builtin.yum: name={{ item }} state=present
     with_items:

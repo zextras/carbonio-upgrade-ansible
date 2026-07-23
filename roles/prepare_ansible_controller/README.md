@@ -1,6 +1,6 @@
 # Prepare Ansible Controller
 
-This role prepares the Ansible controller before the Carbonio installation starts.
+This role prepares the Ansible controller before the Carbonio upgrade starts.
 
 It verifies that the Python interpreter used by Ansible has the `netaddr` dependency required for inventory IP address validation.
 

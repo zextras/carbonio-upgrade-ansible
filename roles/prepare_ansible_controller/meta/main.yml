@@ -4,7 +4,7 @@
 
 galaxy_info:
   author: zextras-mobius <mobius@zextras.com>
-  description: Ansible controller prepare for installation playbook
+  description: Prepare the Ansible controller for the Carbonio upgrade playbook
   company: zextras
   license: GPL-3.0-only
 

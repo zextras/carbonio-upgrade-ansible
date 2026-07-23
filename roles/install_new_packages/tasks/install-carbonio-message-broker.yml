@@ -13,7 +13,7 @@
   register: check_services
   changed_when: false
   when:
-    - inventory_hostname in groups['masterDirectoryServers'][0]
+    - inventory_hostname == groups['masterDirectoryServers'][0]
   tags:
     - install-carbonio-message-broker
 
@@ -25,7 +25,7 @@
   with_items: "{{ check_services.results }}"
   when:
     - ansible_facts.os_family == "Debian"
-    - inventory_hostname in groups['masterDirectoryServers'][0]
+    - inventory_hostname == groups['masterDirectoryServers'][0]
     - item.stdout == "absent"
   tags:
     - install-carbonio-message-broker
@@ -37,8 +37,8 @@
     state: present
   with_items: "{{ check_services.results }}"
   when:
-    - ansible_facts.os_family in ["RedHat", "CentOS"]
-    - inventory_hostname in groups['masterDirectoryServers'][0]
+    - ansible_facts.os_family == "RedHat"
+    - inventory_hostname == groups['masterDirectoryServers'][0]
     - item.stdout == "absent"
   tags:
     - install-carbonio-message-broker
@@ -48,7 +48,7 @@
     msg: "Message Broker is already installed"
   with_items: "{{ check_services.results }}"
   when:
-    - inventory_hostname in groups['masterDirectoryServers'][0]
+    - inventory_hostname == groups['masterDirectoryServers'][0]
     - item.stdout == "installed"
   tags:
     - install-carbonio-message-broker

@@ -364,7 +364,7 @@
     state: restarted
   when:
     - groups['workStreamServers'] | length > 0
-    - inventory_hostname in groups['workStreamServers'][0]
+    - inventory_hostname == groups['workStreamServers'][0]
   loop:
     - carbonio-message-dispatcher.service
   tags:

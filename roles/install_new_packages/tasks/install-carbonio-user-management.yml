@@ -39,7 +39,7 @@
     state: present
   with_items: "{{ check_services.results }}"
   when:
-    - ansible_facts.os_family in ["RedHat", "CentOS"]
+    - ansible_facts.os_family == "RedHat"
     - inventory_hostname in groups['serviceDiscoverServers']
     - groups['filesServers'] | length > 0
     - item.stdout == "absent"

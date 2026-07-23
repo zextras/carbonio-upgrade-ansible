@@ -18,7 +18,7 @@
   become_method: su
   become_user: zextras
   ansible.builtin.command: '/opt/zextras/libexec/zmslapcat /bck/{{ ansible_facts.date_time.date }}'
-  when: inventory_hostname in groups["masterDirectoryServers"] or inventory_hostname in groups["replicaDirectoryServers"]
+  when: inventory_hostname in groups['masterDirectoryServers'] or inventory_hostname in groups['replicaDirectoryServers']
   tags:
     - pre-upgrade-cmds
 
@@ -27,7 +27,7 @@
   become_method: su
   become_user: zextras
   ansible.builtin.command: '/opt/zextras/libexec/zmslapcat -c /bck/{{ ansible_facts.date_time.date }}'
-  when: inventory_hostname in groups["masterDirectoryServers"] or inventory_hostname in groups["replicaDirectoryServers"]
+  when: inventory_hostname in groups['masterDirectoryServers'] or inventory_hostname in groups['replicaDirectoryServers']
   tags:
     - pre-upgrade-cmds
 

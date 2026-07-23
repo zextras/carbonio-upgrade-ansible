@@ -81,8 +81,8 @@
     capability: cap_net_bind_service=+ep
     state: present
   when: >
-    (inventory_hostname in groups["masterDirectoryServers"] or
-    inventory_hostname in groups["replicaDirectoryServers"]) and
+    (inventory_hostname in groups['masterDirectoryServers'] or
+    inventory_hostname in groups['replicaDirectoryServers']) and
     (pkgu is search("carbonio-directory-server") or pkgr is search("carbonio-directory-server"))
 
 # Check status of restart file. Only for LDAP master and LDAP replica
@@ -90,15 +90,15 @@
   ansible.builtin.command: "cat {{ restart_file }}"
   register: restart_zmcontrol_var
   when: >
-    (inventory_hostname in groups["masterDirectoryServers"] or
-    inventory_hostname in groups["replicaDirectoryServers"])
+    (inventory_hostname in groups['masterDirectoryServers'] or
+    inventory_hostname in groups['replicaDirectoryServers'])
   tags:
       - track-zmcontrol
 
 - name: Debug restart file
   when: >
-    (inventory_hostname in groups["masterDirectoryServers"] or
-    inventory_hostname in groups["replicaDirectoryServers"])
+    (inventory_hostname in groups['masterDirectoryServers'] or
+    inventory_hostname in groups['replicaDirectoryServers'])
   ansible.builtin.debug:
     msg: "{{ restart_zmcontrol_var.stdout }}"
 
@@ -110,8 +110,8 @@
   register: zm_status
   changed_when: zm_status.rc == 0
   when: >
-    (inventory_hostname in groups["masterDirectoryServers"] or
-    inventory_hostname in groups["replicaDirectoryServers"]) and
+    (inventory_hostname in groups['masterDirectoryServers'] or
+    inventory_hostname in groups['replicaDirectoryServers']) and
     (ansible_facts.distribution_major_version != "9" and ansible_facts.distribution_major_version != "24") and
     (pkgu is search("carbonio-directory-server") or pkgr is search("carbonio-directory-server")) 
   tags:
@@ -123,8 +123,8 @@
     name: carbonio.target
     state: restarted
   when: >
-    (inventory_hostname in groups["masterDirectoryServers"] or
-    inventory_hostname in groups["replicaDirectoryServers"]) and
+    (inventory_hostname in groups['masterDirectoryServers'] or
+    inventory_hostname in groups['replicaDirectoryServers']) and
     (ansible_facts.distribution_major_version == "9" or ansible_facts.distribution_major_version == "24") and
     (pkgu is search("carbonio-directory-server") or pkgr is search("carbonio-directory-server")) 
   tags:
@@ -137,7 +137,7 @@
       content: |
         false
   when: >
-    (inventory_hostname in groups["masterDirectoryServers"] or
-    inventory_hostname in groups["replicaDirectoryServers"])
+    (inventory_hostname in groups['masterDirectoryServers'] or
+    inventory_hostname in groups['replicaDirectoryServers'])
   tags:
     - track-zmcontrol

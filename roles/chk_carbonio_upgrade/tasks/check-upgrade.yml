@@ -10,14 +10,14 @@
   ansible.builtin.command: '/opt/zextras/bin/zmcontrol status'
   register: zmcontrol_chk_status
   changed_when: false
-  when: inventory_hostname in groups["applicationServers"]
+  when: inventory_hostname in groups['applicationServers']
   tags:
     - check-carbonio-upgrade
 
 - name: Debug zmcontrol status
   ansible.builtin.debug:
     msg: "{{ zmcontrol_chk_status.stdout_lines }}"
-  when: inventory_hostname in groups["applicationServers"]
+  when: inventory_hostname in groups['applicationServers']
   tags:
     - check-carbonio-upgrade
 
@@ -61,12 +61,12 @@
     executable: /bin/bash
   register: video_chk_services
   changed_when: false
-  when: inventory_hostname in groups["videoServers"]
+  when: inventory_hostname in groups['videoServers']
   tags:
     - check-carbonio-upgrade
 
 - name: Debug videoserver status
-  when: inventory_hostname in groups["videoServers"]
+  when: inventory_hostname in groups['videoServers']
   ansible.builtin.debug:
     msg: "{{ video_chk_services.stdout_lines }}"
   tags:

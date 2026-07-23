@@ -5,7 +5,7 @@
 ---
 
 ### Ubuntu 
-- name: Check if patroni is installed (Debian)
+- name: Check if patroni is installed [Ubuntu]
   become: true
   ansible.builtin.shell: apt list --installed 2>/dev/null | grep -w '^patroni'
   register: patroni_check_debian

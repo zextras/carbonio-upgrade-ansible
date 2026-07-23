@@ -13,7 +13,7 @@
 # 7) service-discover agent, sidecars, videoserver
 
 ### Detect Patroni and restart the right service (Ubuntu/Debian)
-- name: Check if patroni is installed (Debian)
+- name: Check if patroni is installed [Ubuntu]
   become: true
   ansible.builtin.shell: apt list --installed 2>/dev/null | grep -w '^patroni'
   register: patroni_check_debian
@@ -27,7 +27,7 @@
     - postgresServers
 
 # If Patroni is absent → restart PostgreSQL
-- name: Restart postgres[Ubuntu]
+- name: Restart postgres [Ubuntu]
   become: true
   ansible.builtin.service:
     name: "postgresql"
@@ -42,7 +42,7 @@
     - postgresServers
 
 # If Patroni is present → restart Patroni; will pause later
-- name: Restart patroni[Ubuntu]
+- name: Restart patroni [Ubuntu]
   become: true
   ansible.builtin.service:
     name: "patroni"

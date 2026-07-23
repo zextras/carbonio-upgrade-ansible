@@ -5,7 +5,7 @@
 ---
 - name: Install notification push db connector Ubuntu
   become: true
-  apt: name={{ item }} state=present
+  ansible.builtin.apt: name={{ item }} state=present
   with_items:
     - "{{ notification_push_dbconnectors_packages }}"
   when:
@@ -21,7 +21,7 @@
 
 - name: Install videorecorder db connector Ubuntu
   become: true
-  apt: name={{ item }} state=present
+  ansible.builtin.apt: name={{ item }} state=present
   with_items:
     - "{{ videorecorder_dbconnectors_packages }}"
   when: 
@@ -37,7 +37,7 @@
 
 - name: Install preview db connector Ubuntu
   become: true
-  apt: name={{ item }} state=present
+  ansible.builtin.apt: name={{ item }} state=present
   with_items:
     - "{{ preview_dbconnectors_packages }}"
   when:
@@ -55,7 +55,7 @@
 
 - name: Install notification push db connector RHEL
   become: true
-  yum: name={{ item }} state=present
+  ansible.builtin.yum: name={{ item }} state=present
   with_items:
     - "{{ notification_push_dbconnectors_packages }}"
   when:
@@ -72,7 +72,7 @@
 
 - name: Install videorecorder db connector RHEL
   become: true
-  yum: name={{ item }} state=present
+  ansible.builtin.yum: name={{ item }} state=present
   with_items:
     - "{{ videorecorder_dbconnectors_packages }}"
   when: 
@@ -88,7 +88,7 @@
 
 - name: Install preview db connector RHEL
   become: true
-  yum: name={{ item }} state=present
+  ansible.builtin.yum: name={{ item }} state=present
   with_items:
     - "{{ preview_dbconnectors_packages }}"
   when:

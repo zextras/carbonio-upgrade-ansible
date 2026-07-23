@@ -7,7 +7,7 @@
 ### Ubuntu 
 - name: Check if patroni is installed (Debian)
   become: true
-  shell: apt list --installed 2>/dev/null | grep -w '^patroni'
+  ansible.builtin.shell: apt list --installed 2>/dev/null | grep -w '^patroni'
   register: patroni_check_debian
   failed_when: false
   changed_when: false 
@@ -31,7 +31,7 @@
 - name: run mailbox db-connectors Bootstrap (HA)
   environment:
       PGPASSWORD: "{{ carbonio_postgres_password }}"
-  command: /usr/bin/carbonio-mailbox-db-bootstrap carbonio_adm 127.0.0.1
+  ansible.builtin.command: /usr/bin/carbonio-mailbox-db-bootstrap carbonio_adm 127.0.0.1
   become: true
   when: 
     - ansible_facts.os_family == "Debian" and groups['dbsConnectorServers'] | length > 0
@@ -43,7 +43,7 @@
 - name: run files-db Bootstrap (HA)
   environment:
       PGPASSWORD: "{{ carbonio_postgres_password }}"
-  command: /usr/bin/carbonio-files-db-bootstrap carbonio_adm 127.0.0.1
+  ansible.builtin.command: /usr/bin/carbonio-files-db-bootstrap carbonio_adm 127.0.0.1
   become: true
   run_once: true
   when: 
@@ -59,7 +59,7 @@
       PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
   run_once: true
-  command: /usr/bin/carbonio-docs-connector-db-bootstrap carbonio_adm 127.0.0.1
+  ansible.builtin.command: /usr/bin/carbonio-docs-connector-db-bootstrap carbonio_adm 127.0.0.1
   when: 
     - groups['docsServers'] | length > 0 and groups['dbsConnectorServers'] | length > 0
     - ansible_facts.os_family == "Debian"
@@ -73,7 +73,7 @@
       PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
   run_once: true
-  command: /usr/bin/carbonio-tasks-db-bootstrap carbonio_adm 127.0.0.1
+  ansible.builtin.command: /usr/bin/carbonio-tasks-db-bootstrap carbonio_adm 127.0.0.1
   when:  
     - groups['taskServers'] | length > 0 and groups['dbsConnectorServers'] | length > 0
     - ansible_facts.os_family == "Debian"
@@ -86,7 +86,7 @@
   environment:
     PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
-  command: /usr/bin/carbonio-ws-collaboration-db-bootstrap carbonio_adm 127.0.0.1
+  ansible.builtin.command: /usr/bin/carbonio-ws-collaboration-db-bootstrap carbonio_adm 127.0.0.1
   when: 
     - groups['workStreamServers'] | length > 0 and groups['dbsConnectorServers'] | length > 0
     - ansible_facts.os_family == "Debian"
@@ -99,7 +99,7 @@
   environment:
     PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
-  command: /usr/bin/carbonio-notification-push-db-bootstrap carbonio_adm 127.0.0.1
+  ansible.builtin.command: /usr/bin/carbonio-notification-push-db-bootstrap carbonio_adm 127.0.0.1
   when: 
     - groups['workStreamServers'] | length > 0 and groups['dbsConnectorServers'] | length > 0
     - ansible_facts.os_family == "Debian"
@@ -112,7 +112,7 @@
   environment:
     PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
-  command: /usr/bin/carbonio-videorecorder-db-bootstrap carbonio_adm 127.0.0.1
+  ansible.builtin.command: /usr/bin/carbonio-videorecorder-db-bootstrap carbonio_adm 127.0.0.1
   when: 
     - groups['videoServers'] | length > 0 and groups['dbsConnectorServers'] | length > 0
     - ansible_facts.os_family == "Debian"
@@ -126,7 +126,7 @@
       PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
   run_once: true
-  command: /usr/bin/carbonio-preview-db-bootstrap carbonio_adm 127.0.0.1
+  ansible.builtin.command: /usr/bin/carbonio-preview-db-bootstrap carbonio_adm 127.0.0.1
   when:
     - groups['previewServers'] | length > 0 and groups['dbsConnectorServers'] | length > 0
     - ansible_facts.os_family == "Debian"
@@ -149,7 +149,7 @@
 - name: run mailbox db-connectors Bootstrap (Standard)
   environment:
       PGPASSWORD: "{{ carbonio_postgres_password }}"
-  command: /usr/bin/carbonio-mailbox-db-bootstrap carbonio_adm 127.0.0.1
+  ansible.builtin.command: /usr/bin/carbonio-mailbox-db-bootstrap carbonio_adm 127.0.0.1
   become: true
   when: 
     - ansible_facts.os_family == "Debian"
@@ -161,7 +161,7 @@
 - name: run files-db Bootstrap (Standard)
   environment:
       PGPASSWORD: "{{ carbonio_postgres_password }}"
-  command: /usr/bin/carbonio-files-db-bootstrap carbonio_adm 127.0.0.1
+  ansible.builtin.command: /usr/bin/carbonio-files-db-bootstrap carbonio_adm 127.0.0.1
   become: true
   run_once: true
   when: 
@@ -177,7 +177,7 @@
       PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
   run_once: true
-  command: /usr/bin/carbonio-docs-connector-db-bootstrap carbonio_adm 127.0.0.1
+  ansible.builtin.command: /usr/bin/carbonio-docs-connector-db-bootstrap carbonio_adm 127.0.0.1
   when: 
     - groups['docsServers'] | length > 0 
     - ansible_facts.os_family == "Debian"
@@ -191,7 +191,7 @@
       PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
   run_once: true
-  command: /usr/bin/carbonio-tasks-db-bootstrap carbonio_adm 127.0.0.1
+  ansible.builtin.command: /usr/bin/carbonio-tasks-db-bootstrap carbonio_adm 127.0.0.1
   when:  
     - groups['taskServers'] | length > 0 
     - ansible_facts.os_family == "Debian"
@@ -204,7 +204,7 @@
   environment:
     PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
-  command: /usr/bin/carbonio-ws-collaboration-db-bootstrap carbonio_adm 127.0.0.1
+  ansible.builtin.command: /usr/bin/carbonio-ws-collaboration-db-bootstrap carbonio_adm 127.0.0.1
   when: 
     - groups['workStreamServers'] | length > 0
     - ansible_facts.os_family == "Debian"
@@ -217,7 +217,7 @@
   environment:
     PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
-  command: /usr/bin/carbonio-notification-push-db-bootstrap carbonio_adm 127.0.0.1
+  ansible.builtin.command: /usr/bin/carbonio-notification-push-db-bootstrap carbonio_adm 127.0.0.1
   when: 
     - groups['workStreamServers'] | length > 0
     - ansible_facts.os_family == "Debian"
@@ -230,7 +230,7 @@
   environment:
     PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
-  command: /usr/bin/carbonio-videorecorder-db-bootstrap carbonio_adm 127.0.0.1
+  ansible.builtin.command: /usr/bin/carbonio-videorecorder-db-bootstrap carbonio_adm 127.0.0.1
   when: 
     - groups['videoServers'] | length > 0
     - ansible_facts.os_family == "Debian"
@@ -244,7 +244,7 @@
       PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
   run_once: true
-  command: /usr/bin/carbonio-preview-db-bootstrap carbonio_adm 127.0.0.1
+  ansible.builtin.command: /usr/bin/carbonio-preview-db-bootstrap carbonio_adm 127.0.0.1
   when:
     - groups['previewServers'] | length > 0
     - ansible_facts.os_family == "Debian"
@@ -256,7 +256,7 @@
 ### RHEL
 - name: Check if patroni is installed [RHEL] (Standard)
   become: true
-  shell: rpm -qa 2>/dev/null | grep -w '^patroni'
+  ansible.builtin.shell: rpm -qa 2>/dev/null | grep -w '^patroni'
   register: patroni_check_rhel
   failed_when: false 
   changed_when: false
@@ -279,7 +279,7 @@
 - name: run mailbox db-connectors Bootstrap (HA)
   environment:
       PGPASSWORD: "{{ carbonio_postgres_password }}"
-  command: /usr/bin/carbonio-mailbox-db-bootstrap carbonio_adm 127.0.0.1
+  ansible.builtin.command: /usr/bin/carbonio-mailbox-db-bootstrap carbonio_adm 127.0.0.1
   become: true
   when: 
     - ansible_facts.os_family == "RedHat" and groups['dbsConnectorServers'] | length > 0
@@ -291,7 +291,7 @@
 - name: run files-db Bootstrap (HA)
   environment:
       PGPASSWORD: "{{ carbonio_postgres_password }}"
-  command: /usr/bin/carbonio-files-db-bootstrap carbonio_adm 127.0.0.1
+  ansible.builtin.command: /usr/bin/carbonio-files-db-bootstrap carbonio_adm 127.0.0.1
   become: true
   run_once: true
   when: 
@@ -307,7 +307,7 @@
       PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
   run_once: true
-  command: /usr/bin/carbonio-docs-connector-db-bootstrap carbonio_adm 127.0.0.1
+  ansible.builtin.command: /usr/bin/carbonio-docs-connector-db-bootstrap carbonio_adm 127.0.0.1
   when: 
     - groups['docsServers'] | length > 0 and groups['dbsConnectorServers'] | length > 0
     - ansible_facts.os_family == "RedHat" 
@@ -321,7 +321,7 @@
       PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
   run_once: true
-  command: /usr/bin/carbonio-tasks-db-bootstrap carbonio_adm 127.0.0.1
+  ansible.builtin.command: /usr/bin/carbonio-tasks-db-bootstrap carbonio_adm 127.0.0.1
   when:  
     - groups['taskServers'] | length > 0 and groups['dbsConnectorServers'] | length > 0
     - ansible_facts.os_family == "RedHat" 
@@ -334,7 +334,7 @@
   environment:
     PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
-  command: /usr/bin/carbonio-ws-collaboration-db-bootstrap carbonio_adm 127.0.0.1
+  ansible.builtin.command: /usr/bin/carbonio-ws-collaboration-db-bootstrap carbonio_adm 127.0.0.1
   when: 
     - groups['workStreamServers'] | length > 0 and groups['dbsConnectorServers'] | length > 0
     - ansible_facts.os_family == "RedHat" 
@@ -347,7 +347,7 @@
   environment:
     PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
-  command: /usr/bin/carbonio-notification-push-db-bootstrap carbonio_adm 127.0.0.1
+  ansible.builtin.command: /usr/bin/carbonio-notification-push-db-bootstrap carbonio_adm 127.0.0.1
   when: 
     - groups['workStreamServers'] | length > 0 and groups['dbsConnectorServers'] | length > 0
     - ansible_facts.os_family == "RedHat" 
@@ -360,7 +360,7 @@
   environment:
     PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
-  command: /usr/bin/carbonio-videorecorder-db-bootstrap carbonio_adm 127.0.0.1
+  ansible.builtin.command: /usr/bin/carbonio-videorecorder-db-bootstrap carbonio_adm 127.0.0.1
   when: 
     - groups['videoServers'] | length > 0 and groups['dbsConnectorServers'] | length > 0
     - ansible_facts.os_family == "RedHat" 
@@ -374,7 +374,7 @@
       PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
   run_once: true
-  command: /usr/bin/carbonio-preview-db-bootstrap carbonio_adm 127.0.0.1
+  ansible.builtin.command: /usr/bin/carbonio-preview-db-bootstrap carbonio_adm 127.0.0.1
   when:
     - groups['previewServers'] | length > 0 and groups['dbsConnectorServers'] | length > 0
     - ansible_facts.os_family == "RedHat"
@@ -398,7 +398,7 @@
 - name: run mailbox db-connectors Bootstrap (Standard)
   environment:
       PGPASSWORD: "{{ carbonio_postgres_password }}"
-  command: /usr/bin/carbonio-mailbox-db-bootstrap carbonio_adm 127.0.0.1
+  ansible.builtin.command: /usr/bin/carbonio-mailbox-db-bootstrap carbonio_adm 127.0.0.1
   become: true
   when: 
     - ansible_facts.os_family == "RedHat" 
@@ -410,7 +410,7 @@
 - name: run files-db Bootstrap (Standard)
   environment:
       PGPASSWORD: "{{ carbonio_postgres_password }}"
-  command: /usr/bin/carbonio-files-db-bootstrap carbonio_adm 127.0.0.1
+  ansible.builtin.command: /usr/bin/carbonio-files-db-bootstrap carbonio_adm 127.0.0.1
   become: true
   run_once: true
   when: 
@@ -426,7 +426,7 @@
       PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
   run_once: true
-  command: /usr/bin/carbonio-docs-connector-db-bootstrap carbonio_adm 127.0.0.1
+  ansible.builtin.command: /usr/bin/carbonio-docs-connector-db-bootstrap carbonio_adm 127.0.0.1
   when: 
     - groups['docsServers'] | length > 0 
     - ansible_facts.os_family == "RedHat" 
@@ -440,7 +440,7 @@
       PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
   run_once: true
-  command: /usr/bin/carbonio-tasks-db-bootstrap carbonio_adm 127.0.0.1
+  ansible.builtin.command: /usr/bin/carbonio-tasks-db-bootstrap carbonio_adm 127.0.0.1
   when:  
     - groups['taskServers'] | length > 0 
     - ansible_facts.os_family == "RedHat" 
@@ -453,7 +453,7 @@
   environment:
     PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
-  command: /usr/bin/carbonio-ws-collaboration-db-bootstrap carbonio_adm 127.0.0.1
+  ansible.builtin.command: /usr/bin/carbonio-ws-collaboration-db-bootstrap carbonio_adm 127.0.0.1
   when: 
     - groups['workStreamServers'] | length > 0
     - ansible_facts.os_family == "RedHat" 
@@ -480,7 +480,7 @@
   environment:
     PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
-  command: /usr/bin/carbonio-videorecorder-db-bootstrap carbonio_adm 127.0.0.1
+  ansible.builtin.command: /usr/bin/carbonio-videorecorder-db-bootstrap carbonio_adm 127.0.0.1
   when: 
     - groups['videoServers'] | length > 0
     - ansible_facts.os_family == "RedHat" 
@@ -494,7 +494,7 @@
       PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
   run_once: true
-  command: /usr/bin/carbonio-preview-db-bootstrap carbonio_adm 127.0.0.1
+  ansible.builtin.command: /usr/bin/carbonio-preview-db-bootstrap carbonio_adm 127.0.0.1
   when:
     - groups['previewServers'] | length > 0
     - ansible_facts.os_family == "RedHat"

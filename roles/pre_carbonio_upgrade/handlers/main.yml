@@ -5,4 +5,4 @@
 ---
 # handlers file for pre-carbonio-upgrade
   - name: restart_rsyslog
-    service: name=rsyslog state=restarted
+    ansible.builtin.service: name=rsyslog state=restarted

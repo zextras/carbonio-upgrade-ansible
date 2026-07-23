@@ -4,12 +4,12 @@
 
 ---
 # tasks file for install_new_packages
-- import_tasks: install-carbonio-memcached.yml
-- import_tasks: install-carbonio-message-broker.yml
-- import_tasks: install-new-proxy-packages.yml
-- import_tasks: install-carbonio-storages.yml
-- import_tasks: install-carbonio-user-management.yml
-- import_tasks: install-carbonio-catalog.yml
-- import_tasks: install-carbonio-syslog.yml
-- import_tasks: install-carbonio-notification-push.yml
-- import_tasks: install-db-connectors.yml
+- ansible.builtin.import_tasks: install-carbonio-memcached.yml
+- ansible.builtin.import_tasks: install-carbonio-message-broker.yml
+- ansible.builtin.import_tasks: install-new-proxy-packages.yml
+- ansible.builtin.import_tasks: install-carbonio-storages.yml
+- ansible.builtin.import_tasks: install-carbonio-user-management.yml
+- ansible.builtin.import_tasks: install-carbonio-catalog.yml
+- ansible.builtin.import_tasks: install-carbonio-syslog.yml
+- ansible.builtin.import_tasks: install-carbonio-notification-push.yml
+- ansible.builtin.import_tasks: install-db-connectors.yml

@@ -5,7 +5,7 @@
 ---
 - name: Check if carbonio user management service is present in Consul
   become: true
-  shell: >
+  ansible.builtin.shell: >
     consul catalog services | grep -q {{ item }}
     && echo installed
     || echo absent
@@ -20,7 +20,7 @@
 
 - name: Install carbonio user management if not found in Consul [Ubuntu]
   become: true
-  apt:
+  ansible.builtin.apt:
     name: "{{ item.item }}"
     state: present
   with_items: "{{ check_services.results }}"
@@ -34,7 +34,7 @@
 
 - name: Install carbonio user management if not found in Consul [RHEL]
   become: true
-  yum:
+  ansible.builtin.yum:
     name: "{{ item.item }}"
     state: present
   with_items: "{{ check_services.results }}"
@@ -47,7 +47,7 @@
     - install-carbonio-user-management
 
 - name: Debug message for already installed carbonio user management
-  debug:
+  ansible.builtin.debug:
     msg: "carbonio user management is already installed"
   with_items: "{{ check_services.results }}"
   when:

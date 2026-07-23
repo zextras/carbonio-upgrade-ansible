@@ -5,7 +5,7 @@
 ---
 - name: Check if Message Broker service is present in Consul
   become: true
-  shell: >
+  ansible.builtin.shell: >
     consul catalog services | grep -q {{ item }}
     && echo installed
     || echo absent
@@ -19,7 +19,7 @@
 
 - name: Install Message Broker if absent [Ubuntu]
   become: true
-  apt:
+  ansible.builtin.apt:
     name: "{{ item.item }}"
     state: present
   with_items: "{{ check_services.results }}"
@@ -32,7 +32,7 @@
 
 - name: Install Message Broker if absent [RHEL]
   become: true
-  yum:
+  ansible.builtin.yum:
     name: "{{ item.item }}"
     state: present
   with_items: "{{ check_services.results }}"
@@ -44,7 +44,7 @@
     - install-carbonio-message-broker
 
 - name: Debug message if Message Broker is already installed
-  debug:
+  ansible.builtin.debug:
     msg: "Message Broker is already installed"
   with_items: "{{ check_services.results }}"
   when:

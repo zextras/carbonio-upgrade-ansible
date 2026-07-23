@@ -5,7 +5,7 @@
 ---
 - name: Update repositories cache
   become: true
-  apt:
+  ansible.builtin.apt:
     update_cache: true
   when: ansible_facts.os_family == "Debian"
   tags:
@@ -13,7 +13,7 @@
 
 - name: Run scripts to get packages to upgrade(Ubuntu)
   become: true
-  shell:
+  ansible.builtin.shell:
     cmd: 'set -o pipefail && apt list --upgradable 2>/dev/null | cut -f 1 -d / | tail -n +2'
     executable: /bin/bash
   register: pkgu
@@ -23,7 +23,7 @@
 
 - name: Run scripts to get packages to upgrade(RedHat)
   become: true
-  shell:
+  ansible.builtin.shell:
     cmd: "set -o pipefail && yum check-update -y 2>/dev/null |  awk '/zextras/ {print $1}'"
     executable: /bin/bash
   register: pkgr
@@ -34,7 +34,7 @@
 
 # Check if file with status for restart present . For all VMs
 - name: Check if file exist
-  stat:
+  ansible.builtin.stat:
     path: "{{ restart_file }}"
   register: restart_file_status
   tags:
@@ -42,7 +42,7 @@
 
 # If file with restart status not present will create with content:true. zmcontrol will be restarted with content:true. For all VMs
 - name: Create file with default variables if not exist
-  copy:
+  ansible.builtin.copy:
       dest: "{{ restart_file }}"
       content: |
         true
@@ -51,12 +51,12 @@
 
 - name: Debug list packages(Ubuntu)
   when: ansible_facts.os_family == "Debian"
-  debug:
+  ansible.builtin.debug:
     msg: "{{ pkgu }}"
 
 - name: Debug list packages(RedHat)
   when: ansible_facts.os_family == "RedHat"
-  debug:
+  ansible.builtin.debug:
     msg: "{{ pkgr }}"
 
 - name: Update all packages to their latest version
@@ -68,7 +68,7 @@
 
 - name: Upgrade all packages (RHEL/CentOS)
   become: true
-  yum:
+  ansible.builtin.yum:
     name: "*"
     state: latest
     allowerasing: true
@@ -87,7 +87,7 @@
 
 # Check status of restart file. Only for LDAP master and LDAP replica
 - name: Check restart file value
-  command: "cat {{ restart_file }}"
+  ansible.builtin.command: "cat {{ restart_file }}"
   register: restart_zmcontrol_var
   when: >
     (inventory_hostname in groups["masterDirectoryServers"] or
@@ -99,14 +99,14 @@
   when: >
     (inventory_hostname in groups["masterDirectoryServers"] or
     inventory_hostname in groups["replicaDirectoryServers"])
-  debug:
+  ansible.builtin.debug:
     msg: "{{ restart_zmcontrol_var.stdout }}"
 
 - name: Restart Directory Server
   become: true
   become_method: su
   become_user: zextras
-  command: /opt/zextras/bin/zmcontrol restart
+  ansible.builtin.command: /opt/zextras/bin/zmcontrol restart
   register: zm_status
   changed_when: zm_status.rc == 0
   when: >
@@ -119,7 +119,7 @@
 
 - name: Restart carbonio services [Sysd]
   become: true
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: carbonio.target
     state: restarted
   when: >
@@ -132,7 +132,7 @@
     
 # set content for restart file to false. Only for LDAP master and LDAP replica
 - name: Modify restart file
-  copy:
+  ansible.builtin.copy:
       dest: "{{ restart_file }}"
       content: |
         false

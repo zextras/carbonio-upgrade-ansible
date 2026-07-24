@@ -219,7 +219,7 @@
     - ansible_facts.distribution_major_version == "9" or ansible_facts.distribution_major_version == "24"
     - inventory_hostname not in groups['masterDirectoryServers']
     - inventory_hostname not in groups['replicaDirectoryServers']
-    - nrestart_zmcontrol_var.stdout | bool
+    - restart_zmcontrol_var.stdout | bool
   tags:
     - restart-carbonio-services
 

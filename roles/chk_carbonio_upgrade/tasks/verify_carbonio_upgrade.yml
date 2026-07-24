@@ -52,7 +52,9 @@
 - name: Debug consul status
   ansible.builtin.debug:
     msg: "{{ consul_chk_services.stdout_lines }}"
-
+  tags:
+    - check-carbonio-upgrade
+    
 - name: Check videoserver services
   become: true
   become_method: su

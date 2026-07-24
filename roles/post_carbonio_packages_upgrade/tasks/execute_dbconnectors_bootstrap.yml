@@ -17,7 +17,7 @@
     - install-carbonio-dbconnectors
 
 # If Patroni is installed (HA)
-- name: Manage Postgres password (HA)
+- name: Manage Postgres password [Ubuntu] (HA)
   ansible.builtin.set_fact:
       carbonio_postgres_password: "{{ lookup('ansible.builtin.password', inventory_file + '_postgrespassword', chars=['ascii_letters']) }}"
   when: 
@@ -29,7 +29,7 @@
       - db-connectors-bootstrap
 
 
-- name: run mailbox db-connectors Bootstrap (HA)
+- name: Run mailbox db-connectors Bootstrap [Ubuntu] (HA)
   environment:
       PGPASSWORD: "{{ carbonio_postgres_password }}"
   ansible.builtin.command: /usr/bin/carbonio-mailbox-db-bootstrap carbonio_adm 127.0.0.1
@@ -42,7 +42,7 @@
   tags:
       - db-connectors-bootstrap
 
-- name: run files-db Bootstrap (HA)
+- name: Run files-db Bootstrap [Ubuntu] (HA)
   environment:
       PGPASSWORD: "{{ carbonio_postgres_password }}"
   ansible.builtin.command: /usr/bin/carbonio-files-db-bootstrap carbonio_adm 127.0.0.1
@@ -57,7 +57,7 @@
   tags:
       - db-connectors-bootstrap
 
-- name: run docs-connector-db Bootstrap (HA)
+- name: Run docs-connector-db Bootstrap [Ubuntu] (HA)
   environment:
       PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
@@ -72,7 +72,7 @@
   tags:
       - db-connectors-bootstrap
 
-- name: run tasks-connector-db Bootstrap (HA)
+- name: Run tasks-connector-db Bootstrap [Ubuntu] (HA)
   environment:
       PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
@@ -87,7 +87,7 @@
   tags:
       - db-connectors-bootstrap
 
-- name: run carbonio-ws-collaboration-db Bootstrap (HA)
+- name: Run carbonio-ws-collaboration-db Bootstrap [Ubuntu] (HA)
   environment:
     PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
@@ -101,7 +101,7 @@
   tags:
     - db-connectors-bootstrap
 
-- name: run carbonio-notification-push-db Bootstrap (HA)
+- name: Run carbonio-notification-push-db Bootstrap [Ubuntu] (HA)
   environment:
     PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
@@ -115,7 +115,7 @@
   tags:
     - db-connectors-bootstrap
 
-- name: run carbonio-videorecorder-db Bootstrap (HA)
+- name: Run carbonio-videorecorder-db Bootstrap [Ubuntu] (HA)
   environment:
     PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
@@ -129,7 +129,7 @@
   tags:
     - db-connectors-bootstrap
 
-- name: run preview-db Bootstrap (HA)
+- name: Run preview-db Bootstrap [Ubuntu] (HA)
   environment:
       PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
@@ -144,8 +144,8 @@
   tags:
       - db-connectors-bootstrap
 
-# If Partoni is not installd
-- name: Manage Postgres password (Standard)
+# If Partoni is not installed
+- name: Manage Postgres password [Ubuntu] (Standard)
   ansible.builtin.set_fact:
       carbonio_postgres_password: "{{ lookup('ansible.builtin.password', inventory_file + '_postgrespassword', chars=['ascii_letters']) }}"
   when: 
@@ -155,7 +155,7 @@
   tags:
       - db-connectors-bootstrap
 
-- name: run mailbox db-connectors Bootstrap (Standard)
+- name: Run mailbox db-connectors Bootstrap [Ubuntu] (Standard)
   environment:
       PGPASSWORD: "{{ carbonio_postgres_password }}"
   ansible.builtin.command: /usr/bin/carbonio-mailbox-db-bootstrap carbonio_adm 127.0.0.1
@@ -167,7 +167,7 @@
   tags:
       - db-connectors-bootstrap
 
-- name: run files-db Bootstrap (Standard)
+- name: Run files-db Bootstrap [Ubuntu] (Standard)
   environment:
       PGPASSWORD: "{{ carbonio_postgres_password }}"
   ansible.builtin.command: /usr/bin/carbonio-files-db-bootstrap carbonio_adm 127.0.0.1
@@ -181,7 +181,7 @@
   tags:
       - db-connectors-bootstrap
 
-- name: run docs-connector-db Bootstrap (Standard)
+- name: Run docs-connector-db Bootstrap [Ubuntu] (Standard)
   environment:
       PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
@@ -195,7 +195,7 @@
   tags:
       - db-connectors-bootstrap
 
-- name: run tasks-connector-db Bootstrap (Standard)
+- name: Run tasks-connector-db Bootstrap [Ubuntu] (Standard)
   environment:
       PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
@@ -209,7 +209,7 @@
   tags:
       - db-connectors-bootstrap
 
-- name: run carbonio-ws-collaboration-db Bootstrap (Standard)
+- name: Run carbonio-ws-collaboration-db Bootstrap [Ubuntu] (Standard)
   environment:
     PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
@@ -222,7 +222,7 @@
   tags:
     - db-connectors-bootstrap
 
-- name: run carbonio-notification-push-db Bootstrap
+- name: Run carbonio-notification-push-db Bootstrap [Ubuntu]
   environment:
     PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
@@ -235,7 +235,7 @@
   tags:
     - db-connectors-bootstrap
 
-- name: run carbonio-videorecorder-db Bootstrap
+- name: Run carbonio-videorecorder-db Bootstrap [Ubuntu]
   environment:
     PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
@@ -248,7 +248,7 @@
   tags:
     - db-connectors-bootstrap
 
-- name: run preview-db Bootstrap (Standard)
+- name: Run preview-db Bootstrap [Ubuntu] (Standard)
   environment:
       PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
@@ -275,7 +275,7 @@
     - install-carbonio-dbconnectors
 
 ### If Patroni is installed (HA)
-- name: Manage Postgres password (HA)
+- name: Manage Postgres password [RHEL] (HA)
   ansible.builtin.set_fact:
       carbonio_postgres_password: "{{ lookup('ansible.builtin.password', inventory_file + '_postgrespassword', chars=['ascii_letters']) }}"
   when: 
@@ -286,7 +286,7 @@
   tags:
       - db-connectors-bootstrap
 
-- name: run mailbox db-connectors Bootstrap (HA)
+- name: Run mailbox db-connectors Bootstrap [RHEL] (HA)
   environment:
       PGPASSWORD: "{{ carbonio_postgres_password }}"
   ansible.builtin.command: /usr/bin/carbonio-mailbox-db-bootstrap carbonio_adm 127.0.0.1
@@ -299,7 +299,7 @@
   tags:
       - db-connectors-bootstrap
 
-- name: run files-db Bootstrap (HA)
+- name: Run files-db Bootstrap [RHEL] (HA)
   environment:
       PGPASSWORD: "{{ carbonio_postgres_password }}"
   ansible.builtin.command: /usr/bin/carbonio-files-db-bootstrap carbonio_adm 127.0.0.1
@@ -314,7 +314,7 @@
   tags:
       - db-connectors-bootstrap
 
-- name: run docs-connector-db Bootstrap (HA)
+- name: Run docs-connector-db Bootstrap [RHEL] (HA)
   environment:
       PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
@@ -329,7 +329,7 @@
   tags:
       - db-connectors-bootstrap
 
-- name: run tasks-connector-db Bootstrap (HA)
+- name: Run tasks-connector-db Bootstrap [RHEL] (HA)
   environment:
       PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
@@ -344,7 +344,7 @@
   tags:
       - db-connectors-bootstrap
 
-- name: run carbonio-ws-collaboration-db Bootstrap (HA)
+- name: Run carbonio-ws-collaboration-db Bootstrap [RHEL] (HA)
   environment:
     PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
@@ -358,7 +358,7 @@
   tags:
     - db-connectors-bootstrap
 
-- name: run carbonio-notification-push-db Bootstrap (HA)
+- name: Run carbonio-notification-push-db Bootstrap [RHEL] (HA)
   environment:
     PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
@@ -372,7 +372,7 @@
   tags:
     - db-connectors-bootstrap
 
-- name: run carbonio-videorecorder-db Bootstrap (HA)
+- name: Run carbonio-videorecorder-db Bootstrap [RHEL] (HA)
   environment:
     PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
@@ -386,7 +386,7 @@
   tags:
     - db-connectors-bootstrap
 
-- name: run preview-db Bootstrap (HA)
+- name: Run preview-db Bootstrap [RHEL] (HA)
   environment:
       PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
@@ -403,7 +403,7 @@
 
 ### If Patroni is not installed 
 
-- name: Manage Postgres password (Standard)
+- name: Manage Postgres password [RHEL] (Standard)
   ansible.builtin.set_fact:
       carbonio_postgres_password: "{{ lookup('ansible.builtin.password', inventory_file + '_postgrespassword', chars=['ascii_letters']) }}"
   when: 
@@ -413,7 +413,7 @@
   tags:
       - db-connectors-bootstrap
 
-- name: run mailbox db-connectors Bootstrap (Standard)
+- name: Run mailbox db-connectors Bootstrap [RHEL] (Standard)
   environment:
       PGPASSWORD: "{{ carbonio_postgres_password }}"
   ansible.builtin.command: /usr/bin/carbonio-mailbox-db-bootstrap carbonio_adm 127.0.0.1
@@ -425,7 +425,7 @@
   tags:
       - db-connectors-bootstrap
 
-- name: run files-db Bootstrap (Standard)
+- name: Run files-db Bootstrap [RHEL] (Standard)
   environment:
       PGPASSWORD: "{{ carbonio_postgres_password }}"
   ansible.builtin.command: /usr/bin/carbonio-files-db-bootstrap carbonio_adm 127.0.0.1
@@ -439,7 +439,7 @@
   tags:
       - db-connectors-bootstrap
 
-- name: run docs-connector-db Bootstrap (Standard)
+- name: Run docs-connector-db Bootstrap [RHEL] (Standard)
   environment:
       PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
@@ -453,7 +453,7 @@
   tags:
       - db-connectors-bootstrap
 
-- name: run tasks-connector-db Bootstrap (Standard)
+- name: Run tasks-connector-db Bootstrap [RHEL] (Standard)
   environment:
       PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
@@ -467,7 +467,7 @@
   tags:
       - db-connectors-bootstrap
 
-- name: run carbonio-ws-collaboration-db Bootstrap (Standard)
+- name: Run carbonio-ws-collaboration-db Bootstrap [RHEL] (Standard)
   environment:
     PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
@@ -480,7 +480,7 @@
   tags:
     - db-connectors-bootstrap
 
-- name: Run carbonio-notification-push-db Bootstrap (Standard)
+- name: Run carbonio-notification-push-db Bootstrap [RHEL] (Standard)
   environment:
     PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
@@ -494,7 +494,7 @@
   tags:
     - db-connectors-bootstrap
     
-- name: run carbonio-videorecorder-db Bootstrap (Standard)
+- name: Run carbonio-videorecorder-db Bootstrap [RHEL] (Standard)
   environment:
     PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true
@@ -507,7 +507,7 @@
   tags:
     - db-connectors-bootstrap
     
-- name: run preview-db Bootstrap (Standard)
+- name: Run preview-db Bootstrap [RHEL] (Standard)
   environment:
       PGPASSWORD: "{{ carbonio_postgres_password }}"
   become: true

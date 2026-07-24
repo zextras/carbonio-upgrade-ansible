@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 ---
-- name: Creates Bck directory
+- name: Create backup directory
   become: true
   ansible.builtin.file:
     path: /bck/{{ ansible_facts.date_time.date }}
@@ -14,7 +14,7 @@
   tags:
     - pre-upgrade-cmds
 
-- name: Dump Ldap
+- name: Dump LDAP data
   become: true
   become_method: su
   become_user: zextras
@@ -23,7 +23,7 @@
   tags:
     - pre-upgrade-cmds
 
-- name: Dump Ldap Config
+- name: Dump LDAP configuration
   become: true
   become_method: su
   become_user: zextras

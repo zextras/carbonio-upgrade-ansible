@@ -78,19 +78,6 @@
     - inventory_hostname in groups['masterDirectoryServers'] or inventory_hostname in groups['replicaDirectoryServers']
     - pkgu is search("carbonio-directory-server") or pkgr is search("carbonio-directory-server")
 
-# Check status of restart file. Only for LDAP master and LDAP replica
-- name: Check restart file value
-  ansible.builtin.command: "cat {{ restart_file }}"
-  register: restart_zmcontrol_var
-  when: inventory_hostname in groups['masterDirectoryServers'] or inventory_hostname in groups['replicaDirectoryServers']
-  tags:
-    - track-zmcontrol
-
-- name: Debug restart file
-  when: inventory_hostname in groups['masterDirectoryServers'] or inventory_hostname in groups['replicaDirectoryServers']
-  ansible.builtin.debug:
-    msg: "{{ restart_zmcontrol_var.stdout }}"
-
 - name: Restart Directory Server
   become: true
   become_method: su

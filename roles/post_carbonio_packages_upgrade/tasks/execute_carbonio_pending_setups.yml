@@ -40,3 +40,5 @@
     mode: "0600"
   delegate_to: localhost
   become: false
+  tags:
+      - execute-pending-setups

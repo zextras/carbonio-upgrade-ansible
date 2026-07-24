@@ -4,6 +4,7 @@
 
 ---
   - name: Enable remote syslog
+    become: true
     ansible.builtin.lineinfile:
         # firstmatch: true
         dest: /etc/rsyslog.conf

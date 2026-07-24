@@ -18,6 +18,7 @@
     seconds: 10
 
 - name: Autoremove unnecessary packages with apt
+  become: true
   ansible.builtin.apt:
     autoremove: yes
   when: 
@@ -25,6 +26,7 @@
     - skip_autoremove == 0
 
 - name: Autoremove unnecessary packages with dnf
+  become: true
   ansible.builtin.dnf:
     autoremove: yes
   when: 

@@ -54,6 +54,7 @@
     msg: "{{ pkgr }}"
 
 - name: Update all packages to their latest version [Ubuntu]
+  become: true
   ansible.builtin.apt:
     upgrade: full
   when: ansible_facts.os_family == "Debian"
@@ -68,6 +69,7 @@
   when: ansible_facts.os_family == "RedHat"
 
 - name: Add capability to slapd
+  become: true
   community.general.capabilities:
     path: /opt/zextras/common/libexec/slapd
     capability: cap_net_bind_service=+ep

@@ -10,7 +10,7 @@
   - check-rsyslog
 
 - name: Re-apply syslog configuration if remote listeners are commented
-  ansible.builtin.include_tasks: configure-syslog-aggregator.yml
+  ansible.builtin.include_tasks: configure_syslog_aggregator.yml
   when: 
     - inventory_hostname in groups['syslogServer']
     - rsyslog_check.stdout | default('0') | int > 0

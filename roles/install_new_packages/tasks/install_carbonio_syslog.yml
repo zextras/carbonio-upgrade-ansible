@@ -15,6 +15,7 @@
       - install-carbonio-syslog
       
   - name: Install Syslog Server [RHEL]
+    become: true
     ansible.builtin.yum: name={{ item }} state=present
     with_items:
       - "{{ syslog_packages }}"    

@@ -24,7 +24,7 @@
 - name: Run scripts to get packages to upgrade [RHEL]
   become: true
   ansible.builtin.shell:
-    cmd: "set -o pipefail && yum check-update -y 2>/dev/null |  awk '/zextras/ {print $1}'"
+    cmd: "set -o pipefail && yum check-update -y 2>/dev/null | awk '/zextras/ {print $1}'"
     executable: /bin/bash
   register: pkgr
   failed_when: pkgr.rc not in [0, 100]
@@ -33,6 +33,7 @@
     - upgrade-carbonio
 
 # Initialize the restart flag for the current upgrade run
+- name: Initialize restart flag
   ansible.builtin.copy:
     dest: "{{ restart_file }}"
     content: |

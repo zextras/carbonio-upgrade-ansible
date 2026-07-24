@@ -8,6 +8,9 @@
   become_method: su
   become_user: zextras
   ansible.builtin.command: /opt/zextras/bin/carbonio prov -l ms {{ inventory_hostname }} -zimbraServiceEnabled memcached -zimbraServiceInstalled memcached
-  when: groups['proxyServers'] | length > 1 and inventory_hostname in groups['proxyServers'] and inventory_hostname != groups['proxyServers'][0]
+  when: 
+    - groups['proxyServers'] | length > 1
+    - inventory_hostname in groups['proxyServers']
+    - inventory_hostname != groups['proxyServers'][0]
   tags:
     - fix-config

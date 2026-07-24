@@ -3,9 +3,9 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 ---
-# tasks file for post-carbonio-packages-upgrade
-- ansible.builtin.import_tasks: remove-unused-dependencies.yml
-- ansible.builtin.import_tasks: execute-config-fixes.yml
-- ansible.builtin.import_tasks: execute-carbonio-pending-setups.yml
-- ansible.builtin.import_tasks: execute-dbconnectors-bootstrap.yml
-- ansible.builtin.import_tasks: restart-carbonio-services.yml
+# tasks file for post_carbonio_packages_upgrade
+- ansible.builtin.import_tasks: remove_unused_dependencies.yml
+- ansible.builtin.import_tasks: execute_config_fixes.yml
+- ansible.builtin.import_tasks: execute_carbonio_pending_setups.yml
+- ansible.builtin.import_tasks: execute_dbconnectors_bootstrap.yml
+- ansible.builtin.import_tasks: restart_carbonio_services.yml

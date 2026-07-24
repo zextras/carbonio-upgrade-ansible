@@ -4,8 +4,8 @@
 
 ---
 # tasks file for pre-carbonio-upgrade
-- ansible.builtin.import_tasks: password-checks.yml
-- ansible.builtin.import_tasks: chats_check.yml
-- ansible.builtin.import_tasks: inventory_values_checks.yml
-- ansible.builtin.import_tasks: pre-upgrade-cmds.yml
-- ansible.builtin.import_tasks: rsyslog-config-check.yml
+- ansible.builtin.import_tasks: validate_password_files.yml
+- ansible.builtin.import_tasks: validate_inventory_chats.yml
+- ansible.builtin.import_tasks: validate_inventory_values.yml
+- ansible.builtin.import_tasks: create_pre_upgrade_backups.yml
+- ansible.builtin.import_tasks: validate_rsyslog_config.yml

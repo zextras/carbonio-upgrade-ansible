@@ -210,7 +210,7 @@
     - restart-carbonio-services
 
 # Restart via systemd target (if flag true) (Ubuntu24/RHEL9)
-- name: Restart carbonio services [Sysd]
+- name: Restart carbonio services [Ubuntu 24/RHEL 9]
   become: true
   ansible.builtin.systemd_service:
     name: carbonio.target
@@ -252,7 +252,7 @@
     - applicationServers
 
 # AppServer (mailboxd) restart (Ubuntu24/RHEL9)
-- name: Restart application services [Sysd]
+- name: Restart application services [Ubuntu 24/RHEL 9]
   become: true
   ansible.builtin.systemd_service:
     name: carbonio-appserver.target

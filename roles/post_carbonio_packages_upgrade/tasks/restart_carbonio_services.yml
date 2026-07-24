@@ -57,7 +57,7 @@
     - postgresServers
 
 ### Detect Patroni and restart the right service [RHEL]
-- name: Check if patroni is installed [RHEL]
+- name: Check if Patroni is installed [RHEL]
   become: true
   ansible.builtin.shell: rpm -qa 2>/dev/null | grep -w '^patroni'
   register: patroni_check_rhel

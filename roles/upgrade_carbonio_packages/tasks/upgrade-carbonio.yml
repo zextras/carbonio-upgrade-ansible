@@ -27,21 +27,13 @@
     cmd: "set -o pipefail && yum check-update -y 2>/dev/null |  awk '/zextras/ {print $1}'"
     executable: /bin/bash
   register: pkgr
-  failed_when: pkgr.rc not in [ 0, 100 ]
+  failed_when: pkgr.rc not in [0, 100]
   when: ansible_facts.os_family == "RedHat"
   tags:
     - ugrade-carbonio
 
-# Check if file with status for restart present . For all VMs
-- name: Check if file exist
-  ansible.builtin.stat:
-    path: "{{ restart_file }}"
-  register: restart_file_status
-  tags:
-    - track-zmcontrol
-
 # If file with restart status not present will create with content:true. zmcontrol will be restarted with content:true. For all VMs
-- name: Create file with default variables if not exist
+- name: Initialize restart flag
   ansible.builtin.copy:
     dest: "{{ restart_file }}"
     content: |

@@ -49,7 +49,7 @@
   tags:
     - check-carbonio-upgrade
 
-- name: Debig consul status
+- name: Debug consul status
   ansible.builtin.debug:
     msg: "{{ consul_chk_services.stdout_lines }}"
 

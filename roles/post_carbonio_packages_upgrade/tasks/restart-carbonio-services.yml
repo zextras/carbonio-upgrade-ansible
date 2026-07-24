@@ -229,9 +229,9 @@
     - inventory_hostname not in groups['masterDirectoryServers']
     - inventory_hostname not in groups['replicaDirectoryServers']
   ansible.builtin.copy:
-      dest: "{{ restart_file }}"
-      content: |
-        false
+    dest: "{{ restart_file }}"
+    content: |
+      false
   tags:
     - track-zmcontrol
 
@@ -454,8 +454,8 @@
 # Remove the flag on all hosts (final hygiene)
 - name: Remove restart file
   ansible.builtin.file:
-      path: "{{ restart_file }}"
-      state: absent
+    path: "{{ restart_file }}"
+    state: absent
   tags:
     - track-zmcontrol
 

@@ -27,7 +27,7 @@
     cmd: "set -o pipefail && yum check-update -y 2>/dev/null |  awk '/zextras/ {print $1}'"
     executable: /bin/bash
   register: pkgr
-  failed_when: "pkgr.rc not in [ 0, 100 ]"
+  failed_when: pkgr.rc not in [ 0, 100 ]
   when: ansible_facts.os_family == "RedHat"
   tags:
     - ugrade-carbonio
@@ -43,9 +43,9 @@
 # If file with restart status not present will create with content:true. zmcontrol will be restarted with content:true. For all VMs
 - name: Create file with default variables if not exist
   ansible.builtin.copy:
-      dest: "{{ restart_file }}"
-      content: |
-        true
+    dest: "{{ restart_file }}"
+    content: |
+      true
   tags:
     - track-zmcontrol
 
@@ -62,8 +62,6 @@
 - name: Update all packages to their latest version [Ubuntu]
   ansible.builtin.apt:
     upgrade: full
-    #name: "*"
-    #state: latest
   when: ansible_facts.os_family == "Debian"
 
 - name: Upgrade all packages [RHEL]
@@ -127,9 +125,9 @@
 # set content for restart file to false. Only for LDAP master and LDAP replica
 - name: Modify restart file
   ansible.builtin.copy:
-      dest: "{{ restart_file }}"
-      content: |
-        false
+    dest: "{{ restart_file }}"
+    content: |
+      false
   when: inventory_hostname in groups['masterDirectoryServers'] or inventory_hostname in groups['replicaDirectoryServers']
   tags:
     - track-zmcontrol

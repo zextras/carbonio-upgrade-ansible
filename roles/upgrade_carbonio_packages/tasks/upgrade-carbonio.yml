@@ -9,7 +9,7 @@
     update_cache: true
   when: ansible_facts.os_family == "Debian"
   tags:
-    - ugrade-carbonio
+    - upgrade-carbonio
 
 - name: Run scripts to get packages to upgrade [Ubuntu]
   become: true
@@ -19,7 +19,7 @@
   register: pkgu
   when: ansible_facts.os_family == "Debian"
   tags:
-    - ugrade-carbonio
+    - upgrade-carbonio
 
 - name: Run scripts to get packages to upgrade [RHEL]
   become: true
@@ -30,10 +30,9 @@
   failed_when: pkgr.rc not in [0, 100]
   when: ansible_facts.os_family == "RedHat"
   tags:
-    - ugrade-carbonio
+    - upgrade-carbonio
 
-# If file with restart status not present will create with content:true. zmcontrol will be restarted with content:true. For all VMs
-- name: Initialize restart flag
+# Initialize the restart flag for the current upgrade run
   ansible.builtin.copy:
     dest: "{{ restart_file }}"
     content: |
@@ -80,7 +79,7 @@
   register: restart_zmcontrol_var
   when: inventory_hostname in groups['masterDirectoryServers'] or inventory_hostname in groups['replicaDirectoryServers']
   tags:
-      - track-zmcontrol
+    - track-zmcontrol
 
 - name: Debug restart file
   when: inventory_hostname in groups['masterDirectoryServers'] or inventory_hostname in groups['replicaDirectoryServers']
@@ -100,7 +99,7 @@
     - ansible_facts.distribution_major_version != "24"
     - pkgu is search("carbonio-directory-server") or pkgr is search("carbonio-directory-server")
   tags:
-    - ugrade-carbonio
+    - upgrade-carbonio
 
 - name: Restart carbonio services [Sysd]
   become: true
@@ -112,7 +111,7 @@
     - ansible_facts.distribution_major_version == "9" or ansible_facts.distribution_major_version == "24"
     - pkgu is search("carbonio-directory-server") or pkgr is search("carbonio-directory-server")
   tags:
-    - ugrade-carbonio
+    - upgrade-carbonio
     
 # set content for restart file to false. Only for LDAP master and LDAP replica
 - name: Modify restart file

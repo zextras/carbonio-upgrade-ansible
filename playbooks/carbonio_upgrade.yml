@@ -23,7 +23,7 @@
   roles:
     - ../roles/upgrade_carbonio_packages
     - ../roles/install_new_packages
-    - ../roles/post_carbonio_packages_upgrade 
+    - ../roles/post_carbonio_packages_upgrade
 
 - name: Upgrade remaining Service Discover servers
   hosts: serviceDiscoverServers, !masterDirectoryServers, !replicaDirectoryServers

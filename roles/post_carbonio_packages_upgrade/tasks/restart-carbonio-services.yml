@@ -185,7 +185,7 @@
     - inventory_hostname not in groups['masterDirectoryServers']
     - inventory_hostname not in groups['replicaDirectoryServers']
   tags:
-      - track-zmcontrol
+    - track-zmcontrol
 
 - name: Debug restart file
   when:

@@ -1,0 +1,103 @@
+# SPDX-FileCopyrightText: Zextras <https://www.zextras.com>
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
+---
+- name: Install notification push db connector [Ubuntu]
+  become: true
+  ansible.builtin.apt: name={{ item }} state=present
+  with_items:
+    - "{{ notification_push_dbconnectors_packages }}"
+  when:
+    - ansible_facts.os_family == "Debian"
+    - (
+        (inventory_hostname == groups['postgresServers'][0] and groups['dbsConnectorServers'] | length == 0) or
+        (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0])
+      )
+    - groups['workStreamServers'] | length > 0
+  tags:
+    - install-carbonio-dbconnectors
+    - install-carbonio-notification-push
+
+- name: Install videorecorder db connector [Ubuntu]
+  become: true
+  ansible.builtin.apt: name={{ item }} state=present
+  with_items:
+    - "{{ videorecorder_dbconnectors_packages }}"
+  when: 
+    - ansible_facts.os_family == "Debian"
+    - (
+        (inventory_hostname == groups['postgresServers'][0] and groups['dbsConnectorServers'] | length == 0) or 
+        (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0])
+      )
+    - groups['videoServers'] | length > 0 
+  tags:
+    - install-carbonio-dbconnectors
+    - install-carbonio-videoserver
+
+- name: Install preview db connector [Ubuntu]
+  become: true
+  ansible.builtin.apt: name={{ item }} state=present
+  with_items:
+    - "{{ preview_dbconnectors_packages }}"
+  when:
+    - ansible_facts.os_family == "Debian"
+    - (
+        (inventory_hostname == groups['postgresServers'][0] and groups['dbsConnectorServers'] | length == 0) or
+        (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0])
+      )
+    - groups['previewServers'] | length > 0
+  tags:
+    - install-carbonio-dbconnectors
+    - install-carbonio-preview
+
+##### RHEL
+
+- name: Install notification push db connector [RHEL]
+  become: true
+  ansible.builtin.yum: name={{ item }} state=present
+  with_items:
+    - "{{ notification_push_dbconnectors_packages }}"
+  when:
+    - ansible_facts.os_family == "RedHat"
+    - (
+        (inventory_hostname == groups['postgresServers'][0] and groups['dbsConnectorServers'] | length == 0) or
+        (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0])
+      )
+    - groups['workStreamServers'] | length > 0
+  tags:
+    - install-carbonio-dbconnectors
+    - install-carbonio-notification-push
+ 
+
+- name: Install videorecorder db connector [RHEL]
+  become: true
+  ansible.builtin.yum: name={{ item }} state=present
+  with_items:
+    - "{{ videorecorder_dbconnectors_packages }}"
+  when: 
+    - ansible_facts.os_family == "RedHat"
+    - (
+        (inventory_hostname == groups['postgresServers'][0] and groups['dbsConnectorServers'] | length == 0) or 
+        (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0])
+      ) 
+    - groups['videoServers'] | length > 0 
+  tags:
+    - install-carbonio-dbconnectors
+    - install-carbonio-videoserver
+
+- name: Install preview db connector [RHEL]
+  become: true
+  ansible.builtin.yum: name={{ item }} state=present
+  with_items:
+    - "{{ preview_dbconnectors_packages }}"
+  when:
+    - ansible_facts.os_family == "RedHat"
+    - (
+        (inventory_hostname == groups['postgresServers'][0] and groups['dbsConnectorServers'] | length == 0) or
+        (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0])
+      )
+    - groups['previewServers'] | length > 0
+  tags:
+    - install-carbonio-dbconnectors
+    - install-carbonio-preview

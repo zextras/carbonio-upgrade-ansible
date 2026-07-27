@@ -1,0 +1,116 @@
+# SPDX-FileCopyrightText: Zextras <https://www.zextras.com>
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
+---
+- name: Update repositories cache [Ubuntu]
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
+  when: ansible_facts.os_family == "Debian"
+  tags:
+    - upgrade-carbonio
+
+- name: Get packages to upgrade [Ubuntu]
+  become: true
+  ansible.builtin.shell:
+    cmd: 'set -o pipefail && apt list --upgradable 2>/dev/null | cut -f 1 -d / | tail -n +2'
+    executable: /bin/bash
+  register: pkgu
+  changed_when: false
+  when: ansible_facts.os_family == "Debian"
+  tags:
+    - upgrade-carbonio
+
+- name: Get packages to upgrade [RHEL]
+  become: true
+  ansible.builtin.shell:
+    cmd: "set -o pipefail && yum check-update -y 2>/dev/null | awk '/zextras/ {print $1}'"
+    executable: /bin/bash
+  register: pkgr
+  changed_when: false
+  failed_when: pkgr.rc not in [0, 100]
+  when: ansible_facts.os_family == "RedHat"
+  tags:
+    - upgrade-carbonio
+
+# Initialize the restart flag for the current upgrade run
+- name: Initialize restart flag
+  ansible.builtin.copy:
+    dest: "{{ restart_file }}"
+    content: |
+      true
+  tags:
+    - track-zmcontrol
+
+- name: Debug list packages [Ubuntu]
+  when: ansible_facts.os_family == "Debian"
+  ansible.builtin.debug:
+    msg: "{{ pkgu }}"
+
+- name: Debug list packages [RHEL]
+  when: ansible_facts.os_family == "RedHat"
+  ansible.builtin.debug:
+    msg: "{{ pkgr }}"
+
+- name: Update all packages to their latest version [Ubuntu]
+  become: true
+  ansible.builtin.apt:
+    upgrade: full
+  when: ansible_facts.os_family == "Debian"
+
+- name: Upgrade all packages [RHEL]
+  become: true
+  ansible.builtin.yum:
+    name: "*"
+    state: latest
+    allowerasing: true
+  register: update
+  when: ansible_facts.os_family == "RedHat"
+
+- name: Add capability to slapd
+  become: true
+  community.general.capabilities:
+    path: /opt/zextras/common/libexec/slapd
+    capability: cap_net_bind_service=+ep
+    state: present
+  when:
+    - inventory_hostname in groups['masterDirectoryServers'] or inventory_hostname in groups['replicaDirectoryServers']
+    - pkgu is search("carbonio-directory-server") or pkgr is search("carbonio-directory-server")
+
+- name: Restart Directory Server
+  become: true
+  become_method: su
+  become_user: zextras
+  ansible.builtin.command: /opt/zextras/bin/zmcontrol restart
+  register: zm_status
+  changed_when: zm_status.rc == 0
+  when: 
+    - inventory_hostname in groups['masterDirectoryServers'] or inventory_hostname in groups['replicaDirectoryServers']
+    - ansible_facts.distribution_major_version != "9"
+    - ansible_facts.distribution_major_version != "24"
+    - pkgu is search("carbonio-directory-server") or pkgr is search("carbonio-directory-server")
+  tags:
+    - upgrade-carbonio
+
+- name: Restart carbonio services [Ubuntu 24/RHEL 9]
+  become: true
+  ansible.builtin.systemd_service:
+    name: carbonio.target
+    state: restarted
+  when: 
+    - inventory_hostname in groups['masterDirectoryServers'] or inventory_hostname in groups['replicaDirectoryServers']
+    - ansible_facts.distribution_major_version == "9" or ansible_facts.distribution_major_version == "24"
+    - pkgu is search("carbonio-directory-server") or pkgr is search("carbonio-directory-server")
+  tags:
+    - upgrade-carbonio
+    
+# set content for restart file to false. Only for LDAP master and LDAP replica
+- name: Modify restart file
+  ansible.builtin.copy:
+    dest: "{{ restart_file }}"
+    content: |
+      false
+  when: inventory_hostname in groups['masterDirectoryServers'] or inventory_hostname in groups['replicaDirectoryServers']
+  tags:
+    - track-zmcontrol

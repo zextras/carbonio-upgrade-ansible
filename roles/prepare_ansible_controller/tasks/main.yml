@@ -3,5 +3,5 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 ---
-# tasks file for upgrade_carbonio_packages
-- ansible.builtin.import_tasks: upgrade_carbonio.yml
+# tasks file for prepare_ansible_controller
+- ansible.builtin.import_tasks: ensure_python_dependencies.yml

@@ -1,15 +1,15 @@
-# SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
+# SPDX-FileCopyrightText: Zextras <https://www.zextras.com>
 #
 # SPDX-License-Identifier: GPL-3.0-only
 
 ---
 # tasks file for install_new_packages
-- import_tasks: install-carbonio-memcached.yml
-- import_tasks: install-carbonio-message-broker.yml
-- import_tasks: install-new-proxy-packages.yml
-- import_tasks: install-carbonio-storages.yml
-- import_tasks: install-carbonio-user-management.yml
-- import_tasks: install-carbonio-catalog.yml
-- import_tasks: install-carbonio-syslog.yml
-- import_tasks: install-carbonio-notification-push.yml
-- import_tasks: install-db-connectors.yml
+- ansible.builtin.import_tasks: install_carbonio_memcached.yml
+- ansible.builtin.import_tasks: install_carbonio_message_broker.yml
+- ansible.builtin.import_tasks: install_new_proxy_packages.yml
+- ansible.builtin.import_tasks: install_carbonio_storages.yml
+- ansible.builtin.import_tasks: install_carbonio_user_management.yml
+- ansible.builtin.import_tasks: install_carbonio_catalog.yml
+- ansible.builtin.import_tasks: install_carbonio_syslog.yml
+- ansible.builtin.import_tasks: install_carbonio_notification_push.yml
+- ansible.builtin.import_tasks: install_db_connectors.yml

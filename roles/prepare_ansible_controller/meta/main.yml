@@ -4,7 +4,7 @@
 
 galaxy_info:
   author: zextras-mobius <mobius@zextras.com>
-  description: Carbonio backup role
+  description: Prepare the Ansible controller for the Carbonio upgrade playbook
   company: zextras
   license: GPL-3.0-only
 
@@ -26,8 +26,8 @@ galaxy_info:
     - 9
   - name: Ubuntu
     versions:
-    - 24.04
     - 22.04
+    - 24.04
 
   galaxy_tags: [zextras, carbonio]
 

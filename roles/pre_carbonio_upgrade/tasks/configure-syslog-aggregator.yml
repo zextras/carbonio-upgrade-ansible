@@ -1,11 +1,10 @@
-# SPDX-FileCopyrightText: Zextras <https://www.zextras.com>
+# SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
 #
 # SPDX-License-Identifier: GPL-3.0-only
 
 ---
   - name: Enable remote syslog
-    become: true
-    ansible.builtin.lineinfile:
+    lineinfile:
         # firstmatch: true
         dest: /etc/rsyslog.conf
         regex: '^#\s*{{ item.regex }}(.*)$'
@@ -20,6 +19,6 @@
         - regex: 'input\(type="imtcp" port="514"\)'
           line: 'input(type="imtcp" port="514")'
     notify: restart_rsyslog
-    when: inventory_hostname in groups['syslogServer']
+    when: inventory_hostname in groups["syslogServer"]
     tags:
       - check-rsyslog

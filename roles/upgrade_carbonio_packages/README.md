@@ -1,25 +1,38 @@
-# Upgrade Carbonio Packages
+Role Name
+=========
 
-This role upgrades the installed Carbonio packages on supported Ubuntu and RHEL systems.
+A brief description of the role goes here.
 
-## Responsibilities
+Requirements
+------------
 
-The role:
+Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
 
-- updates the package repository cache;
-- collects the list of packages available for upgrade;
-- upgrades installed packages to their latest available versions;
-- restores the required network bind capability on the Directory Server binary;
-- restarts Directory Server services when the Directory Server package is upgraded;
-- manages the restart flag used by the post-upgrade role.
+Role Variables
+--------------
 
-The role does not install additional Carbonio components introduced by newer releases.
+A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
 
-## License
+Dependencies
+------------
 
-GPL-3.0-only
+A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
 
-## Author Information
+Example Playbook
+----------------
 
-Zextras  
-<https://www.zextras.com>
+Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+
+    - hosts: servers
+      roles:
+         - { role: username.rolename, x: 42 }
+
+License
+-------
+
+BSD
+
+Author Information
+------------------
+
+An optional section for the role authors to include contact information, or a website (HTML is not allowed).

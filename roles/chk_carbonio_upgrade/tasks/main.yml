@@ -1,6 +1,5 @@
-# SPDX-FileCopyrightText: Zextras <https://www.zextras.com>
+# SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
 #
 # SPDX-License-Identifier: GPL-3.0-only
 
----
-- ansible.builtin.import_tasks: verify_carbonio_upgrade.yml
+- import_tasks: check-upgrade.yml

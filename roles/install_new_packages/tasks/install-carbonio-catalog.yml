@@ -1,11 +1,11 @@
-# SPDX-FileCopyrightText: Zextras <https://www.zextras.com>
+# SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
 #
 # SPDX-License-Identifier: GPL-3.0-only
 
 ---
 - name: Check if carbonio-catalog is present in Consul
   become: true
-  ansible.builtin.shell: >
+  shell: >
     consul catalog services | grep -q {{ item }}
     && echo installed
     || echo absent
@@ -19,7 +19,7 @@
 
 - name: Install carbonio-catalog if not found in Consul [Ubuntu]
   become: true
-  ansible.builtin.apt:
+  apt:
     name: "{{ item.item }}"
     state: present
   with_items: "{{ check_services.results }}"
@@ -32,19 +32,19 @@
 
 - name: Install carbonio-catalog if not found in Consul [RHEL]
   become: true
-  ansible.builtin.yum:
+  yum:
     name: "{{ item.item }}"
     state: present
   with_items: "{{ check_services.results }}"
   when:
-    - ansible_facts.os_family == "RedHat"
+    - ansible_facts.os_family in ["RedHat", "CentOS"]
     - inventory_hostname in groups['proxyServers']
     - item.stdout == "absent"
   tags:
     - install-carbonio-catalog
 
 - name: Debug message for already installed carbonio-catalog
-  ansible.builtin.debug:
+  debug:
     msg: "carbonio-catalog is already installed"
   with_items: "{{ check_services.results }}"
   when:

@@ -1,25 +1,38 @@
-# Pre Carbonio Upgrade
+Role Name
+=========
 
-This role performs validation and backup operations before the Carbonio upgrade starts.
+A brief description of the role goes here.
 
-## Responsibilities
+Requirements
+------------
 
-The role:
+Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
 
-- validates the required Consul and PostgreSQL password files;
-- validates required inventory groups and inventory values;
-- validates the public IP address configured for VideoServer nodes;
-- creates backups of LDAP and Carbonio configuration files;
-- checks the rsyslog remote listener configuration;
-- restores the rsyslog listener configuration when required.
+Role Variables
+--------------
 
-The role does not upgrade or install Carbonio packages.
+A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
 
-## License
+Dependencies
+------------
 
-GPL-3.0-only
+A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
 
-## Author Information
+Example Playbook
+----------------
 
-Zextras  
-<https://www.zextras.com>
+Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+
+    - hosts: servers
+      roles:
+         - { role: username.rolename, x: 42 }
+
+License
+-------
+
+BSD
+
+Author Information
+------------------
+
+An optional section for the role authors to include contact information, or a website (HTML is not allowed).

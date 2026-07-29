@@ -1,8 +1,8 @@
-# SPDX-FileCopyrightText: Zextras <https://www.zextras.com>
+# SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
 #
 # SPDX-License-Identifier: GPL-3.0-only
 
 ---
-# vars file for post_carbonio_packages_upgrade
+# vars file for post-carbonio-packages-upgrade
 restart_file: "/tmp/zmcontrol_restart_status"
 skip_autoremove: 0  # Set to 1 to skip the autoremove tasks

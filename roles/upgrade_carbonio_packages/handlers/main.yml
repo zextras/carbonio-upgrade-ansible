@@ -1,6 +1,6 @@
-# SPDX-FileCopyrightText: Zextras <https://www.zextras.com>
+# SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
 #
 # SPDX-License-Identifier: GPL-3.0-only
 
 ---
-# handlers file for upgrade_carbonio_packages
+# handlers file for upgrade-carbonio-packages

@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 * Removed the obsolete carbonio-core < 4.2 compatibility block, including version detection and the related restart, wait, and stop sequence.
 * Removed outdated Carbonio version references from task names that are not conditionally executed based on the installed Carbonio version.
 * Added installation and database bootstrap support for the new carbonio-preview-db package.
+* Refactored the playbook structure and standardized Ansible content across roles, including task names, module FQCNs, inventory group references, and task conditions.
 
 
 ### [26.6.2] (2026-07-10)

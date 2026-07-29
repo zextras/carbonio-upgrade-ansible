@@ -1,95 +1,105 @@
-# SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
+# SPDX-FileCopyrightText: Zextras <https://www.zextras.com>
 #
 # SPDX-License-Identifier: GPL-3.0-only
 
-- hosts: all
+- name: Prepare Ansible controller
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  roles:
+    - ../roles/prepare_ansible_controller
+
+- name: Run pre-upgrade validation and backups
+  hosts: all
   order: inventory
   gather_facts: true
   roles:
-     - ../roles/pre_carbonio_upgrade
+    - ../roles/pre_carbonio_upgrade
 
-# Upgrade master LDAP, replica and Postgres
-- hosts: postgresServers, masterDirectoryServers, replicaDirectoryServers
+- name: Upgrade PostgreSQL and master/replica Directory servers
+  hosts: postgresServers, masterDirectoryServers, replicaDirectoryServers
   serial: 1
   gather_facts: true
   roles:
-     - ../roles/upgrade_carbonio_packages
-     - ../roles/install_new_packages
-     - ../roles/post_carbonio_packages_upgrade 
+    - ../roles/upgrade_carbonio_packages
+    - ../roles/install_new_packages
+    - ../roles/post_carbonio_packages_upgrade
 
-# Upgrade others consul servers
-- hosts: serviceDiscoverServers, !masterDirectoryServers, !replicaDirectoryServers
-  serial: 1
-  order: inventory
-  gather_facts: true
-  roles:
-     - ../roles/upgrade_carbonio_packages
-     - ../roles/install_new_packages
-     - ../roles/post_carbonio_packages_upgrade
-
-# Upgrade all dbsConnectorServers, db bootstrap it's executed only on first
-- hosts: dbsConnectorServers
+- name: Upgrade remaining Service Discover servers
+  hosts: serviceDiscoverServers, !masterDirectoryServers, !replicaDirectoryServers
   serial: 1
   order: inventory
   gather_facts: true
   roles:
-     - ../roles/upgrade_carbonio_packages
-     - ../roles/install_new_packages
-     - ../roles/post_carbonio_packages_upgrade
+    - ../roles/upgrade_carbonio_packages
+    - ../roles/install_new_packages
+    - ../roles/post_carbonio_packages_upgrade
 
-# Upgrade others applicationServers exept dbsConnectorServers
-- hosts: applicationServers, !dbsConnectorServers 
+- name: Upgrade DB Connector servers
+  hosts: dbsConnectorServers
   serial: 1
   order: inventory
   gather_facts: true
   roles:
-     - ../roles/upgrade_carbonio_packages
-     - ../roles/post_carbonio_packages_upgrade
+    - ../roles/upgrade_carbonio_packages
+    - ../roles/install_new_packages
+    - ../roles/post_carbonio_packages_upgrade
 
-# Fix packages
-- hosts: filesServers
+- name: Upgrade remaining Application servers
+  hosts: applicationServers, !dbsConnectorServers
+  serial: 1
   order: inventory
   gather_facts: true
   roles:
-     - ../roles/upgrade_carbonio_packages
-     - ../roles/install_new_packages
-     - ../roles/post_carbonio_packages_upgrade
+    - ../roles/upgrade_carbonio_packages
+    - ../roles/post_carbonio_packages_upgrade
 
-#Upgrade proxy servers
-- hosts: proxyServers
+- name: Upgrade Files servers
+  hosts: filesServers
   order: inventory
   gather_facts: true
   roles:
-     - ../roles/upgrade_carbonio_packages
-     - ../roles/install_new_packages
-     - ../roles/post_carbonio_packages_upgrade
+    - ../roles/upgrade_carbonio_packages
+    - ../roles/install_new_packages
+    - ../roles/post_carbonio_packages_upgrade
 
-# Upgrade WSC
-- hosts: workStreamServers
+- name: Upgrade Proxy servers
+  hosts: proxyServers
   order: inventory
   gather_facts: true
   roles:
-     - ../roles/upgrade_carbonio_packages
-     - ../roles/install_new_packages
-     - ../roles/post_carbonio_packages_upgrade
+    - ../roles/upgrade_carbonio_packages
+    - ../roles/install_new_packages
+    - ../roles/post_carbonio_packages_upgrade
 
-- hosts: videoServers
+- name: Upgrade Chats servers
+  hosts: workStreamServers
   order: inventory
   gather_facts: true
   roles:
-     - ../roles/upgrade_carbonio_packages
-     - ../roles/post_carbonio_packages_upgrade
+    - ../roles/upgrade_carbonio_packages
+    - ../roles/install_new_packages
+    - ../roles/post_carbonio_packages_upgrade
 
-# Upgrade others VMs except consul servers and db-connectors
-- hosts: all, !serviceDiscoverServers, !masterDirectoryServers, !replicaDirectoryServers, !dbsConnectorServers,!applicationServers, !filesServers, !proxyServers, !workStreamServers, !videoServers
+- name: Upgrade Video servers
+  hosts: videoServers
   order: inventory
   gather_facts: true
   roles:
-     - ../roles/upgrade_carbonio_packages
-     - ../roles/post_carbonio_packages_upgrade
+    - ../roles/upgrade_carbonio_packages
+    - ../roles/post_carbonio_packages_upgrade
 
-- hosts: all
+- name: Upgrade remaining Carbonio servers
+  hosts: all, !serviceDiscoverServers, !masterDirectoryServers, !replicaDirectoryServers, !dbsConnectorServers, !applicationServers, !filesServers, !proxyServers, !workStreamServers, !videoServers
   order: inventory
   gather_facts: true
   roles:
-     - ../roles/chk_carbonio_upgrade
+    - ../roles/upgrade_carbonio_packages
+    - ../roles/post_carbonio_packages_upgrade
+
+- name: Verify Carbonio services after upgrade
+  hosts: all
+  order: inventory
+  gather_facts: true
+  roles:
+    - ../roles/chk_carbonio_upgrade

@@ -1,17 +1,17 @@
-# SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
+# SPDX-FileCopyrightText: Zextras <https://www.zextras.com>
 #
 # SPDX-License-Identifier: GPL-3.0-only
 
 ---
-- name: Install notification push db connector Ubuntu
+- name: Install notification push db connector [Ubuntu]
   become: true
-  apt: name={{ item }} state=present
+  ansible.builtin.apt: name={{ item }} state=present
   with_items:
     - "{{ notification_push_dbconnectors_packages }}"
   when:
     - ansible_facts.os_family == "Debian"
     - (
-        (inventory_hostname in groups['postgresServers'][0] and groups['dbsConnectorServers'] | length == 0) or
+        (inventory_hostname == groups['postgresServers'][0] and groups['dbsConnectorServers'] | length == 0) or
         (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0])
       )
     - groups['workStreamServers'] | length > 0
@@ -19,15 +19,15 @@
     - install-carbonio-dbconnectors
     - install-carbonio-notification-push
 
-- name: Install videorecorder db connector Ubuntu
+- name: Install videorecorder db connector [Ubuntu]
   become: true
-  apt: name={{ item }} state=present
+  ansible.builtin.apt: name={{ item }} state=present
   with_items:
     - "{{ videorecorder_dbconnectors_packages }}"
   when: 
     - ansible_facts.os_family == "Debian"
     - (
-        (inventory_hostname in groups['postgresServers'][0] and groups['dbsConnectorServers'] | length == 0) or 
+        (inventory_hostname == groups['postgresServers'][0] and groups['dbsConnectorServers'] | length == 0) or 
         (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0])
       )
     - groups['videoServers'] | length > 0 
@@ -35,15 +35,15 @@
     - install-carbonio-dbconnectors
     - install-carbonio-videoserver
 
-- name: Install preview db connector Ubuntu
+- name: Install preview db connector [Ubuntu]
   become: true
-  apt: name={{ item }} state=present
+  ansible.builtin.apt: name={{ item }} state=present
   with_items:
     - "{{ preview_dbconnectors_packages }}"
   when:
     - ansible_facts.os_family == "Debian"
     - (
-        (inventory_hostname in groups['postgresServers'][0] and groups['dbsConnectorServers'] | length == 0) or
+        (inventory_hostname == groups['postgresServers'][0] and groups['dbsConnectorServers'] | length == 0) or
         (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0])
       )
     - groups['previewServers'] | length > 0
@@ -53,15 +53,15 @@
 
 ##### RHEL
 
-- name: Install notification push db connector RHEL
+- name: Install notification push db connector [RHEL]
   become: true
-  yum: name={{ item }} state=present
+  ansible.builtin.yum: name={{ item }} state=present
   with_items:
     - "{{ notification_push_dbconnectors_packages }}"
   when:
-    - ansible_facts.os_family == "RedHat" or ansible_facts.os_family == "CentOS"
+    - ansible_facts.os_family == "RedHat"
     - (
-        (inventory_hostname in groups['postgresServers'][0] and groups['dbsConnectorServers'] | length == 0) or
+        (inventory_hostname == groups['postgresServers'][0] and groups['dbsConnectorServers'] | length == 0) or
         (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0])
       )
     - groups['workStreamServers'] | length > 0
@@ -70,15 +70,15 @@
     - install-carbonio-notification-push
  
 
-- name: Install videorecorder db connector RHEL
+- name: Install videorecorder db connector [RHEL]
   become: true
-  yum: name={{ item }} state=present
+  ansible.builtin.yum: name={{ item }} state=present
   with_items:
     - "{{ videorecorder_dbconnectors_packages }}"
   when: 
-    - ansible_facts.os_family == "RedHat" or ansible_facts.os_family == "CentOS"
+    - ansible_facts.os_family == "RedHat"
     - (
-        (inventory_hostname in groups['postgresServers'][0] and groups['dbsConnectorServers'] | length == 0) or 
+        (inventory_hostname == groups['postgresServers'][0] and groups['dbsConnectorServers'] | length == 0) or 
         (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0])
       ) 
     - groups['videoServers'] | length > 0 
@@ -86,15 +86,15 @@
     - install-carbonio-dbconnectors
     - install-carbonio-videoserver
 
-- name: Install preview db connector RHEL
+- name: Install preview db connector [RHEL]
   become: true
-  yum: name={{ item }} state=present
+  ansible.builtin.yum: name={{ item }} state=present
   with_items:
     - "{{ preview_dbconnectors_packages }}"
   when:
-    - ansible_facts.os_family == "RedHat" or ansible_facts.os_family == "CentOS"
+    - ansible_facts.os_family == "RedHat"
     - (
-        (inventory_hostname in groups['postgresServers'][0] and groups['dbsConnectorServers'] | length == 0) or
+        (inventory_hostname == groups['postgresServers'][0] and groups['dbsConnectorServers'] | length == 0) or
         (groups['dbsConnectorServers'] | length > 0 and inventory_hostname in groups['dbsConnectorServers'] and groups['dbsConnectorServers'][0] != groups['postgresServers'][0])
       )
     - groups['previewServers'] | length > 0

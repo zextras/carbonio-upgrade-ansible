@@ -3,5 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 ---
-# tasks file for upgrade_carbonio_packages
-- ansible.builtin.import_tasks: upgrade_carbonio.yml
+- hosts: localhost
+  remote_user: root
+  roles:
+    - prepare_ansible_controller

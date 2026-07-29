@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
+# SPDX-FileCopyrightText: Zextras <https://www.zextras.com>
 #
 # SPDX-License-Identifier: GPL-3.0-only
 
@@ -7,24 +7,24 @@
   become: true
   become_method: su
   become_user: zextras
-  command: '/opt/zextras/bin/zmcontrol status'
+  ansible.builtin.command: '/opt/zextras/bin/zmcontrol status'
   register: zmcontrol_chk_status
   changed_when: false
-  when: inventory_hostname in groups["applicationServers"]
+  when: inventory_hostname in groups['applicationServers']
   tags:
     - check-carbonio-upgrade
 
 - name: Debug zmcontrol status
-  debug:
+  ansible.builtin.debug:
     msg: "{{ zmcontrol_chk_status.stdout_lines }}"
-  when: inventory_hostname in groups["applicationServers"]
+  when: inventory_hostname in groups['applicationServers']
   tags:
     - check-carbonio-upgrade
 
 - name: Check Carbonio services
   become: true
   become_method: su
-  shell:
+  ansible.builtin.shell:
     cmd: 'set -o pipefail && systemctl list-units --no-legend | grep carbonio'
     executable: /bin/bash
   register: carbonio_chk_services
@@ -33,7 +33,7 @@
     - check-carbonio-upgrade
 
 - name: Debug list of carbonio services status
-  debug:
+  ansible.builtin.debug:
     msg: "{{ carbonio_chk_services.stdout_lines }}"
   tags:
     - check-carbonio-upgrade
@@ -41,7 +41,7 @@
 - name: Check Consul services
   become: true
   become_method: su
-  shell:
+  ansible.builtin.shell:
     cmd: 'set -o pipefail && systemctl list-units --no-legend | grep service-discover'
     executable: /bin/bash
   register: consul_chk_services
@@ -49,25 +49,27 @@
   tags:
     - check-carbonio-upgrade
 
-- name: Debig consul status
-  debug:
+- name: Debug consul status
+  ansible.builtin.debug:
     msg: "{{ consul_chk_services.stdout_lines }}"
-
+  tags:
+    - check-carbonio-upgrade
+    
 - name: Check videoserver services
   become: true
   become_method: su
-  shell:
+  ansible.builtin.shell:
     cmd: 'set -o pipefail && systemctl list-units --no-legend | grep videoserver'
     executable: /bin/bash
   register: video_chk_services
   changed_when: false
-  when: inventory_hostname in groups["videoServers"]
+  when: inventory_hostname in groups['videoServers']
   tags:
     - check-carbonio-upgrade
 
 - name: Debug videoserver status
-  when: inventory_hostname in groups["videoServers"]
-  debug:
+  when: inventory_hostname in groups['videoServers']
+  ansible.builtin.debug:
     msg: "{{ video_chk_services.stdout_lines }}"
   tags:
     - check-carbonio-upgrade
@@ -76,14 +78,14 @@
   become: true
   become_method: su
   become_user: zextras
-  command: '/opt/zextras/bin/zmcontrol -v'
+  ansible.builtin.command: '/opt/zextras/bin/zmcontrol -v'
   register: version_chk_version
   changed_when: false
   tags:
     - check-carbonio-upgrade
 
 - name: Debug version output
-  debug:
+  ansible.builtin.debug:
     msg: "{{ version_chk_version.stdout_lines }}"
   tags:
     - check-carbonio-upgrade

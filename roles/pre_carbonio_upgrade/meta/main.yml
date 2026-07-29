@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Zextras <https://www.zextras.com>
+# SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
 #
 # SPDX-License-Identifier: GPL-3.0-only
 
@@ -28,6 +28,7 @@ galaxy_info:
     versions:
     - 24.04
     - 22.04
+    - 20.04
 
   galaxy_tags: [zextras, carbonio]
 

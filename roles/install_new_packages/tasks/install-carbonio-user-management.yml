@@ -1,11 +1,11 @@
-# SPDX-FileCopyrightText: Zextras <https://www.zextras.com>
+# SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
 #
 # SPDX-License-Identifier: GPL-3.0-only
 
 ---
 - name: Check if carbonio user management service is present in Consul
   become: true
-  ansible.builtin.shell: >
+  shell: >
     consul catalog services | grep -q {{ item }}
     && echo installed
     || echo absent
@@ -20,7 +20,7 @@
 
 - name: Install carbonio user management if not found in Consul [Ubuntu]
   become: true
-  ansible.builtin.apt:
+  apt:
     name: "{{ item.item }}"
     state: present
   with_items: "{{ check_services.results }}"
@@ -34,12 +34,12 @@
 
 - name: Install carbonio user management if not found in Consul [RHEL]
   become: true
-  ansible.builtin.yum:
+  yum:
     name: "{{ item.item }}"
     state: present
   with_items: "{{ check_services.results }}"
   when:
-    - ansible_facts.os_family == "RedHat"
+    - ansible_facts.os_family in ["RedHat", "CentOS"]
     - inventory_hostname in groups['serviceDiscoverServers']
     - groups['filesServers'] | length > 0
     - item.stdout == "absent"
@@ -47,7 +47,7 @@
     - install-carbonio-user-management
 
 - name: Debug message for already installed carbonio user management
-  ansible.builtin.debug:
+  debug:
     msg: "carbonio user management is already installed"
   with_items: "{{ check_services.results }}"
   when:

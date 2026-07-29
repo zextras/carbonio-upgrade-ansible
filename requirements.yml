@@ -8,9 +8,3 @@ collections:
   - name: zxbot.sps_ansible_addons
     version: ">=1.0.0"
     source: https://galaxy.ansible.com
-  - name: ansible.utils
-    version: ">=4.1.0"
-    source: https://galaxy.ansible.com
-  - name: community.general
-    version: ">=9.5.2"
-    source: https://galaxy.ansible.com

@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Zextras <https://www.zextras.com>
+# SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
 #
 # SPDX-License-Identifier: GPL-3.0-only
 
@@ -13,28 +13,28 @@
 # 7) service-discover agent, sidecars, videoserver
 
 ### Detect Patroni and restart the right service (Ubuntu/Debian)
-- name: Check if patroni is installed [Ubuntu]
+- name: Check if patroni is installed (Debian) 24.9 -> 25.12.1
   become: true
-  ansible.builtin.shell: apt list --installed 2>/dev/null | grep -w '^patroni'
+  shell: apt list --installed 2>/dev/null | grep -w '^patroni'
   register: patroni_check_debian
   failed_when: false
   changed_when: false 
   when: 
-    - inventory_hostname in groups['postgresServers']
+    - inventory_hostname in groups["postgresServers"]
     - ansible_facts.os_family == "Debian"
   tags:
     - restart-carbonio-services
     - postgresServers
 
 # If Patroni is absent → restart PostgreSQL
-- name: Restart postgres [Ubuntu]
+- name: Restart postgres(Ubuntu)
   become: true
   ansible.builtin.service:
     name: "postgresql"
     state: restarted
   register: postgres_ubuntu
   when: 
-    - inventory_hostname in groups['postgresServers'] 
+    - inventory_hostname in groups["postgresServers"] 
     - ansible_facts.os_family == "Debian" 
     - "'patroni' not in patroni_check_debian.stdout"
   tags:
@@ -42,43 +42,43 @@
     - postgresServers
 
 # If Patroni is present → restart Patroni; will pause later
-- name: Restart patroni [Ubuntu]
+- name: Restart patroni(Ubuntu)
   become: true
   ansible.builtin.service:
     name: "patroni"
     state: restarted
   register: patroni_ubuntu
   when: 
-    - inventory_hostname in groups['postgresServers'] 
+    - inventory_hostname in groups["postgresServers"] 
     -  ansible_facts.os_family == "Debian"
     - "'patroni' in patroni_check_debian.stdout" 
   tags:
     - restart-carbonio-services
     - postgresServers
 
-### Detect Patroni and restart the right service [RHEL]
-- name: Check if Patroni is installed [RHEL]
+### Detect Patroni and restart the right service (RHEL)
+- name: Check if patroni is installed [RHEL] 24.9 -> 25.12.1
   become: true
-  ansible.builtin.shell: rpm -qa 2>/dev/null | grep -w '^patroni'
+  shell: rpm -qa 2>/dev/null | grep -w '^patroni'
   register: patroni_check_rhel
   failed_when: false 
   changed_when: false
   when: 
     - ansible_facts.os_family == "RedHat" 
-    - inventory_hostname in groups['postgresServers']
+    - inventory_hostname in groups["postgresServers"]
   tags:
     - restart-carbonio-services
     - postgresServers
 
 # Patroni absent → restart the PostgreSQL unit
-- name: Restart postgres [RHEL]
+- name: Restart postgres(RHEL)
   become: true
   ansible.builtin.service:
     name: "postgresql-16.service"
     state: restarted
   register: postgres_rhel
   when: 
-    - inventory_hostname in groups['postgresServers'] 
+    - inventory_hostname in groups["postgresServers"] 
     - ansible_facts.os_family == "RedHat"
     - "'patroni' not in patroni_check_rhel.stdout"
   tags:
@@ -86,14 +86,14 @@
     - postgresServers
 
 # Patroni present → restart Patroni
-- name: Restart patroni [RHEL]
+- name: Restart patroni(RHEL)
   become: true
   ansible.builtin.service:
     name: "patroni.service"
     state: restarted
   register: patroni_rhel
   when: 
-    - inventory_hostname in groups['postgresServers'] 
+    - inventory_hostname in groups["postgresServers"] 
     - ansible_facts.os_family == "RedHat"
     - "'patroni' in patroni_check_rhel.stdout"
   tags:
@@ -101,67 +101,67 @@
     - postgresServers
 
 # After Patroni restart, give cluster time to stabilize
-- name: Wait for 60 seconds after Patroni restart [Ubuntu]
+- name: Wait for 60 seconds after Patroni restart (Ubuntu)
   ansible.builtin.pause:
     seconds: 60
   when: 
     -  ansible_facts.os_family == "Debian"
-    - inventory_hostname in groups['postgresServers'] 
+    - inventory_hostname in groups["postgresServers"] 
     - "'patroni' in patroni_check_debian.stdout"
   tags:
     - restart-carbonio-services
     - postgresServers
 
-- name: Wait for 60 seconds after Patroni restart [RHEL]
+- name: Wait for 60 seconds after Patroni restart (RHEL)
   ansible.builtin.pause:
     seconds: 60
   when: 
     - ansible_facts.os_family == "RedHat" 
-    - inventory_hostname in groups['postgresServers']
+    - inventory_hostname in groups["postgresServers"]
     - "'patroni' in patroni_check_rhel.stdout"
   tags:
     - restart-carbonio-services
     - postgresServers
 
 # Debug outputs for visibility of what actually restarted
-- name: Debug postgres restart status [Ubuntu]
-  ansible.builtin.debug:
+- name: Debug postgres restart status (Ubuntu)
+  debug:
     msg: "{{ postgres_ubuntu }}"
   when: 
-    - inventory_hostname in groups['postgresServers']
+    - inventory_hostname in groups["postgresServers"]
     -  ansible_facts.os_family == "Debian"
     - "'patroni' not in patroni_check_debian.stdout"
   tags:
     - restart-carbonio-services
     - postgresServers
 
-- name: Debug postgres restart status [RHEL]
-  ansible.builtin.debug:
+- name: Debug postgres restart status (RHEL)
+  debug:
     msg: "{{ postgres_rhel }}"
   when: 
-    - inventory_hostname in groups['postgresServers']
+    - inventory_hostname in groups["postgresServers"]
     - ansible_facts.os_family == "RedHat" 
     - "'patroni' not in patroni_check_rhel.stdout"
   tags:
     - restart-carbonio-services
     - postgresServers
 
-- name: Debug patroni restart status [Ubuntu]
-  ansible.builtin.debug:
+- name: Debug patroni restart status (Ubuntu)
+  debug:
     msg: "{{ patroni_ubuntu }}"
   when: 
-    - inventory_hostname in groups['postgresServers'] 
+    - inventory_hostname in groups["postgresServers"] 
     -  ansible_facts.os_family == "Debian"
     - "'patroni' in patroni_check_debian.stdout"
   tags:
     - restart-carbonio-services
     - postgresServers
 
-- name: Debug patroni restart status [RHEL]
-  ansible.builtin.debug:
+- name: Debug patroni restart status (RHEL)
+  debug:
     msg: "{{ patroni_rhel }}"
   when: 
-    - inventory_hostname in groups['postgresServers'] 
+    - inventory_hostname in groups["postgresServers"] 
     - ansible_facts.os_family == "RedHat" 
     - "'patroni' in patroni_check_rhel.stdout"
   tags:
@@ -179,19 +179,19 @@
 
 ### zmcontrol restart controlled by a flag file (skip LDAP master/replica)
 - name: Check restart file value
-  ansible.builtin.command: "cat {{ restart_file }}"
+  command: "cat {{ restart_file }}"
   register: restart_zmcontrol_var
-  when:
-    - inventory_hostname not in groups['masterDirectoryServers']
-    - inventory_hostname not in groups['replicaDirectoryServers']
+  when: >
+    inventory_hostname not in groups["masterDirectoryServers"] and
+    inventory_hostname not in groups["replicaDirectoryServers"]
   tags:
-    - track-zmcontrol
+      - track-zmcontrol
 
 - name: Debug restart file
-  when:
-    - inventory_hostname not in groups['masterDirectoryServers']
-    - inventory_hostname not in groups['replicaDirectoryServers']
-  ansible.builtin.debug:
+  when: >
+    inventory_hostname not in groups["masterDirectoryServers"] and
+    inventory_hostname not in groups["replicaDirectoryServers"]
+  debug:
     msg: "{{ restart_zmcontrol_var.stdout }}"
 
 # Restart via zmcontrol (if flag true) (Ubuntu22/RHEL8)
@@ -199,39 +199,39 @@
   become: true
   become_method: su
   become_user: zextras
-  ansible.builtin.command: '/opt/zextras/bin/zmcontrol restart'
-  when:
-    - ansible_facts.distribution_major_version != "9"
-    - ansible_facts.distribution_major_version != "24"
-    - inventory_hostname not in groups['masterDirectoryServers']
-    - inventory_hostname not in groups['replicaDirectoryServers']
-    - restart_zmcontrol_var.stdout | bool
+  command: '/opt/zextras/bin/zmcontrol restart'
+  when: >
+    ansible_facts.distribution_major_version != "9" and 
+    ansible_facts.distribution_major_version != "24" and
+    inventory_hostname not in groups["masterDirectoryServers"] and
+    inventory_hostname not in groups["replicaDirectoryServers"] and
+    restart_zmcontrol_var.stdout | bool
   tags:
     - restart-carbonio-services
 
 # Restart via systemd target (if flag true) (Ubuntu24/RHEL9)
-- name: Restart carbonio services [Ubuntu 24/RHEL 9]
+- name: Restart carbonio services [Sysd]
   become: true
-  ansible.builtin.systemd_service:
+  ansible.builtin.systemd:
     name: carbonio.target
     state: restarted
-  when:
-    - ansible_facts.distribution_major_version == "9" or ansible_facts.distribution_major_version == "24"
-    - inventory_hostname not in groups['masterDirectoryServers']
-    - inventory_hostname not in groups['replicaDirectoryServers']
-    - restart_zmcontrol_var.stdout | bool
+  when: >
+    (ansible_facts.distribution_major_version == "9" or ansible_facts.distribution_major_version == "24") and
+    inventory_hostname not in groups["masterDirectoryServers"] and
+    inventory_hostname not in groups["replicaDirectoryServers"] and
+    restart_zmcontrol_var.stdout | bool
   tags:
     - restart-carbonio-services
 
 # After acting on the flag, reset it to "false" (prevents repeated restarts)
 - name: Modify restart file
-  when:
-    - inventory_hostname not in groups['masterDirectoryServers']
-    - inventory_hostname not in groups['replicaDirectoryServers']
-  ansible.builtin.copy:
-    dest: "{{ restart_file }}"
-    content: |
-      false
+  when: >
+    inventory_hostname not in groups["masterDirectoryServers"] and
+    inventory_hostname not in groups["replicaDirectoryServers"]
+  copy:
+      dest: "{{ restart_file }}"
+      content: |
+        false
   tags:
     - track-zmcontrol
 
@@ -240,11 +240,8 @@
   become: true
   become_method: su
   become_user: zextras
-  ansible.builtin.command: '/opt/zextras/bin/zmmailboxdctl restart'
-  when:
-    - inventory_hostname in groups['applicationServers']
-    - ansible_facts.distribution_major_version != "9"
-    - ansible_facts.distribution_major_version != "24"
+  command: '/opt/zextras/bin/zmmailboxdctl restart'
+  when: inventory_hostname in groups["applicationServers"] and ansible_facts.distribution_major_version != "9" and ansible_facts.distribution_major_version != "24"
   register: appserver_status
   changed_when: appserver_status.rc == 0
   tags:
@@ -252,21 +249,19 @@
     - applicationServers
 
 # AppServer (mailboxd) restart (Ubuntu24/RHEL9)
-- name: Restart application services [Ubuntu 24/RHEL 9]
+- name: Restart application services [Sysd]
   become: true
-  ansible.builtin.systemd_service:
+  ansible.builtin.systemd:
     name: carbonio-appserver.target
     state: restarted
-  when: 
-    - inventory_hostname in groups['applicationServers']
-    - ansible_facts.distribution_major_version == "9" or ansible_facts.distribution_major_version == "24"
+  when: inventory_hostname in groups["applicationServers"] and (ansible_facts.distribution_major_version == "9" or ansible_facts.distribution_major_version == "24")
   tags:
     - restart-carbonio-services
     - applicationServers
 
 # Run the common handler only once per host 
 - name: Ensure restart flag is initialized
-  ansible.builtin.set_fact:
+  set_fact:
     carbonio_restarted: "{{ carbonio_restarted | default(false) }}"
   tags:
     - restart-carbonio-services
@@ -274,7 +269,7 @@
 # List enabled carbonio units
 - name: Get all carbonio services
   become: true
-  ansible.builtin.shell:
+  shell:
     cmd: "set -o pipefail && systemctl list-unit-files --state=enabled  | awk '/carbonio/ {print $1}'"
     executable: /bin/bash
   register: carbonio_services_in_memory
@@ -284,98 +279,70 @@
 
 ### Trigger a shared handler once per role to restart services from the list (app/mta/proxy/files/docs/tasks/preview) (Ubuntu22/RHEL8)
 - name: Notify restart of all carbonio services on applicationServers
-  ansible.builtin.debug:
+  debug:
     msg: "Trigger handler to restart carbonio application services"
   changed_when: true
-  when: 
-    - inventory_hostname in groups['applicationServers']
-    - ansible_facts.distribution_major_version != "9"
-    - ansible_facts.distribution_major_version != "24"
-    - not carbonio_restarted | bool
+  when: inventory_hostname in groups["applicationServers"] and ansible_facts.distribution_major_version != "9" and ansible_facts.distribution_major_version != "24" and (not carbonio_restarted | bool)
   notify: restart_carbonio_services
   tags:
     - restart-carbonio-services
     - applicationServers
 
 - name: Notify restart of all carbonio services on mtaServers
-  ansible.builtin.debug:
+  debug:
     msg: "Trigger handler to restart carbonio mta services"
   changed_when: true
-  when: 
-    - inventory_hostname in groups['mtaServers']
-    - ansible_facts.distribution_major_version != "9"
-    - ansible_facts.distribution_major_version != "24"
-    - not carbonio_restarted | bool
+  when: inventory_hostname in groups["mtaServers"] and ansible_facts.distribution_major_version != "9" and ansible_facts.distribution_major_version != "24" and (not carbonio_restarted | bool)
   notify: restart_carbonio_services
   tags:
     - restart-carbonio-services
     - mtaServers
 
 - name: Notify restart of all carbonio services on proxyServers
-  ansible.builtin.debug:
+  debug:
     msg: "Trigger handler to restart carbonio proxy services"
   changed_when: true
-  when: 
-    - inventory_hostname in groups['proxyServers']
-    - ansible_facts.distribution_major_version != "9"
-    - ansible_facts.distribution_major_version != "24"
-    - not carbonio_restarted | bool
+  when: inventory_hostname in groups["proxyServers"] and ansible_facts.distribution_major_version != "9" and ansible_facts.distribution_major_version != "24" and (not carbonio_restarted | bool)
   notify: restart_carbonio_services
   tags:
     - restart-carbonio-services
     - proxyServers
 
 - name: Notify restart of all carbonio services on filesServers
-  ansible.builtin.debug:
+  debug:
     msg: "Trigger handler to restart carbonio files services"
   changed_when: true
-  when: 
-    - inventory_hostname in groups['filesServers']
-    - ansible_facts.distribution_major_version != "9"
-    - ansible_facts.distribution_major_version != "24"
-    - not carbonio_restarted | bool
+  when: inventory_hostname in groups["filesServers"] and ansible_facts.distribution_major_version != "9" and ansible_facts.distribution_major_version != "24" and (not carbonio_restarted | bool)
   notify: restart_carbonio_services
   tags:
     - restart-carbonio-services
     - filesServers
 
 - name: Notify restart of all carbonio services on docsServers
-  ansible.builtin.debug:
+  debug:
     msg: "Trigger handler to restart carbonio docs services"
   changed_when: true
-  when: 
-    - inventory_hostname in groups['docsServers']
-    - ansible_facts.distribution_major_version != "9"
-    - ansible_facts.distribution_major_version != "24"
-    - not carbonio_restarted | bool
+  when: inventory_hostname in groups["docsServers"] and ansible_facts.distribution_major_version != "9" and ansible_facts.distribution_major_version != "24" and (not carbonio_restarted | bool)
   notify: restart_carbonio_services
   tags:
     - restart-carbonio-services
     - docsServers
 
 - name: Notify restart of all carbonio services on taskServers
-  ansible.builtin.debug:
+  debug:
     msg: "Trigger handler to restart carbonio tasks services"
   changed_when: true
-  when: 
-    - inventory_hostname in groups['taskServers']
-    - ansible_facts.distribution_major_version != "9"
-    - ansible_facts.distribution_major_version != "24"
-    - not carbonio_restarted | bool
+  when: inventory_hostname in groups["taskServers"] and ansible_facts.distribution_major_version != "9" and ansible_facts.distribution_major_version != "24" and (not carbonio_restarted | bool)
   notify: restart_carbonio_services
   tags:
     - restart-carbonio-services
     - taskServers
 
 - name: Notify restart of all carbonio services on previewServers
-  ansible.builtin.debug:
+  debug:
     msg: "Trigger handler to restart carbonio preview services"
   changed_when: true
-  when: 
-    - inventory_hostname in groups['previewServers']
-    - ansible_facts.distribution_major_version != "9"
-    - ansible_facts.distribution_major_version != "24"
-    - not carbonio_restarted | bool
+  when: inventory_hostname in groups["previewServers"] and ansible_facts.distribution_major_version != "9" and ansible_facts.distribution_major_version != "24" and (not carbonio_restarted | bool)
   notify: restart_carbonio_services
   tags:
     - restart-carbonio-services
@@ -383,7 +350,7 @@
 
 # Mark as restarted to prevent duplicate handler triggers on the same host
 - name: Mark carbonio services as restarted
-  ansible.builtin.set_fact:
+  set_fact:
     carbonio_restarted: true
   when: carbonio_restarted | bool == false
   tags:
@@ -396,8 +363,8 @@
     name: "{{ item }}"
     state: restarted
   when:
-    - groups['workStreamServers'] | length > 0
-    - inventory_hostname == groups['workStreamServers'][0]
+    - groups["workStreamServers"] | length > 0
+    - inventory_hostname in groups["workStreamServers"][0]
   loop:
     - carbonio-message-dispatcher.service
   tags:
@@ -406,12 +373,12 @@
 
 - name: Collect WSC carbonio services
   become: true
-  ansible.builtin.shell:
+  shell:
     cmd: "set -o pipefail && systemctl list-unit-files --state=enabled | awk '/ws/ {print $1}'"
     executable: /bin/bash
   register: wsc_services_in_memory
   changed_when: false
-  when: inventory_hostname in groups['workStreamServers']
+  when: inventory_hostname in groups["workStreamServers"]
   tags:
     - restart-carbonio-services
     - chats
@@ -421,7 +388,7 @@
   ansible.builtin.service:
     name: "{{ item }}"
     state: restarted
-  when: inventory_hostname in groups['workStreamServers']
+  when: inventory_hostname in groups["workStreamServers"]
   loop: "{{ wsc_services_in_memory.stdout_lines }}"
   tags:
     - restart-carbonio-services
@@ -430,12 +397,12 @@
 ### Video servers: restart all video* units ( only enabled units)
 - name: Get all videoserver services
   become: true
-  ansible.builtin.shell:
+  shell:
     cmd: "set -o pipefail && systemctl list-unit-files --state=enabled | awk '/video/ {print $1}'"
     executable: /bin/bash
   register: videoserver_services_in_memory
   changed_when: false
-  when: inventory_hostname in groups['videoServers']
+  when: inventory_hostname in groups["videoServers"]
   tags:
     - restart-carbonio-services
     - videoServers
@@ -445,7 +412,7 @@
   ansible.builtin.service:
     name: "{{ item }}"
     state: restarted
-  when: inventory_hostname in groups['videoServers']
+  when: inventory_hostname in groups["videoServers"]
   loop: "{{ videoserver_services_in_memory.stdout_lines }}"
   tags:
     - restart-carbonio-services
@@ -453,9 +420,9 @@
 
 # Remove the flag on all hosts (final hygiene)
 - name: Remove restart file
-  ansible.builtin.file:
-    path: "{{ restart_file }}"
-    state: absent
+  file:
+      path: "{{ restart_file }}"
+      state: absent
   tags:
     - track-zmcontrol
 
@@ -465,8 +432,6 @@
   ansible.builtin.service:
     name: "carbonio"
     state: restarted  
-  when: 
-    - ansible_facts.distribution_major_version != "9"
-    - ansible_facts.distribution_major_version != "24"
+  when: ansible_facts.distribution_major_version != "9" and ansible_facts.distribution_major_version != "24"
   tags:
     - restart-carbonio-services

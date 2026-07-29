@@ -1,11 +1,12 @@
-# SPDX-FileCopyrightText: Zextras <https://www.zextras.com>
+# SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
 #
 # SPDX-License-Identifier: GPL-3.0-only
 
 ---
 # tasks file for pre-carbonio-upgrade
-- ansible.builtin.import_tasks: validate_password_files.yml
-- ansible.builtin.import_tasks: validate_inventory_chats.yml
-- ansible.builtin.import_tasks: validate_inventory_values.yml
-- ansible.builtin.import_tasks: create_pre_upgrade_backups.yml
-- ansible.builtin.import_tasks: validate_rsyslog_config.yml
+- import_tasks: password-checks.yml
+- import_tasks: chats_check.yml
+- import_tasks: ansible_controller_dependencies.yml
+- import_tasks: inventory_values_checks.yml
+- import_tasks: pre-upgrade-cmds.yml
+- import_tasks: rsyslog-config-check.yml

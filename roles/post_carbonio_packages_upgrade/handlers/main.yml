@@ -1,9 +1,9 @@
-# SPDX-FileCopyrightText: Zextras <https://www.zextras.com>
+# SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
 #
 # SPDX-License-Identifier: GPL-3.0-only
 
 ---
-# handlers file for post_carbonio_packages_upgrade
+# handlers file for post-carbonio-packages-upgrade
 - name: restart_carbonio_services
   become: true
   ansible.builtin.service:

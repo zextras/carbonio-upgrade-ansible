@@ -48,7 +48,7 @@
   ansible.builtin.debug:
     msg: "{{ pkgu }}"
 
-- name: Debug list packages [RHEL]
+- name: Display packages to upgrade [RHEL]
   when: ansible_facts.os_family == "RedHat"
   ansible.builtin.debug:
     msg: "{{ pkgr }}"

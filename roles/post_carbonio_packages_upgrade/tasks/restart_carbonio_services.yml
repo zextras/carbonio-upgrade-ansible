@@ -26,7 +26,7 @@
     - restart-carbonio-services
     - postgresServers
 
-# If Patroni is absent → Restart PostgreSQLQL
+# If Patroni is absent → restart PostgreSQL
 - name: Restart PostgreSQL [Ubuntu]
   become: true
   ansible.builtin.service:
@@ -146,7 +146,7 @@
     - restart-carbonio-services
     - postgresServers
 
-- name: Debug patroni restart status [Ubuntu]
+- name: Display Patroni restart status [Ubuntu]
   ansible.builtin.debug:
     msg: "{{ patroni_ubuntu }}"
   when: 
@@ -157,7 +157,7 @@
     - restart-carbonio-services
     - postgresServers
 
-- name: Debug patroni restart status [RHEL]
+- name: Display Patroni restart status [RHEL]
   ansible.builtin.debug:
     msg: "{{ patroni_rhel }}"
   when: 

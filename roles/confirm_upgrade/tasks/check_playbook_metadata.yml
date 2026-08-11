@@ -20,8 +20,7 @@
 - name: Abort when collection metadata is missing
   ansible.builtin.fail:
     msg: >-
-      Unable to determine the Carbonio installation playbook version.
-      Neither galaxy.yml nor MANIFEST.json was found.
+      Unable to determine the Carbonio upgrade playbook version.      Neither galaxy.yml nor MANIFEST.json was found.
   run_once: true
   when:
     - not carbonio_galaxy_metadata.stat.exists

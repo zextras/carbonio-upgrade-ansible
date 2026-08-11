@@ -21,6 +21,7 @@ Repository and playbook confirmation can be automated with:
 
 ```
 carbonio_auto_confirm_repository_and_playbook: true
+```
 
 When enabled, the repository and playbook information is still displayed, but the interactive confirmation prompt is skipped.
 

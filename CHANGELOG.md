@@ -11,6 +11,8 @@ All notable changes to this project will be documented in this file.
 * Removed outdated Carbonio version references from task names that are not conditionally executed based on the installed Carbonio version.
 * Added installation and database bootstrap support for the new carbonio-preview-db package.
 * Refactored the playbook structure and standardized Ansible content across roles, including task names, module FQCNs, inventory group references, and task conditions.
+* Added repository and upgrade playbook validation and confirmation before Carbonio upgrade, with repository consistency checks across all hosts and support for non-interactive confirmation.
+* Updated the Notification Push installation logic to check Consul before installing the package.
 
 
 ### [26.6.2] (2026-07-10)

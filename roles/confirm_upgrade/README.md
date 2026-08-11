@@ -1,30 +1,26 @@
-# Confirm Carbonio Installation
+# Confirm Carbonio Upgrade
 
-This role performs the initial checks and confirmations before starting the Carbonio installation.
+This role performs the initial checks and confirmation before starting the Carbonio upgrade.
 
-It validates the installation collection version and the Zextras repository configuration before any Carbonio packages are installed.
+It validates the upgrade collection version and the Zextras repository configuration before any Carbonio packages are upgraded.
 
 ## Responsibilities
 
 The role:
 
-- requests Carbonio license acceptance;
-- gathers facts required for repository detection;
-- retrieves the installation collection source and version;
+- retrieves the upgrade collection source and version;
 - detects the configured Zextras repository on each host;
-- determines the default release repository when no Zextras repository is configured;
+- verifies that a Zextras repository is configured on all hosts;
 - verifies that the same repository is used across the infrastructure;
-- displays the repository and installation playbook information;
-- requests confirmation before continuing with the installation;
-- displays the detected deployment type.
+- displays the repository and upgrade playbook information;
+- requests confirmation before continuing with the upgrade.
 
 ## Non-Interactive Confirmation
 
 Repository and playbook confirmation can be automated with:
 
-```yaml
-carbonio_auto_confirm_repository_and_playbook: true
 ```
+carbonio_auto_confirm_repository_and_playbook: true
 
 When enabled, the repository and playbook information is still displayed, but the interactive confirmation prompt is skipped.
 

@@ -5,7 +5,7 @@
 ---
 galaxy_info:
   author: zextras-mobius <mobius@zextras.com>
-  description: Carbonio installation confirmation role
+  description: Carbonio upgrade confirmation role
   company: zextras
   license: GPL-3.0-only
 

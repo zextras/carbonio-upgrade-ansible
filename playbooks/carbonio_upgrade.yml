@@ -6,6 +6,7 @@
   hosts: all
   order: inventory
   gather_facts: true
+  any_errors_fatal: true
   roles:
     - ../roles/confirm_upgrade
 

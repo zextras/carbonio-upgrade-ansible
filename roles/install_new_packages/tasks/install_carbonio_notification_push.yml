@@ -1,26 +1,54 @@
-# SPDX-FileCopyrightText: Zextras <https://www.zextras.com>
+# SPDX-FileCopyrightText: Zextras https://www.zextras.com
 #
 # SPDX-License-Identifier: GPL-3.0-only
----
-  - name: Install Notification Push [Ubuntu]
-    become: true
-    ansible.builtin.apt: name={{ item }} state=present
-    with_items:
-      - "{{ notification_push_packages }}"
-    when: 
-      - ansible_facts.os_family == "Debian"
-      - inventory_hostname in groups['workStreamServers'] 
-    tags:
-      - install-carbonio-notification-push
 
-### RHEL
-  - name: Install Notification Push [RHEL]
-    become: true
-    ansible.builtin.yum: name={{ item }} state=present
-    with_items:
-      - "{{ notification_push_packages }}"
-    when: 
-      - ansible_facts.os_family == "RedHat"
-      - inventory_hostname in groups['workStreamServers'] 
-    tags:
-      - install-carbonio-notification-push
+---
+
+- name: Check if Notification Push service is present in Consul
+  become: true
+  ansible.builtin.shell: >
+    consul catalog services | grep -q {{ item }}
+    && echo installed
+    || echo absent
+  with_items: "{{ notification_push_packages }}"
+  register: check_services
+  changed_when: false
+  when: inventory_hostname in groups['workStreamServers']
+  tags:
+    - install-carbonio-notification-push
+
+- name: Install Notification Push if not found in Consul [Ubuntu]
+  become: true
+  ansible.builtin.apt:
+    name: "{{ item.item }}"
+    state: present
+  with_items: "{{ check_services.results }}"
+  when:
+    - ansible_facts.os_family == "Debian"
+    - inventory_hostname in groups['workStreamServers']
+    - item.stdout == "absent"
+  tags:
+    - install-carbonio-notification-push
+
+- name: Install Notification Push if not found in Consul [RHEL]
+  become: true
+  ansible.builtin.yum:
+    name: "{{ item.item }}"
+    state: present
+  with_items: "{{ check_services.results }}"
+  when:
+    - ansible_facts.os_family == "RedHat"
+    - inventory_hostname in groups['workStreamServers']
+    - item.stdout == "absent"
+  tags:
+    - install-carbonio-notification-push
+
+- name: Debug message for already installed Notification Push
+  ansible.builtin.debug:
+    msg: "Notification Push is already installed"
+  with_items: "{{ check_services.results }}"
+  when:
+    - inventory_hostname in groups['workStreamServers']
+    - item.stdout == "installed"
+  tags:
+    - install-carbonio-notification-push

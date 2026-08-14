@@ -5,9 +5,11 @@ An Ansible role to upgrade Zextras Carbonio infrastructures.
 ## Table of Contents
 
 - [Prerequisites](#prerequisites)
+- [Upgrade Confirmation](#upgrade-confirmation)
 - [Behavior Notes](#behavior-notes)
 - [Usage](#usage)
-- [License](#license)
+- [Non-Interactive / Automation Usage](#non-interactive--automation-usage)
+- [License](#licenses)
 
 ## Prerequisites
 
@@ -21,6 +23,25 @@ An Ansible role to upgrade Zextras Carbonio infrastructures.
 - The netaddr Python module (installed automatically by Ansible on the control node — if you're running Ansible from a Python virtual environment, install it manually with pip install netaddr inside that venv). Used to validate inventory hostnames, domains, and IP addresses.
 - If `videoServers` is defined in your inventory, `workStreamServers` must also be defined — the playbook validates this and will fail otherwise.
 
+## Upgrade Confirmation
+
+Before starting the upgrade, the playbook displays:
+
+- the upgrade playbook source and version;
+- the Zextras repository configured for the infrastructure.
+
+The playbook verifies that:
+
+- a Zextras repository is configured on every host;
+- only one Zextras repository is configured on each host;
+- all hosts use the same Zextras repository.
+
+The upgrade is stopped if the repository configuration is missing or inconsistent.
+
+The user must confirm the displayed repository and upgrade playbook information by entering `yes`.
+
+For non-interactive runs, this confirmation can be pre-answered with the `carbonio_auto_confirm_repository_and_playbook` extra-var.
+
 ## Behavior Notes
 
 The upgrade playbook applies the following automatically; no extra action is needed unless noted:
@@ -33,7 +54,7 @@ The upgrade playbook applies the following automatically; no extra action is nee
 1. Clone or download this repository.
 2. Create or update your inventory file following the guidelines in `carbonio-install-ansible`.
 3. Place the necessary password files near the inventory file (see [Prerequisites](#prerequisites)).
-4. Execute the upgrade playbook:
+4. Execute the upgrade playbook.
 
 **From this repository:**
 
@@ -64,6 +85,30 @@ ansible-playbook -i inventoryname -u root carbonio-upgrade-ansible/playbooks/car
 ansible-galaxy collection install zxbot.carbonio_upgrade
 ansible-playbook -i inventoryname -u root zxbot.carbonio_upgrade.carbonio_upgrade --extra-vars "skip_autoremove=1"
 ```
+
+## Non-Interactive / Automation Usage
+
+The repository and playbook confirmation can be skipped for automated runs with:
+
+```
+-e carbonio_auto_confirm_repository_and_playbook=true
+```
+
+Example from this repository:
+
+```
+ansible-playbook -i inventoryname -u root carbonio-upgrade-ansible/playbooks/carbonio_upgrade.yml \
+  -e carbonio_auto_confirm_repository_and_playbook=true
+```
+
+Example from Ansible Galaxy:
+
+```
+ansible-playbook -i inventoryname -u root zxbot.carbonio_upgrade.carbonio_upgrade \
+  -e carbonio_auto_confirm_repository_and_playbook=true
+```
+
+The repository and upgrade playbook information is still displayed when automatic confirmation is enabled.
 
 ## License(s)
 

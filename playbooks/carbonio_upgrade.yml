@@ -1,6 +1,14 @@
 # SPDX-FileCopyrightText: Zextras <https://www.zextras.com>
 #
 # SPDX-License-Identifier: GPL-3.0-only
+---
+- name: Confirm Carbonio upgrade
+  hosts: all
+  order: inventory
+  gather_facts: true
+  any_errors_fatal: true
+  roles:
+    - ../roles/confirm_upgrade
 
 - name: Prepare Ansible controller
   hosts: localhost

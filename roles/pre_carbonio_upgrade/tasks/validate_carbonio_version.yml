@@ -1,0 +1,134 @@
+- name: Read collection galaxy.yml on control node
+  set_fact:
+    collection_version: "{{ lookup('file', playbook_dir + '/../galaxy.yml') | regex_search('version:\\s*([\\d.]+)', '\\1') | first }}"
+  delegate_to: localhost
+  become: false
+  run_once: true
+  tags:
+    - max-version-check
+
+- name: Derive target Carbonio release line (major.minor)
+  set_fact:
+    target_carbonio_version: "{{ collection_version.split('.')[0:2] | join('.') }}"
+  run_once: true
+  tags:
+    - max-version-check
+
+- name: Get Carbonio license info
+  become: true
+  become_method: su
+  become_user: zextras
+  command: '/opt/zextras/bin/carbonio core getlicenseinfo'
+  register: license_info
+  changed_when: false
+  when: inventory_hostname in groups["applicationServers"]
+  tags:
+    - max-version-check
+
+- name: Extract raw carbonioVersion value
+  set_fact:
+    current_carbonio_version_raw: "{{ (license_info.stdout | regex_search('carbonioVersion[ \t]*(.*)', '\\1') | default([], true) | first | default('')) | trim }}"
+  when: inventory_hostname in groups["applicationServers"]
+  tags:
+    - max-version-check
+
+- name: Extract raw licence type value (for diagnostics)
+  set_fact:
+    license_type_raw: "{{ (license_info.stdout | regex_search('\\btype[ \t]*(.*)', '\\1') | default([], true) | first | default('')) | trim }}"
+  when: inventory_hostname in groups["applicationServers"]
+  tags:
+    - max-version-check
+
+- name: Fail if no valid licence is active
+  ansible.builtin.fail:
+    msg: >-
+      No valid Carbonio licence is active on this host (licence type:
+      '{{ license_type_raw }}', carbonioVersion is blank in
+      `carbonio core getlicenseinfo` output). Aborting upgrade - a valid
+      licence is required before upgrading.
+  when:
+    - inventory_hostname in groups["applicationServers"]
+    - current_carbonio_version_raw | length == 0
+  tags:
+    - max-version-check
+
+- name: Extract current Carbonio version (major.minor)
+  set_fact:
+    current_carbonio_version: "{{ current_carbonio_version_raw | regex_search('([\\d]+\\.[\\d]+)') }}"
+  when: inventory_hostname in groups["applicationServers"]
+  tags:
+    - max-version-check
+
+- name: Extract raw maxCarbonioVersion value
+  set_fact:
+    max_carbonio_version_raw: "{{ (license_info.stdout | regex_search('maxCarbonioVersion[ \t]*(.*)', '\\1') | default([], true) | first | default('')) | trim }}"
+  when: inventory_hostname in groups["applicationServers"]
+  tags:
+    - max-version-check
+
+- name: Determine whether the licence has no version ceiling
+  set_fact:
+    max_carbonio_unlimited: "{{ max_carbonio_version_raw | length == 0 }}"
+  when: inventory_hostname in groups["applicationServers"]
+  tags:
+    - max-version-check
+
+- name: Extract max Carbonio version (major.minor) when a limit is set
+  set_fact:
+    max_carbonio_version: "{{ max_carbonio_version_raw | regex_search('([\\d]+\\.[\\d]+)') }}"
+  when:
+    - inventory_hostname in groups["applicationServers"]
+    - not max_carbonio_unlimited
+  tags:
+    - max-version-check
+
+- name: Warn if target release exceeds licensed max
+  debug:
+    msg: >-
+      WARNING: This playbook (collection version {{ collection_version }})
+      will upgrade Carbonio from {{ current_carbonio_version }} to release
+      {{ target_carbonio_version }}, which exceeds the maximum version
+      covered by your licence ({{ max_carbonio_version }}). Proceeding may
+      result in an unsupported installation.
+  when:
+    - inventory_hostname in groups["applicationServers"]
+    - not max_carbonio_unlimited
+    - target_carbonio_version is version(max_carbonio_version, '>')
+    - target_carbonio_version != current_carbonio_version
+  tags:
+    - max-version-check
+
+- name: Confirm to proceed past the licence version limit
+  ansible.builtin.pause:
+    prompt: >-
+      This playbook will upgrade Carbonio from {{ current_carbonio_version }}
+      to {{ target_carbonio_version }}, which exceeds your licensed maximum
+      version ({{ max_carbonio_version }}). Type IAMSURE to proceed anyway
+  register: max_version_confirm
+  when:
+    - inventory_hostname in groups["applicationServers"]
+    - not max_carbonio_unlimited
+    - target_carbonio_version is version(max_carbonio_version, '>')
+    - target_carbonio_version != current_carbonio_version
+  tags:
+    - max-version-check
+
+- name: Abort upgrade if licence limit not confirmed
+  ansible.builtin.assert:
+    that:
+      - max_version_confirm.user_input | default('') | trim == 'IAMSURE'
+    fail_msg: >-
+      Upgrade aborted: target version {{ target_carbonio_version }} exceeds
+      the licensed maximum ({{ max_carbonio_version }}) and was not
+      confirmed. Re-run the playbook and type IAMSURE to proceed, or
+      contact Zextras to update your licence.
+    success_msg: >-
+      Confirmed: proceeding with upgrade to {{ target_carbonio_version }}
+      despite exceeding the licensed maximum ({{ max_carbonio_version }}).
+  when:
+    - inventory_hostname in groups["applicationServers"]
+    - not max_carbonio_unlimited
+    - target_carbonio_version is version(max_carbonio_version, '>')
+    - target_carbonio_version != current_carbonio_version
+  tags:
+    - max-version-check

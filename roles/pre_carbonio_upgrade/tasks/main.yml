@@ -9,3 +9,4 @@
 - ansible.builtin.import_tasks: validate_inventory_values.yml
 - ansible.builtin.import_tasks: create_pre_upgrade_backups.yml
 - ansible.builtin.import_tasks: validate_rsyslog_config.yml
+- ansible.builtin.import_tasks: validate_carbonio_version.yml

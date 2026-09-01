@@ -42,6 +42,8 @@ The user must confirm the displayed repository and upgrade playbook information 
 
 For non-interactive runs, this confirmation can be pre-answered with the `carbonio_auto_confirm_repository_and_playbook` extra-var.
 
+On each application server, the playbook also checks `carbonio core getlicenseinfo` against the target Carbonio release. It warns and requires typing `IAMSURE` to proceed if no valid licence is active, the licence has expired, or the target release exceeds the licence's maximum allowed version (a blank maximum is treated as unlimited). For non-interactive runs, this can be pre-answered with the `carbonio_version_check_force` extra-var — see [Non-Interactive / Automation Usage](#non-interactive--automation-usage).
+
 ## Behavior Notes
 
 The upgrade playbook applies the following automatically; no extra action is needed unless noted:
@@ -94,21 +96,31 @@ The repository and playbook confirmation can be skipped for automated runs with:
 -e carbonio_auto_confirm_repository_and_playbook=true
 ```
 
+The licence and version check confirmation (see [Licence and Version Check](#licence-and-version-check)) can be skipped for automated runs with:
+
+```
+-e carbonio_version_check_force=true
+```
+
+Both extra-vars can be combined for a fully non-interactive run.
+
 Example from this repository:
 
 ```
 ansible-playbook -i inventoryname -u root carbonio-upgrade-ansible/playbooks/carbonio_upgrade.yml \
-  -e carbonio_auto_confirm_repository_and_playbook=true
+  -e carbonio_auto_confirm_repository_and_playbook=true \
+  -e carbonio_version_check_force=true
 ```
 
 Example from Ansible Galaxy:
 
 ```
 ansible-playbook -i inventoryname -u root zxbot.carbonio_upgrade.carbonio_upgrade \
-  -e carbonio_auto_confirm_repository_and_playbook=true
+  -e carbonio_auto_confirm_repository_and_playbook=true \
+  -e carbonio_version_check_force=true
 ```
 
-The repository and upgrade playbook information is still displayed when automatic confirmation is enabled.
+The repository and upgrade playbook information — and the licence/version check warning, if triggered — is still displayed when automatic confirmation is enabled.
 
 ## License(s)
 

@@ -13,7 +13,7 @@ All notable changes to this project will be documented in this file.
 * Refactored the playbook structure and standardized Ansible content across roles, including task names, module FQCNs, inventory group references, and task conditions.
 * Added repository and upgrade playbook validation and confirmation before Carbonio upgrade, with repository consistency checks across all hosts and support for non-interactive confirmation.
 * Updated the Notification Push installation logic to check Consul before installing the package.
-* Added a max Carbonio version check to the upgrade playbook, warning and requiring confirmation (or failing outright if no licence is active) when the upgrade would exceed the licensed version limit
+* Added a pre-upgrade licence and version check to the upgrade playbook, warning and requiring confirmation (or a non-interactive override) when the licence is invalid, expired, or the target version exceeds the licensed maximum.
 
 
 ### [26.6.2] (2026-07-10)

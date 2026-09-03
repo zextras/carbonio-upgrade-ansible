@@ -53,6 +53,92 @@
   ansible.builtin.debug:
     msg: "{{ pkgr }}"
 
+###Temporary workaround to upgrade from Carbonio 25.12.0
+- name: Remove old Message Dispatcher dpkg-dist configuration [Ubuntu]
+  become: true
+  ansible.builtin.file:
+    path: /etc/carbonio/message-dispatcher/mongooseim.toml.dpkg-dist
+    state: absent
+  when:
+    - ansible_facts.os_family == "Debian"
+    - groups['workStreamServers'] | length > 0
+    - inventory_hostname == groups['workStreamServers'][0]
+    - pkgu is search("carbonio-message-dispatcher")
+  tags:
+    - upgrade-carbonio
+
+- name: Upgrade Carbonio Message Dispatcher with new configuration [Ubuntu]
+  become: true
+  ansible.builtin.apt:
+    name: carbonio-message-dispatcher
+    state: latest
+    only_upgrade: true
+    dpkg_options: force-confnew
+  when:
+    - ansible_facts.os_family == "Debian"
+    - groups['workStreamServers'] | length > 0
+    - inventory_hostname == groups['workStreamServers'][0]
+    - pkgu is search("carbonio-message-dispatcher")
+  tags:
+    - upgrade-carbonio
+
+- name: Remove old Message Dispatcher rpmnew configuration [RHEL]
+  become: true
+  ansible.builtin.file:
+    path: /etc/carbonio/message-dispatcher/mongooseim.toml.rpmnew
+    state: absent
+  when:
+    - ansible_facts.os_family == "RedHat"
+    - groups['workStreamServers'] | length > 0
+    - inventory_hostname == groups['workStreamServers'][0]
+    - pkgr is search("carbonio-message-dispatcher")
+
+- name: Upgrade Carbonio Message Dispatcher [RHEL]
+  become: true
+  ansible.builtin.yum:
+    name: carbonio-message-dispatcher
+    state: latest
+    allowerasing: true
+  when:
+    - ansible_facts.os_family == "RedHat"
+    - groups['workStreamServers'] | length > 0
+    - inventory_hostname == groups['workStreamServers'][0]
+    - pkgr is search("carbonio-message-dispatcher")
+
+- name: Check new Message Dispatcher configuration [RHEL]
+  become: true
+  ansible.builtin.stat:
+    path: /etc/carbonio/message-dispatcher/mongooseim.toml.rpmnew
+  register: message_dispatcher_rpmnew
+  when:
+    - ansible_facts.os_family == "RedHat"
+    - groups['workStreamServers'] | length > 0
+    - inventory_hostname == groups['workStreamServers'][0]
+    - pkgr is search("carbonio-message-dispatcher")
+
+- name: Apply new Message Dispatcher configuration [RHEL]
+  become: true
+  ansible.builtin.copy:
+    src: /etc/carbonio/message-dispatcher/mongooseim.toml.rpmnew
+    dest: /etc/carbonio/message-dispatcher/mongooseim.toml
+    remote_src: true
+    owner: root
+    group: root
+    mode: "0644"
+  when:
+    - message_dispatcher_rpmnew is defined
+    - message_dispatcher_rpmnew.stat.exists | default(false)
+
+- name: Remove Message Dispatcher rpmnew configuration [RHEL]
+  become: true
+  ansible.builtin.file:
+    path: /etc/carbonio/message-dispatcher/mongooseim.toml.rpmnew
+    state: absent
+  when:
+    - message_dispatcher_rpmnew is defined
+    - message_dispatcher_rpmnew.stat.exists | default(false)
+###
+
 - name: Update all packages to their latest version [Ubuntu]
   become: true
   ansible.builtin.apt:

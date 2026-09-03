@@ -15,6 +15,9 @@ All notable changes to this project will be documented in this file.
 * Updated the Notification Push installation logic to check Consul before installing the package.
 * Updated  proxy_packages list to align with the new package structure.
 
+### Bug Fixes
+* Added a workaround for carbonio-message-dispatcher upgrades from Carbonio 25.12.0 to ensure the new mongooseim.toml configuration is applied instead of preserving the outdated one as .dpkg-dist or .rpmnew.
+
 
 ### [26.6.2] (2026-07-10)
 

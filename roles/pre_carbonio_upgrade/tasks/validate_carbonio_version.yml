@@ -1,0 +1,138 @@
+- name: Check source collection metadata (galaxy.yml, GitHub repo install)
+  ansible.builtin.stat:
+    path: "{{ playbook_dir | dirname }}/galaxy.yml"
+  register: carbonio_galaxy_metadata
+  delegate_to: localhost
+  run_once: true
+  tags:
+    - max-version-check
+
+- name: Check installed collection metadata (MANIFEST.json, Galaxy install)
+  ansible.builtin.stat:
+    path: "{{ playbook_dir | dirname }}/MANIFEST.json"
+  register: carbonio_manifest_metadata
+  delegate_to: localhost
+  run_once: true
+  tags:
+    - max-version-check
+
+- name: Abort when collection metadata is missing
+  ansible.builtin.fail:
+    msg: >-
+      Unable to determine the Carbonio upgrade playbook version. Neither
+      galaxy.yml nor MANIFEST.json was found.
+  run_once: true
+  when:
+    - not carbonio_galaxy_metadata.stat.exists
+    - not carbonio_manifest_metadata.stat.exists
+  tags:
+    - max-version-check
+
+- name: Read playbook version from source collection (galaxy.yml)
+  ansible.builtin.set_fact:
+    collection_version: "{{ (lookup('ansible.builtin.file', (playbook_dir | dirname) + '/galaxy.yml') | from_yaml).version }}"
+  delegate_to: localhost
+  run_once: true
+  when: carbonio_galaxy_metadata.stat.exists
+  tags:
+    - max-version-check
+
+- name: Read playbook version from installed collection (MANIFEST.json)
+  ansible.builtin.set_fact:
+    collection_version: "{{ (lookup('ansible.builtin.file', (playbook_dir | dirname) + '/MANIFEST.json') | from_json).collection_info.version }}"
+  delegate_to: localhost
+  run_once: true
+  when:
+    - not carbonio_galaxy_metadata.stat.exists
+    - carbonio_manifest_metadata.stat.exists
+  tags:
+    - max-version-check
+
+- name: Derive target Carbonio release line (major.minor)
+  ansible.builtin.set_fact:
+    target_carbonio_version: "{{ collection_version.split('.')[0:2] | join('.') }}"
+  run_once: true
+  tags:
+    - max-version-check
+
+- name: Check licence status and Carbonio version, confirm if there's a risk
+  when: inventory_hostname in groups["applicationServers"]
+  tags:
+    - max-version-check
+  block:
+    - name: Get Carbonio license info
+      become: true
+      become_method: su
+      become_user: zextras
+      ansible.builtin.command: '/opt/zextras/bin/carbonio core getlicenseinfo'
+      register: license_info
+      changed_when: false
+
+    - name: Extract raw licence fields
+      ansible.builtin.set_fact:
+        current_carbonio_version_raw: "{{ (license_info.stdout | regex_search('carbonioVersion[ \t]*(.*)', '\\1') | default([], true) | first | default('')) | trim }}"
+        license_type_raw: "{{ (license_info.stdout | regex_search('\\btype[ \t]*(.*)', '\\1') | default([], true) | first | default('')) | trim }}"
+        max_carbonio_version_raw: "{{ (license_info.stdout | regex_search('maxCarbonioVersion[ \t]*(.*)', '\\1') | default([], true) | first | default('')) | trim }}"
+        license_expired_raw: "{{ (license_info.stdout | regex_search('\\bexpired[ \t]*(.*)', '\\1') | default([], true) | first | default('')) | trim }}"
+
+    - name: Derive licence status facts
+      ansible.builtin.set_fact:
+        no_license_active: "{{ current_carbonio_version_raw | length == 0 }}"
+        license_expired: "{{ license_expired_raw | lower == 'true' }}"
+        max_carbonio_unlimited: "{{ max_carbonio_version_raw | length == 0 }}"
+        current_carbonio_version: "{{ (current_carbonio_version_raw | regex_search('([\\d]+\\.[\\d]+)')) if current_carbonio_version_raw | length > 0 else 'unknown' }}"
+        max_carbonio_version: "{{ (max_carbonio_version_raw | regex_search('([\\d]+\\.[\\d]+)')) if max_carbonio_version_raw | length > 0 else 'unlimited' }}"
+
+    - name: Determine if the target release exceeds the licensed maximum
+      ansible.builtin.set_fact:
+        version_exceeds_limit: "{{ (not no_license_active) and (not max_carbonio_unlimited) and (target_carbonio_version is version(max_carbonio_version, '>')) and (target_carbonio_version != current_carbonio_version) }}"
+
+    - name: Build list of upgrade-risk reasons
+      ansible.builtin.set_fact:
+        upgrade_risk_reasons: >-
+          {{
+            ([ "no valid licence is currently active" ] if no_license_active else [])
+            + ([ "the licence has expired" ] if license_expired else [])
+            + ([ "target version " + target_carbonio_version + " exceeds the licensed maximum (" + max_carbonio_version + ")" ] if version_exceeds_limit else [])
+          }}
+
+    - name: Warn if upgrading carries a licence risk
+      ansible.builtin.debug:
+        msg: >-
+          WARNING: This playbook (collection version {{ collection_version }})
+          will upgrade Carbonio from {{ current_carbonio_version }} to release
+          {{ target_carbonio_version }}. Issue(s) found: {{ upgrade_risk_reasons | join('; ') }}.
+          Proceeding may result in an unsupported installation.
+      when: upgrade_risk_reasons | length > 0
+
+    - name: Log non-interactive force bypass of licence risk
+      ansible.builtin.debug:
+        msg: >-
+          carbonio_version_check_force is set - proceeding non-interactively
+          despite: {{ upgrade_risk_reasons | join('; ') }}.
+      when:
+        - upgrade_risk_reasons | length > 0
+        - carbonio_version_check_force | default(false) | bool
+
+    - name: Confirm to proceed despite the licence risk
+      ansible.builtin.pause:
+        prompt: >-
+          Upgrading to {{ target_carbonio_version }} has the following issue(s):
+          {{ upgrade_risk_reasons | join('; ') }}. Type IAMSURE to proceed anyway
+      register: license_risk_confirm
+      when:
+        - upgrade_risk_reasons | length > 0
+        - not (carbonio_version_check_force | default(false) | bool)
+
+    - name: Abort upgrade if licence risk not confirmed
+      ansible.builtin.assert:
+        that:
+          - (carbonio_version_check_force | default(false) | bool) or ((license_risk_confirm | default({})).user_input | default('') | trim == 'IAMSURE')
+        fail_msg: >-
+          Upgrade aborted: {{ upgrade_risk_reasons | join('; ') }}. Re-run
+          the playbook and type IAMSURE to proceed, set
+          -e carbonio_version_check_force=true for a non-interactive run
+        success_msg: >-
+          Confirmed: proceeding with upgrade to {{ target_carbonio_version }}
+          despite: {{ upgrade_risk_reasons | join('; ') }}.
+      when: upgrade_risk_reasons | length > 0

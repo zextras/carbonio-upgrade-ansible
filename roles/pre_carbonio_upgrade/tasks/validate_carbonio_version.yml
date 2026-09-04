@@ -29,7 +29,7 @@
     - max-version-check
 
 - name: Read playbook version from source collection (galaxy.yml)
-  set_fact:
+  ansible.builtin.set_fact:
     collection_version: "{{ (lookup('ansible.builtin.file', (playbook_dir | dirname) + '/galaxy.yml') | from_yaml).version }}"
   delegate_to: localhost
   run_once: true
@@ -38,7 +38,7 @@
     - max-version-check
 
 - name: Read playbook version from installed collection (MANIFEST.json)
-  set_fact:
+  ansible.builtin.set_fact:
     collection_version: "{{ (lookup('ansible.builtin.file', (playbook_dir | dirname) + '/MANIFEST.json') | from_json).collection_info.version }}"
   delegate_to: localhost
   run_once: true
@@ -49,7 +49,7 @@
     - max-version-check
 
 - name: Derive target Carbonio release line (major.minor)
-  set_fact:
+  ansible.builtin.set_fact:
     target_carbonio_version: "{{ collection_version.split('.')[0:2] | join('.') }}"
   run_once: true
   tags:
@@ -64,19 +64,19 @@
       become: true
       become_method: su
       become_user: zextras
-      command: '/opt/zextras/bin/carbonio core getlicenseinfo'
+      ansible.builtin.command: '/opt/zextras/bin/carbonio core getlicenseinfo'
       register: license_info
       changed_when: false
 
     - name: Extract raw licence fields
-      set_fact:
+      ansible.builtin.set_fact:
         current_carbonio_version_raw: "{{ (license_info.stdout | regex_search('carbonioVersion[ \t]*(.*)', '\\1') | default([], true) | first | default('')) | trim }}"
         license_type_raw: "{{ (license_info.stdout | regex_search('\\btype[ \t]*(.*)', '\\1') | default([], true) | first | default('')) | trim }}"
         max_carbonio_version_raw: "{{ (license_info.stdout | regex_search('maxCarbonioVersion[ \t]*(.*)', '\\1') | default([], true) | first | default('')) | trim }}"
         license_expired_raw: "{{ (license_info.stdout | regex_search('\\bexpired[ \t]*(.*)', '\\1') | default([], true) | first | default('')) | trim }}"
 
     - name: Derive licence status facts
-      set_fact:
+      ansible.builtin.set_fact:
         no_license_active: "{{ current_carbonio_version_raw | length == 0 }}"
         license_expired: "{{ license_expired_raw | lower == 'true' }}"
         max_carbonio_unlimited: "{{ max_carbonio_version_raw | length == 0 }}"
@@ -84,11 +84,11 @@
         max_carbonio_version: "{{ (max_carbonio_version_raw | regex_search('([\\d]+\\.[\\d]+)')) if max_carbonio_version_raw | length > 0 else 'unlimited' }}"
 
     - name: Determine if the target release exceeds the licensed maximum
-      set_fact:
+      ansible.builtin.set_fact:
         version_exceeds_limit: "{{ (not no_license_active) and (not max_carbonio_unlimited) and (target_carbonio_version is version(max_carbonio_version, '>')) and (target_carbonio_version != current_carbonio_version) }}"
 
     - name: Build list of upgrade-risk reasons
-      set_fact:
+      ansible.builtin.set_fact:
         upgrade_risk_reasons: >-
           {{
             ([ "no valid licence is currently active (type: '" + license_type_raw + "')" ] if no_license_active else [])
@@ -97,7 +97,7 @@
           }}
 
     - name: Warn if upgrading carries a licence risk
-      debug:
+      ansible.builtin.debug:
         msg: >-
           WARNING: This playbook (collection version {{ collection_version }})
           will upgrade Carbonio from {{ current_carbonio_version }} to release
@@ -106,7 +106,7 @@
       when: upgrade_risk_reasons | length > 0
 
     - name: Log non-interactive force bypass of licence risk
-      debug:
+      ansible.builtin.debug:
         msg: >-
           carbonio_version_check_force is set - proceeding non-interactively
           despite: {{ upgrade_risk_reasons | join('; ') }}.

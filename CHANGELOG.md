@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file. 
 
 
-### [26.9.0] (2026-07-10)
+### [26.9.0] (2026-09-30)
 
 
 ### Features 
@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 * Added repository and upgrade playbook validation and confirmation before Carbonio upgrade, with repository consistency checks across all hosts and support for non-interactive confirmation.
 * Updated the Notification Push installation logic to check Consul before installing the package.
 * Added a pre-upgrade licence and version check to the upgrade playbook, warning and requiring confirmation (or a non-interactive override) when the licence is invalid, expired, or the target version exceeds the licensed maximum.
+* Updated  proxy_packages list to align with the new package structure.
 
 
 ### [26.6.2] (2026-07-10)

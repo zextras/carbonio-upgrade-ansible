@@ -91,7 +91,7 @@
       ansible.builtin.set_fact:
         upgrade_risk_reasons: >-
           {{
-            ([ "no valid licence is currently active (type: '" + license_type_raw + "')" ] if no_license_active else [])
+            ([ "no valid licence is currently active" ] if no_license_active else [])
             + ([ "the licence has expired" ] if license_expired else [])
             + ([ "target version " + target_carbonio_version + " exceeds the licensed maximum (" + max_carbonio_version + ")" ] if version_exceeds_limit else [])
           }}

@@ -10,7 +10,7 @@
       - "{{ license_service_packages }}"
     when: 
       - ansible_facts.os_family == "Debian" 
-      - inventory_hostname in groups['masterDirectoryServers']
+      - inventory_hostname in groups['masterDirectoryServers'] or (groups['applicationServers'] | length > 0 and inventory_hostname == groups['applicationServers'][0])
     tags:
       - install-license-service
       
@@ -22,6 +22,6 @@
       - "{{ license_service_packages }}"
     when: 
       - ansible_facts.os_family == "RedHat"
-      - inventory_hostname in groups['masterDirectoryServers']
+      - inventory_hostname in groups['masterDirectoryServers'] or (groups['applicationServers'] | length > 0 and inventory_hostname == groups['applicationServers'][0])
     tags:
       - install-license-service

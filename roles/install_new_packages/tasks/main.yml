@@ -13,3 +13,4 @@
 - ansible.builtin.import_tasks: install_carbonio_syslog.yml
 - ansible.builtin.import_tasks: install_carbonio_notification_push.yml
 - ansible.builtin.import_tasks: install_db_connectors.yml
+- ansible.builtin.import_tasks: install_carbonio_license_service.yml

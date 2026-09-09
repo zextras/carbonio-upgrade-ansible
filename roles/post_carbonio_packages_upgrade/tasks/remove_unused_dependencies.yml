@@ -12,11 +12,11 @@
       Unused packages installed manually are not removed by this operation,
       please check Carbonio documentation for deprecated packages.
   when: skip_autoremove | lower != 'true'
-  
+
 - name: Delay for 10 seconds to read the warning
   ansible.builtin.pause:
     seconds: 10
-  when: skip_autoremove | lower != 'true'  
+  when: skip_autoremove | lower != 'true'
 
 - name: Autoremove unnecessary packages with apt
   become: true

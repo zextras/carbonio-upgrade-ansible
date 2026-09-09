@@ -38,7 +38,7 @@ The playbook verifies that:
 
 The upgrade is stopped if the repository configuration is missing or inconsistent.
 
-The user must confirm the displayed repository and upgrade playbook information by entering `yes`.
+The user must confirm the displayed repository and upgrade playbook information by entering `YES`.
 
 For non-interactive runs, this confirmation can be pre-answered with the `carbonio_auto_confirm_repository_and_playbook` extra-var.
 
@@ -60,13 +60,13 @@ The upgrade playbook applies the following automatically; no extra action is nee
 
 **From this repository:**
 
-```
+```bash
 ansible-playbook -i inventoryname -u root carbonio-upgrade-ansible/playbooks/carbonio_upgrade.yml
 ```
 
 **Or from Ansible Galaxy:**
 
-```
+```bash
 ansible-galaxy collection install zxbot.carbonio_upgrade
 ansible-playbook -i inventoryname -u root zxbot.carbonio_upgrade.carbonio_upgrade
 ```
@@ -77,13 +77,13 @@ To skip the `autoremove` step, pass `skip_autoremove=true` via `--extra-vars`:
 
 **From this repository:**
 
-```
+```bash
 ansible-playbook -i inventoryname -u root carbonio-upgrade-ansible/playbooks/carbonio_upgrade.yml --extra-vars "skip_autoremove=true"
 ```
 
 **Or from Ansible Galaxy:**
 
-```
+```bash
 ansible-galaxy collection install zxbot.carbonio_upgrade
 ansible-playbook -i inventoryname -u root zxbot.carbonio_upgrade.carbonio_upgrade --extra-vars "skip_autoremove=true"
 ```
@@ -92,21 +92,23 @@ ansible-playbook -i inventoryname -u root zxbot.carbonio_upgrade.carbonio_upgrad
 
 The repository and playbook confirmation can be skipped for automated runs with:
 
-```
+```bash
 -e carbonio_auto_confirm_repository_and_playbook=true
 ```
 
-The licence and version check confirmation (see [Licence and Version Check](#licence-and-version-check)) can be skipped for automated runs with:
+The licence and version check confirmation can be skipped for automated runs with:
 
-```
+```bash
 -e carbonio_version_check_force=true
 ```
+
+Only `true` and `false` are supported values for extra vars.
 
 Both extra-vars can be combined for a fully non-interactive run.
 
 Example from this repository:
 
-```
+```bash
 ansible-playbook -i inventoryname -u root carbonio-upgrade-ansible/playbooks/carbonio_upgrade.yml \
   -e carbonio_auto_confirm_repository_and_playbook=true \
   -e carbonio_version_check_force=true
@@ -114,7 +116,7 @@ ansible-playbook -i inventoryname -u root carbonio-upgrade-ansible/playbooks/car
 
 Example from Ansible Galaxy:
 
-```
+```bash
 ansible-playbook -i inventoryname -u root zxbot.carbonio_upgrade.carbonio_upgrade \
   -e carbonio_auto_confirm_repository_and_playbook=true \
   -e carbonio_version_check_force=true

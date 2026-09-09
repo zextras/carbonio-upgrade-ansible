@@ -73,19 +73,19 @@ ansible-playbook -i inventoryname -u root zxbot.carbonio_upgrade.carbonio_upgrad
 
 ### Skipping autoremove
 
-To skip the `autoremove` step, pass `skip_autoremove=1` via `--extra-vars`:
+To skip the `autoremove` step, pass `skip_autoremove=true` via `--extra-vars`:
 
 **From this repository:**
 
 ```
-ansible-playbook -i inventoryname -u root carbonio-upgrade-ansible/playbooks/carbonio_upgrade.yml --extra-vars "skip_autoremove=1"
+ansible-playbook -i inventoryname -u root carbonio-upgrade-ansible/playbooks/carbonio_upgrade.yml --extra-vars "skip_autoremove=true"
 ```
 
 **Or from Ansible Galaxy:**
 
 ```
 ansible-galaxy collection install zxbot.carbonio_upgrade
-ansible-playbook -i inventoryname -u root zxbot.carbonio_upgrade.carbonio_upgrade --extra-vars "skip_autoremove=1"
+ansible-playbook -i inventoryname -u root zxbot.carbonio_upgrade.carbonio_upgrade --extra-vars "skip_autoremove=true"
 ```
 
 ## Non-Interactive / Automation Usage

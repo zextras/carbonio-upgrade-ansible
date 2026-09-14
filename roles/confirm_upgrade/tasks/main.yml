@@ -5,4 +5,5 @@
 ---
 - ansible.builtin.import_tasks: check_playbook_metadata.yml
 - ansible.builtin.import_tasks: check_carbonio_repositories.yml
+- ansible.builtin.import_tasks: confirm_carbonio_license.yml
 - ansible.builtin.import_tasks: confirm_repository_and_playbook.yml

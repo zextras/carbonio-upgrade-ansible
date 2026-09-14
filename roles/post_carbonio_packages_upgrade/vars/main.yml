@@ -5,4 +5,4 @@
 ---
 # vars file for post_carbonio_packages_upgrade
 restart_file: "/tmp/zmcontrol_restart_status"
-skip_autoremove: 0  # Set to 1 to skip the autoremove tasks
+skip_autoremove: false  # Set to true to skip the autoremove tasks

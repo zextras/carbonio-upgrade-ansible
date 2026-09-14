@@ -7,24 +7,24 @@
   ansible.builtin.debug:
     msg: |
       WARNING: the Ansible playbook will remove unused dependencies on your system,
-      to avoid running autoremove add skip_autoremove=1 as --extra-vars.
+      to avoid running autoremove add skip_autoremove=true as --extra-vars.
 
       Unused packages installed manually are not removed by this operation,
       please check Carbonio documentation for deprecated packages.
-  when: skip_autoremove == 0
+  when: skip_autoremove | lower != 'true'
 
 - name: Delay for 10 seconds to read the warning
   ansible.builtin.pause:
     seconds: 10
-  when: skip_autoremove == 0
-  
+  when: skip_autoremove | lower != 'true'
+
 - name: Autoremove unnecessary packages with apt
   become: true
   ansible.builtin.apt:
     autoremove: true
   when: 
     - ansible_facts.os_family == "Debian"
-    - skip_autoremove == 0
+    - skip_autoremove | lower != 'true'
 
 - name: Autoremove unnecessary packages with dnf
   become: true
@@ -32,4 +32,4 @@
     autoremove: true
   when: 
     - ansible_facts.os_family == "RedHat"
-    - skip_autoremove == 0
+    - skip_autoremove | lower != 'true'

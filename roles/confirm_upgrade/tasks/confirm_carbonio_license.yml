@@ -20,24 +20,21 @@
       become: true
       become_method: su
       become_user: zextras
-      ansible.builtin.command: '/opt/zextras/bin/carbonio core getlicenseinfo'
+      ansible.builtin.command: '/opt/zextras/bin/carbonio --json core getlicenseinfo'
       register: license_info
       changed_when: false
 
-    - name: Extract raw licence fields
+    - name: Parse Carbonio license info
       ansible.builtin.set_fact:
-        current_carbonio_version_raw: "{{ (license_info.stdout | regex_search('carbonioVersion[ \\t]*(.*)', '\\1') | default([], true) | first | default('')) | trim }}"
-        authentication_token_raw: "{{ (license_info.stdout | regex_search('authenticationToken[ \\t]*(.*)', '\\1') | default([], true) | first | default('')) | trim }}"
-        max_carbonio_version_raw: "{{ (license_info.stdout | regex_search('maxCarbonioVersion[ \\t]*(.*)', '\\1') | default([], true) | first | default('')) | trim }}"
-        license_expired_raw: "{{ (license_info.stdout | regex_search('\\bexpired[ \\t]*(.*)', '\\1') | default([], true) | first | default('')) | trim }}"
+        license_data: "{{ (license_info.stdout | from_json).response }}"
 
     - name: Derive licence status facts
       ansible.builtin.set_fact:
-        license_deployed: "{{ authentication_token_raw | length > 0 }}"
-        license_expired: "{{ license_expired_raw | lower == 'true' }}"
-        max_carbonio_unlimited: "{{ max_carbonio_version_raw | length == 0 }}"
-        current_carbonio_version: "{{ (current_carbonio_version_raw | regex_search('([\\d]+\\.[\\d]+)')) if current_carbonio_version_raw | length > 0 else 'unknown' }}"
-        max_carbonio_version: "{{ (max_carbonio_version_raw | regex_search('([\\d]+\\.[\\d]+)')) if max_carbonio_version_raw | length > 0 else 'unlimited' }}"
+        license_deployed: "{{ license_data.authenticationToken | default('', true) | length > 0 }}"
+        license_expired: "{{ license_data.expired | default(false) }}"
+        max_carbonio_unlimited: "{{ license_data.maxCarbonioVersion | default('', true) | length == 0 }}"
+        current_carbonio_version: "{{ (license_data.carbonioVersion.split('.')[0:2] | join('.')) if license_data.carbonioVersion | default('', true) | length > 0 else 'unknown' }}"
+        max_carbonio_version: "{{ (license_data.maxCarbonioVersion.split('.')[0:2] | join('.')) if license_data.maxCarbonioVersion | default('', true) | length > 0 else 'unlimited' }}"
 
     - name: Determine if the target release exceeds the licensed maximum
       ansible.builtin.set_fact:

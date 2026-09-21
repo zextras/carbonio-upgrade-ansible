@@ -12,7 +12,7 @@
     - max-version-check
 
 - name: Check licence status and Carbonio version
-  when: inventory_hostname in groups["applicationServers"]
+  when: inventory_hostname == groups["applicationServers"][0]
   tags:
     - max-version-check
   block:
@@ -27,13 +27,13 @@
     - name: Extract raw licence fields
       ansible.builtin.set_fact:
         current_carbonio_version_raw: "{{ (license_info.stdout | regex_search('carbonioVersion[ \\t]*(.*)', '\\1') | default([], true) | first | default('')) | trim }}"
-        license_type_raw: "{{ (license_info.stdout | regex_search('\\btype[ \\t]*(.*)', '\\1') | default([], true) | first | default('')) | trim }}"
+        authentication_token_raw: "{{ (license_info.stdout | regex_search('authenticationToken[ \\t]*(.*)', '\\1') | default([], true) | first | default('')) | trim }}"
         max_carbonio_version_raw: "{{ (license_info.stdout | regex_search('maxCarbonioVersion[ \\t]*(.*)', '\\1') | default([], true) | first | default('')) | trim }}"
         license_expired_raw: "{{ (license_info.stdout | regex_search('\\bexpired[ \\t]*(.*)', '\\1') | default([], true) | first | default('')) | trim }}"
 
     - name: Derive licence status facts
       ansible.builtin.set_fact:
-        no_license_active: "{{ current_carbonio_version_raw | length == 0 }}"
+        license_deployed: "{{ authentication_token_raw | length > 0 }}"
         license_expired: "{{ license_expired_raw | lower == 'true' }}"
         max_carbonio_unlimited: "{{ max_carbonio_version_raw | length == 0 }}"
         current_carbonio_version: "{{ (current_carbonio_version_raw | regex_search('([\\d]+\\.[\\d]+)')) if current_carbonio_version_raw | length > 0 else 'unknown' }}"
@@ -43,7 +43,7 @@
       ansible.builtin.set_fact:
         version_exceeds_limit: >-
           {{
-            (not no_license_active)
+            license_deployed
             and (not max_carbonio_unlimited)
             and (target_carbonio_version is version(max_carbonio_version, '>'))
             and (target_carbonio_version != current_carbonio_version)
@@ -53,7 +53,7 @@
       ansible.builtin.set_fact:
         upgrade_risk_reasons: >-
           {{
-            ([ "no valid licence is currently active" ] if no_license_active else [])
+            ([ "no valid licence is currently deployed" ] if not license_deployed else [])
             + ([ "the licence has expired" ] if license_expired else [])
             + ([ "target version " + target_carbonio_version + " exceeds the licensed maximum (" + max_carbonio_version + ")" ] if version_exceeds_limit else [])
           }}
@@ -90,7 +90,6 @@
       {{ hostvars[groups['applicationServers'][0]].upgrade_risk_reasons | join('; ') }}.
       Type 'IAMSURE' to proceed anyway:
   register: license_risk_confirm
-  run_once: true
   when:
     - hostvars[groups['applicationServers'][0]].upgrade_risk_reasons | length > 0
     - carbonio_version_check_force is not defined

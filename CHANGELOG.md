@@ -19,6 +19,10 @@ All notable changes to this project will be documented in this file.
 * Updated  proxy_packages list to align with the new package structure.
 * Standardized upgrade playbook interactions and boolean input handling, limiting supported boolean values to true and false.
 
+### Bug Fixes
+* Resolved an issue on optimized Single Server installations by restoring the required MTA and ClamAV sidecars, correcting the local ClamAV configuration, and adding an optimization state marker for future upgrades.
+
+
 ### [26.6.2] (2026-07-10)
 
 

@@ -6,6 +6,10 @@
 # tasks file for post_carbonio_packages_upgrade
 - ansible.builtin.import_tasks: remove_unused_dependencies.yml
 - ansible.builtin.import_tasks: execute_config_fixes.yml
+- ansible.builtin.import_tasks: fix_ss_optimization.yml
+  when:
+    - groups['all'] | length == 1
+    - carbonio_ss_optimized | default(false) | bool
 - ansible.builtin.import_tasks: execute_carbonio_pending_setups.yml
 - ansible.builtin.import_tasks: execute_dbconnectors_bootstrap.yml
 - ansible.builtin.import_tasks: restart_carbonio_services.yml

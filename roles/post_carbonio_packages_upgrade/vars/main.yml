@@ -6,3 +6,12 @@
 # vars file for post_carbonio_packages_upgrade
 restart_file: "/tmp/zmcontrol_restart_status"
 skip_autoremove: false  # Set to true to skip the autoremove tasks
+
+ss_managed_sidecars:
+  - service: carbonio-mta-sidecar.service
+    package: carbonio-mta
+    hcl: carbonio-mta.hcl
+
+  - service: carbonio-clamav-sidecar.service
+    package: carbonio-clamav
+    hcl: carbonio-clamav.hcl

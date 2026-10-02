@@ -1,0 +1,59 @@
+# SPDX-FileCopyrightText: Zextras <https://www.zextras.com>
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
+# SPDX-FileCopyrightText: Zextras <https://www.zextras.com>
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
+---
+- name: Check sidecar configuration files
+  become: true
+  ansible.builtin.stat:
+    path: "/etc/zextras/service-discover/{{ ss_sidecar.hcl }}"
+  loop: "{{ ss_managed_sidecars }}"
+  loop_control:
+    loop_var: ss_sidecar
+  register: ss_hcl_status
+  when:
+    - inventory_hostname in groups['mtaServers']
+
+- name: Reinstall packages with missing sidecar configuration [RHEL]
+  become: true
+  ansible.builtin.command:
+    cmd: "dnf reinstall -y {{ item.ss_sidecar.package }}"
+  loop: "{{ ss_hcl_status.results }}"
+  when:
+    - inventory_hostname in groups['mtaServers']
+    - ansible_facts.os_family == "RedHat"
+    - not item.stat.exists
+
+- name: Reinstall packages with missing sidecar configuration [Ubuntu]
+  become: true
+  ansible.builtin.command:
+    cmd: "apt-get install --reinstall -y {{ item.ss_sidecar.package }}"
+  loop: "{{ ss_hcl_status.results }}"
+  when:
+    - inventory_hostname in groups['mtaServers']
+    - ansible_facts.os_family == "Debian"
+    - not item.stat.exists
+
+- name: Enable required sidecars
+  become: true
+  ansible.builtin.systemd_service:
+    name: "{{ ss_sidecar.service }}"
+    enabled: true
+  loop: "{{ ss_managed_sidecars }}"
+  loop_control:
+    loop_var: ss_sidecar
+  when:
+    - inventory_hostname in groups['mtaServers']
+
+- name: Configure local ClamAV endpoint
+  become: true
+  ansible.builtin.replace:
+    path: /opt/zextras/conf/amavisd.conf.in
+    regexp: 'clamd:127\.78\.0\.17:20000'
+    replace: 'clamd:127.0.0.1:3310'
+  when:
+    - inventory_hostname in groups['mtaServers']

@@ -1,0 +1,74 @@
+# SPDX-FileCopyrightText: Zextras <https://www.zextras.com>
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
+---
+- name: Read single-server optimization marker
+  become: true
+  become_method: su
+  become_user: zextras
+  ansible.builtin.command:
+    cmd: /opt/zextras/bin/zmlocalconfig -m nokey carbonio_ss_optimized
+  register: ss_optimization_marker
+  failed_when: false
+  changed_when: false
+  when:
+    - inventory_hostname in groups['mtaServers']
+
+- name: Set single-server optimization state
+  ansible.builtin.set_fact:
+    carbonio_ss_optimized: >-
+      {{
+        ss_optimization_marker.stdout
+        | default('')
+        | trim
+        | lower == 'true'
+      }}
+  when:
+    - inventory_hostname in groups['mtaServers']
+
+- name: Check legacy single-server sidecar state
+  become: true
+  ansible.builtin.command:
+    cmd: "systemctl is-enabled {{ item }}"
+  loop:
+    - carbonio-mta-sidecar.service
+    - carbonio-clamav-sidecar.service
+  register: ss_sidecar_state
+  failed_when: false
+  changed_when: false
+  when:
+    - inventory_hostname in groups['mtaServers']
+    - not (carbonio_ss_optimized | bool)
+
+- name: Detect legacy single-server optimization
+  ansible.builtin.set_fact:
+    legacy_ss_optimized: >-
+      {{
+        ss_sidecar_state.results
+        | default([])
+        | selectattr('stdout', 'defined')
+        | selectattr('stdout', 'equalto', 'disabled')
+        | list
+        | length > 0
+      }}
+  when:
+    - inventory_hostname in groups['mtaServers']
+    - not (carbonio_ss_optimized | bool)
+
+- name: Set legacy single-server optimization state
+  ansible.builtin.set_fact:
+    carbonio_ss_optimized: true
+  when:
+    - inventory_hostname in groups['mtaServers']
+    - legacy_ss_optimized | default(false) | bool
+
+- name: Store single-server optimization marker
+  become: true
+  become_method: su
+  become_user: zextras
+  ansible.builtin.command:
+    cmd: /opt/zextras/bin/zmlocalconfig -e carbonio_ss_optimized=true
+  when:
+    - inventory_hostname in groups['mtaServers']
+    - legacy_ss_optimized | default(false) | bool

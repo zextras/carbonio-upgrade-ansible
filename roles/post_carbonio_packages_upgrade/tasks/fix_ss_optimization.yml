@@ -43,6 +43,18 @@
   when:
     - inventory_hostname in groups['mtaServers']
 
+- name: Restart required sidecars
+  become: true
+  ansible.builtin.systemd_service:
+    name: "{{ ss_sidecar.service }}"
+    enabled: true
+    state: restarted
+  loop: "{{ ss_managed_sidecars }}"
+  loop_control:
+    loop_var: ss_sidecar
+  when:
+    - inventory_hostname in groups['mtaServers']
+
 - name: Configure local ClamAV endpoint
   become: true
   ansible.builtin.replace:

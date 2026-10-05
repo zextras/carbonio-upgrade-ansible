@@ -51,14 +51,6 @@
     replace: 'clamd:127.0.0.1:3310'
   when:
     - inventory_hostname in groups['mtaServers']
-
-- name: Get list of carbonio-prometheus services
-  ansible.builtin.shell: "systemctl list-units --state=active 'carbonio-prometheus*' --no-legend | awk '{print $1}'"
-  register: ss_prometheus_services
-  ignore_errors: true
-  changed_when: false
-  when:
-    - groups['prometheusServers'] | length == 0
     
 - name: Mark single-server optimization fix as completed
   ansible.builtin.set_fact:

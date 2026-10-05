@@ -32,18 +32,7 @@
     - ansible_facts.os_family == "Debian"
     - not item.stat.exists
 
-- name: Enable required sidecars
-  become: true
-  ansible.builtin.systemd_service:
-    name: "{{ ss_sidecar.service }}"
-    enabled: true
-  loop: "{{ ss_managed_sidecars }}"
-  loop_control:
-    loop_var: ss_sidecar
-  when:
-    - inventory_hostname in groups['mtaServers']
-
-- name: Restart required sidecars
+- name: Enable and restart required sidecars
   become: true
   ansible.builtin.systemd_service:
     name: "{{ ss_sidecar.service }}"

@@ -2,10 +2,6 @@
 #
 # SPDX-License-Identifier: GPL-3.0-only
 
-# SPDX-FileCopyrightText: Zextras <https://www.zextras.com>
-#
-# SPDX-License-Identifier: GPL-3.0-only
-
 ---
 - name: Check sidecar configuration files
   become: true
@@ -20,8 +16,7 @@
 
 - name: Reinstall packages with missing sidecar configuration [RHEL]
   become: true
-  ansible.builtin.command:
-    cmd: "dnf reinstall -y {{ item.ss_sidecar.package }}"
+  ansible.builtin.command: "dnf reinstall -y {{ item.ss_sidecar.package }}"
   loop: "{{ ss_hcl_status.results }}"
   when:
     - inventory_hostname in groups['mtaServers']
@@ -30,8 +25,7 @@
 
 - name: Reinstall packages with missing sidecar configuration [Ubuntu]
   become: true
-  ansible.builtin.command:
-    cmd: "apt-get install --reinstall -y {{ item.ss_sidecar.package }}"
+  ansible.builtin.command: "apt-get install --reinstall -y {{ item.ss_sidecar.package }}"
   loop: "{{ ss_hcl_status.results }}"
   when:
     - inventory_hostname in groups['mtaServers']
@@ -57,3 +51,7 @@
     replace: 'clamd:127.0.0.1:3310'
   when:
     - inventory_hostname in groups['mtaServers']
+
+- name: Mark single-server optimization fix as completed
+  ansible.builtin.set_fact:
+    ss_optimization_fix_completed: true

@@ -10,6 +10,7 @@
   when:
     - groups['all'] | length == 1
     - carbonio_ss_optimized | default(false) | bool
+    - not (ss_optimization_fix_completed | default(false) | bool)
 - ansible.builtin.import_tasks: execute_carbonio_pending_setups.yml
 - ansible.builtin.import_tasks: execute_dbconnectors_bootstrap.yml
 - ansible.builtin.import_tasks: restart_carbonio_services.yml

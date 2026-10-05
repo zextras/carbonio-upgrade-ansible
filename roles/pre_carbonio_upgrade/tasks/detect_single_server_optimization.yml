@@ -7,8 +7,7 @@
   become: true
   become_method: su
   become_user: zextras
-  ansible.builtin.command:
-    cmd: /opt/zextras/bin/zmlocalconfig -m nokey carbonio_ss_optimized
+  ansible.builtin.command: /opt/zextras/bin/zmlocalconfig -m nokey carbonio_ss_optimized
   register: ss_optimization_marker
   failed_when: false
   changed_when: false
@@ -17,20 +16,13 @@
 
 - name: Set single-server optimization state
   ansible.builtin.set_fact:
-    carbonio_ss_optimized: >-
-      {{
-        ss_optimization_marker.stdout
-        | default('')
-        | trim
-        | lower == 'true'
-      }}
+    carbonio_ss_optimized: "{{ (ss_optimization_marker.stdout | default('') | trim | lower) == 'true' }}"
   when:
     - inventory_hostname in groups['mtaServers']
 
 - name: Check legacy single-server sidecar state
   become: true
-  ansible.builtin.command:
-    cmd: "systemctl is-enabled {{ item }}"
+  ansible.builtin.command: "systemctl is-enabled {{ item }}"
   loop:
     - carbonio-mta-sidecar.service
     - carbonio-clamav-sidecar.service
@@ -43,15 +35,7 @@
 
 - name: Detect legacy single-server optimization
   ansible.builtin.set_fact:
-    legacy_ss_optimized: >-
-      {{
-        ss_sidecar_state.results
-        | default([])
-        | selectattr('stdout', 'defined')
-        | selectattr('stdout', 'equalto', 'disabled')
-        | list
-        | length > 0
-      }}
+    legacy_ss_optimized: "{{ 'disabled' in (ss_sidecar_state.results | default([]) | map(attribute='stdout') | list) }}"
   when:
     - inventory_hostname in groups['mtaServers']
     - not (carbonio_ss_optimized | bool)
@@ -67,8 +51,7 @@
   become: true
   become_method: su
   become_user: zextras
-  ansible.builtin.command:
-    cmd: /opt/zextras/bin/zmlocalconfig -e carbonio_ss_optimized=true
+  ansible.builtin.command: /opt/zextras/bin/zmlocalconfig -e carbonio_ss_optimized=true
   when:
     - inventory_hostname in groups['mtaServers']
     - legacy_ss_optimized | default(false) | bool

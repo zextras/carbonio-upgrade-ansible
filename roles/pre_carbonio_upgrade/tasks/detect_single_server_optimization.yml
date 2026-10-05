@@ -11,14 +11,10 @@
   register: ss_optimization_marker
   failed_when: false
   changed_when: false
-  when:
-    - inventory_hostname in groups['mtaServers']
 
 - name: Set single-server optimization state
   ansible.builtin.set_fact:
     carbonio_ss_optimized: "{{ (ss_optimization_marker.stdout | default('') | trim | lower) == 'true' }}"
-  when:
-    - inventory_hostname in groups['mtaServers']
 
 - name: Check legacy single-server sidecar state
   become: true
@@ -30,21 +26,18 @@
   failed_when: false
   changed_when: false
   when:
-    - inventory_hostname in groups['mtaServers']
     - not (carbonio_ss_optimized | bool)
 
 - name: Detect legacy single-server optimization
   ansible.builtin.set_fact:
     legacy_ss_optimized: "{{ 'disabled' in (ss_sidecar_state.results | default([]) | map(attribute='stdout') | list) }}"
   when:
-    - inventory_hostname in groups['mtaServers']
     - not (carbonio_ss_optimized | bool)
 
 - name: Set legacy single-server optimization state
   ansible.builtin.set_fact:
     carbonio_ss_optimized: true
   when:
-    - inventory_hostname in groups['mtaServers']
     - legacy_ss_optimized | default(false) | bool
 
 - name: Store single-server optimization marker
@@ -53,5 +46,4 @@
   become_user: zextras
   ansible.builtin.command: /opt/zextras/bin/zmlocalconfig -e carbonio_ss_optimized=true
   when:
-    - inventory_hostname in groups['mtaServers']
     - legacy_ss_optimized | default(false) | bool

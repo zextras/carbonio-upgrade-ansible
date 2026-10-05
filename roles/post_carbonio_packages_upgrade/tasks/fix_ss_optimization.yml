@@ -59,33 +59,6 @@
   changed_when: false
   when:
     - groups['prometheusServers'] | length == 0
-
-- name: Stop and disable carbonio-prometheus services
-  become: true
-  ansible.builtin.systemd_service:
-    name: "{{ item }}"
-    state: stopped
-    enabled: false
-  loop: "{{ ss_prometheus_services.stdout_lines }}"
-  when:
-    - groups['prometheusServers'] | length == 0
-    - ss_prometheus_services is defined
-    - ss_prometheus_services.stdout_lines | length > 0
-
-- name: Remove hcl files for disabled carbonio-prometheus exporters
-  become: true
-  ansible.builtin.file:
-    path: >-
-      /etc/zextras/service-discover/{{
-        item | regex_replace('\.service$', '.hcl')
-      }}
-    state: absent
-  loop: "{{ ss_prometheus_services.stdout_lines }}"
-  when:
-    - groups['prometheusServers'] | length == 0
-    - ss_prometheus_services is defined
-    - ss_prometheus_services.stdout_lines | length > 0
-    - item is match('^carbonio-prometheus-.*-exporter\.service$')
     
 - name: Mark single-server optimization fix as completed
   ansible.builtin.set_fact:

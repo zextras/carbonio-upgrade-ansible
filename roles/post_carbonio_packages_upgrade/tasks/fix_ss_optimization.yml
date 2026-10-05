@@ -32,11 +32,12 @@
     - ansible_facts.os_family == "Debian"
     - not item.stat.exists
 
-- name: Enable required sidecars
+- name: Enable and restart required sidecars
   become: true
   ansible.builtin.systemd_service:
     name: "{{ ss_sidecar.service }}"
     enabled: true
+    state: restarted
   loop: "{{ ss_managed_sidecars }}"
   loop_control:
     loop_var: ss_sidecar
@@ -51,7 +52,7 @@
     replace: 'clamd:127.0.0.1:3310'
   when:
     - inventory_hostname in groups['mtaServers']
-
+    
 - name: Mark single-server optimization fix as completed
   ansible.builtin.set_fact:
     ss_optimization_fix_completed: true

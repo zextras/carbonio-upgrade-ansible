@@ -22,7 +22,7 @@ All notable changes to this project will be documented in this file.
 
 ### Bug Fixes
 * Resolved an issue on optimized Single Server installations by restoring the required MTA and ClamAV sidecars, correcting the local ClamAV configuration, disabling Prometheus exporters and adding an optimization state marker for future upgrades.
-
+* Added a temporary workaround for carbonio-avdb-updater startup failures in multi-mailbox deployments by configuring the admin SOAP endpoint to use the first application server from the inventory and restarting the service when the configuration changes.
 
 ### [26.6.2] (2026-07-10)
 

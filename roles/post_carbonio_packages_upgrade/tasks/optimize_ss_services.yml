@@ -1,0 +1,45 @@
+# SPDX-FileCopyrightText: Zextras <https://www.zextras.com>
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
+---
+- name: Get list of carbonio-prometheus services
+  become: true
+  ansible.builtin.shell: "systemctl list-unit-files 'carbonio-prometheus*.service' --no-legend | awk '{print $1}'"
+  register: ss_prometheus_services
+  failed_when: false
+  changed_when: false
+  when:
+    - groups['prometheusServers'] | length == 0
+
+- name: Stop and disable carbonio-prometheus services
+  become: true
+  ansible.builtin.systemd_service:
+    name: "{{ item }}"
+    state: stopped
+    enabled: false
+  loop: "{{ ss_prometheus_services.stdout_lines | default([]) }}"
+  when:
+    - groups['prometheusServers'] | length == 0
+
+- name: Remove hcl files for disabled carbonio-prometheus exporters
+  become: true
+  ansible.builtin.file:
+    path: >-
+      /etc/zextras/service-discover/{{
+        item | regex_replace('\.service$', '.hcl')
+      }}
+    state: absent
+  loop: "{{ ss_prometheus_services.stdout_lines | default([]) }}"
+  register: ss_exporter_hcl_cleanup
+  when:
+    - groups['prometheusServers'] | length == 0
+    - item is match('^carbonio-prometheus-.*-exporter\.service$')
+
+- name: Restart service-discover after exporter cleanup
+  become: true
+  ansible.builtin.systemd_service:
+    name: service-discover
+    state: restarted
+  when:
+    - ss_exporter_hcl_cleanup.changed | default(false)

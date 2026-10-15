@@ -1,12 +1,18 @@
-# SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
+# SPDX-FileCopyrightText: Zextras <https://www.zextras.com>
 #
 # SPDX-License-Identifier: GPL-3.0-only
 
 ---
-# handlers file for post-carbonio-packages-upgrade
+# handlers file for post_carbonio_packages_upgrade
 - name: restart_carbonio_services
   become: true
   ansible.builtin.service:
     name: "{{ item }}"
     state: restarted
   loop: "{{ carbonio_services_in_memory.stdout_lines }}"
+
+- name: restart_avdb_updater
+  become: true
+  ansible.builtin.systemd_service:
+    name: carbonio-avdb-updater.service
+    state: restarted

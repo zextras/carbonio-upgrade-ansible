@@ -1,0 +1,119 @@
+# SPDX-FileCopyrightText: Zextras <https://www.zextras.com>
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
+---
+- name: Derive target Carbonio release line
+  ansible.builtin.set_fact:
+    target_carbonio_version: >-
+      {{ hostvars['localhost'].carbonio_playbook_version.split('.')[0:2] | join('.') }}
+  run_once: true
+  tags:
+    - max-version-check
+
+- name: Check licence status and Carbonio version
+  when: inventory_hostname == groups["applicationServers"][0]
+  tags:
+    - max-version-check
+  block:
+    - name: Get Carbonio license info
+      become: true
+      become_method: su
+      become_user: zextras
+      ansible.builtin.command: '/opt/zextras/bin/carbonio --json core getlicenseinfo'
+      register: license_info
+      changed_when: false
+
+    - name: Parse Carbonio license info
+      ansible.builtin.set_fact:
+        license_data: "{{ (license_info.stdout | from_json).response }}"
+
+    - name: Derive licence status facts
+      ansible.builtin.set_fact:
+        license_deployed: "{{ license_data.authenticationToken | default('', true) | length > 0 }}"
+        license_expired: "{{ license_data.expired | default(false) }}"
+        max_carbonio_unlimited: "{{ license_data.maxCarbonioVersion | default('', true) | length == 0 }}"
+        current_carbonio_version: "{{ (license_data.carbonioVersion.split('.')[0:2] | join('.')) if license_data.carbonioVersion | default('', true) | length > 0 else 'unknown' }}"
+        max_carbonio_version: "{{ (license_data.maxCarbonioVersion.split('.')[0:2] | join('.')) if license_data.maxCarbonioVersion | default('', true) | length > 0 else 'unlimited' }}"
+
+    - name: Determine if the target release exceeds the licensed maximum
+      ansible.builtin.set_fact:
+        version_exceeds_limit: >-
+          {{
+            license_deployed
+            and (not max_carbonio_unlimited)
+            and (target_carbonio_version is version(max_carbonio_version, '>'))
+            and (target_carbonio_version != current_carbonio_version)
+          }}
+
+    - name: Build list of upgrade-risk reasons
+      ansible.builtin.set_fact:
+        upgrade_risk_reasons: >-
+          {{
+            ([ "no valid licence is currently deployed" ] if not license_deployed else [])
+            + ([ "the licence has expired" ] if license_expired else [])
+            + ([ "target version " + target_carbonio_version + " exceeds the licensed maximum (" + max_carbonio_version + ")" ] if version_exceeds_limit else [])
+          }}
+
+    - name: Warn if upgrading carries a licence risk
+      ansible.builtin.debug:
+        msg: >-
+          WARNING: This playbook (collection version
+          {{ hostvars['localhost'].carbonio_playbook_version }})
+          will upgrade Carbonio from {{ current_carbonio_version }} to release
+          {{ target_carbonio_version }}. Issue(s) found:
+          {{ upgrade_risk_reasons | join('; ') }}.
+          Proceeding may result in an unsupported installation.
+      when: upgrade_risk_reasons | length > 0
+
+- name: Log non-interactive force bypass of licence risk
+  ansible.builtin.debug:
+    msg: >-
+      carbonio_version_check_force is set - proceeding non-interactively
+      despite:
+      {{ hostvars[groups['applicationServers'][0]].upgrade_risk_reasons | join('; ') }}.
+  run_once: true
+  when:
+    - hostvars[groups['applicationServers'][0]].upgrade_risk_reasons | length > 0
+    - carbonio_version_check_force is defined
+    - carbonio_version_check_force | lower == 'true'
+  tags:
+    - max-version-check
+
+- name: Confirm to proceed despite the licence risk
+  ansible.builtin.pause:
+    prompt: >-
+      Upgrading to {{ target_carbonio_version }} has the following issue(s):
+      {{ hostvars[groups['applicationServers'][0]].upgrade_risk_reasons | join('; ') }}.
+      Type 'IAMSURE' to proceed anyway:
+  register: license_risk_confirm
+  when:
+    - hostvars[groups['applicationServers'][0]].upgrade_risk_reasons | length > 0
+    - carbonio_version_check_force is not defined
+      or not (carbonio_version_check_force | lower == 'true')
+  tags:
+    - max-version-check
+
+- name: Abort upgrade if licence risk not confirmed
+  ansible.builtin.assert:
+    that:
+      - >-
+        (carbonio_version_check_force is defined and
+        (carbonio_version_check_force | lower == 'true'))
+        or
+        ((license_risk_confirm | default({})).user_input
+        | default('') | trim == 'IAMSURE')
+    fail_msg: >-
+      Upgrade aborted:
+      {{ hostvars[groups['applicationServers'][0]].upgrade_risk_reasons | join('; ') }}.
+      Re-run the playbook and type 'IAMSURE' to proceed, or set
+      -e carbonio_version_check_force=true for a non-interactive run.
+    success_msg: >-
+      Confirmed: proceeding with upgrade to {{ target_carbonio_version }}
+      despite:
+      {{ hostvars[groups['applicationServers'][0]].upgrade_risk_reasons | join('; ') }}.
+  run_once: true
+  when:
+    - hostvars[groups['applicationServers'][0]].upgrade_risk_reasons | length > 0
+  tags:
+    - max-version-check

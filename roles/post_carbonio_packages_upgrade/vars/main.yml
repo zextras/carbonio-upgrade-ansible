@@ -1,8 +1,17 @@
-# SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
+# SPDX-FileCopyrightText: Zextras <https://www.zextras.com>
 #
 # SPDX-License-Identifier: GPL-3.0-only
 
 ---
-# vars file for post-carbonio-packages-upgrade
+# vars file for post_carbonio_packages_upgrade
 restart_file: "/tmp/zmcontrol_restart_status"
-skip_autoremove: 0  # Set to 1 to skip the autoremove tasks
+skip_autoremove: false  # Set to true to skip the autoremove tasks
+
+ss_managed_sidecars:
+  - service: carbonio-mta-sidecar.service
+    package: carbonio-mta
+    hcl: carbonio-mta.hcl
+
+  - service: carbonio-clamav-sidecar.service
+    package: carbonio-clamav
+    hcl: carbonio-clamav.hcl

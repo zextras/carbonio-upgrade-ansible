@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file. 
 
 
+### [26.9.0] (2026-10-15)
+
+
+### Features 
+* Removed the obsolete carbonio-core < 4.2 compatibility block, including version detection and the related restart, wait, and stop sequence.
+* Removed outdated Carbonio version references from task names that are not conditionally executed based on the installed Carbonio version.
+* Added installation and database bootstrap support for the new carbonio-preview-db package.
+* Refactored the playbook structure and standardized Ansible content across roles, including task names, module FQCNs, inventory group references, and task conditions.
+* Added repository and upgrade playbook validation and confirmation before Carbonio upgrade, with repository consistency checks across all hosts and support for non-interactive confirmation.
+* Updated the Notification Push installation logic to check Consul before installing the package.
+* Added carbonio-license-service installation.
+* Added a max Carbonio version check to the upgrade playbook, warning and requiring confirmation (or failing outright if no licence is active) when the upgrade would exceed the licensed version limit
+* Added a pre-upgrade licence and version check to the upgrade playbook, warning and requiring confirmation (or a non-interactive override) when the licence is invalid, expired, or the target version exceeds the licensed maximum.
+* Updated  proxy_packages list to align with the new package structure.
+* Standardized upgrade playbook interactions and boolean input handling, limiting supported boolean values to true and false.
+
+
+### Bug Fixes
+* Resolved an issue on optimized Single Server installations by restoring the required MTA and ClamAV sidecars, correcting the local ClamAV configuration, disabling Prometheus exporters and adding an optimization state marker for future upgrades.
+* Added a temporary workaround for carbonio-avdb-updater startup failures in multi-mailbox deployments by configuring the admin SOAP endpoint to use the first application server from the inventory and restarting the service when the configuration changes.
+
+
 ### [26.6.2] (2026-07-10)
 
 
@@ -27,6 +49,7 @@ All notable changes to this project will be documented in this file.
 * Added validation for inventory values (hostnames, domains, and IP addresses) to prevent misconfigurations caused by INI parsing
 * Removed from the installation list deprecated carbonio-chats-ui
 * Added netaddr dependency handling for inventory IP address validation
+
 
 ### Bug Fixes
 * Fixed deprecated ansible_* facts usage by migrating to ansible_facts for compatibility with ansible-core 2.24
@@ -58,6 +81,7 @@ All notable changes to this project will be documented in this file.
 ### Features
 * Added new DBConnector package carbonio-videorecorder-db for DB-backed metadata storage and job management support
 * Updated the Ansible playbook to install the carbonio-memcached package only on the first proxy, since memcached runs behind the service mesh and currently supports a single instance.
+
 
 ### Bug Fixes
 * Removed message-dispatcher-migration steps (now handled by application)

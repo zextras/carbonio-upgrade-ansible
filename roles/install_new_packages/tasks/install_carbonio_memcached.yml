@@ -1,0 +1,27 @@
+# SPDX-FileCopyrightText: Zextras <https://www.zextras.com>
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
+---
+  - name: Install Memcached [Ubuntu]
+    become: true
+    ansible.builtin.apt: name={{ item }} state=present
+    with_items:
+      - "{{ memcached_packages }}"
+    when: 
+      - ansible_facts.os_family == "Debian"
+      - inventory_hostname == groups['proxyServers'][0]
+    tags:
+      - install-carbonio-memcached
+
+######## RHEL
+  - name: Install Memcached [RHEL]
+    become: true
+    ansible.builtin.yum: name={{ item }} state=present
+    with_items:
+      - "{{ memcached_packages }}"
+    when: 
+      - ansible_facts.os_family == "RedHat" 
+      - inventory_hostname == groups['proxyServers'][0]
+    tags:
+      - install-carbonio-memcached

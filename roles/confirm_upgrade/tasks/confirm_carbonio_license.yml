@@ -36,6 +36,15 @@
         current_carbonio_version: "{{ (license_data.carbonioVersion.split('.')[0:2] | join('.')) if license_data.carbonioVersion | default('', true) | length > 0 else 'unknown' }}"
         max_carbonio_version: "{{ (license_data.maxCarbonioVersion.split('.')[0:2] | join('.')) if license_data.maxCarbonioVersion | default('', true) | length > 0 else 'unlimited' }}"
 
+    - name: Warn if the maximum licensed Carbonio version is unavailable
+      ansible.builtin.debug:
+        msg: >-
+          WARNING: The maximum licensed Carbonio version is not available.
+          This may be due to a Carbonio version that does not support
+          this information, a missing licence, or a licence without
+          a version limit. The maximum version check will be skipped.
+      when: max_carbonio_unlimited
+
     - name: Determine if the target release exceeds the licensed maximum
       ansible.builtin.set_fact:
         version_exceeds_limit: >-

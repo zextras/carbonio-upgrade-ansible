@@ -1,0 +1,26 @@
+# SPDX-FileCopyrightText: Zextras <https://www.zextras.com>
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
+---
+### Should be removed in Carbonio 27.9.0
+- name: Gather installed package facts
+  ansible.builtin.package_facts:
+    manager: auto
+
+- name: Remove obsolete Carbonio License service package
+  become: true
+  ansible.builtin.package:
+    name: carbonio-license-service
+    state: absent
+  when: 
+    - inventory_hostname in groups['masterDirectoryServers'] or inventory_hostname in groups['applicationServers']
+    - "'carbonio-license-service' in ansible_facts.packages"
+
+- name: Remove obsolete Carbonio License service HCL files
+  become: true
+  ansible.builtin.file:
+    path: "/etc/zextras/service-discover/carbonio-license.hcl"
+    state: absent
+  when: 
+    - inventory_hostname in groups['masterDirectoryServers'] or inventory_hostname in groups['applicationServers']

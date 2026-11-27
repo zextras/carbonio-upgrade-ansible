@@ -5,6 +5,7 @@
 ---
 # tasks file for post_carbonio_packages_upgrade
 - ansible.builtin.import_tasks: remove_unused_dependencies.yml
+- ansible.builtin.import_tasks: remove_obsolete_packages.yml
 - ansible.builtin.import_tasks: execute_config_fixes.yml
 - ansible.builtin.import_tasks: fix_ss_optimization.yml
   when:

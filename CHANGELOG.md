@@ -10,6 +10,12 @@ All notable changes to this project will be documented in this file.
 * Removed the obsolete carbonio-license-service package from the upgrade playbook.
 
 
+### Bug Fixes
+
+
+* Added a warning when the maximum licensed Carbonio version cannot be determined during the upgrade pre-checks.
+
+
 ### [26.9.0] (2026-10-15)
 
 

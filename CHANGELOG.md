@@ -11,8 +11,6 @@ All notable changes to this project will be documented in this file.
 
 
 ### Bug Fixes
-
-
 * Added a warning when the maximum licensed Carbonio version cannot be determined during the upgrade pre-checks.
 
 

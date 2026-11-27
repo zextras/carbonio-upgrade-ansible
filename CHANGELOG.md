@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 ### Features 
 * Removed the obsolete carbonio-license-service package from the upgrade playbook.
+* Added carbonio-turn-server package
 
 
 ### Bug Fixes

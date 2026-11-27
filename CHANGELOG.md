@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file.
 
 
 ### Features 
-* Removed the obsolete carbonio-license-service package from the upgrade playbook.
+* Removed the installation of the obsolete carbonio-license-service package and added automatic removal if it is already installed.
 
 
 ### Bug Fixes
